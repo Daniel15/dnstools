@@ -1,8 +1,8 @@
 <?php
-include 'includes/3rdparty/php-captcha.inc.php';
+include '../includes/3rdparty/php-captcha.inc.php';
 
 $page['title'] = 'Welcome to DNSTools.ws!';
-include 'includes/header.php';
+include '../includes/header.php';
 ?>
 
 	<div class="row">
@@ -146,5 +146,5 @@ include 'includes/header.php';
 		</div>
 	</div>
 <?php
-include 'includes/footer.php';
+include '../includes/footer.php';
 ?>

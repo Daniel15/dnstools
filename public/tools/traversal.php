@@ -1,5 +1,5 @@
 <?php
-require '../includes/functions.php';
+require '../../includes/functions.php';
 
 if (empty($_GET['host']) || empty($_GET['type']))
 	die();
@@ -7,7 +7,7 @@ if (empty($_GET['host']) || empty($_GET['type']))
 $_GET['host'] = clean_hostname($_GET['host']);
 
 $page['title'] = 'DNS Traversal for ' . $_GET['host'];
-include '../includes/header.php';
+include '../../includes/header.php';
 
 // Do the lookup.
 do_lookup($root_servers);
@@ -111,5 +111,5 @@ function do_lookup($servers)
 	}
 }
 
-include('../includes/footer.php');
+include '../../includes/footer.php';
 ?>

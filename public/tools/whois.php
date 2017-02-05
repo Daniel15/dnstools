@@ -1,6 +1,6 @@
 <?php
-require '../includes/functions.php';
-include '../includes/3rdparty/php-captcha.inc.php';
+require '../../includes/functions.php';
+include '../../includes/3rdparty/php-captcha.inc.php';
 
 if (empty($_POST['host']))
 	die();
@@ -9,7 +9,7 @@ if (empty($_POST['host']))
 $_POST['host'] = clean_hostname($_POST['host']);
 
 $page['title'] = 'WHOIS for ' . $_POST['host'];
-include '../includes/header.php';
+include '../../includes/header.php';
 
 echo '
 	<form method="post" action="whois.php" class="mb-3 col-3">
@@ -42,5 +42,5 @@ else
 	</pre>';
 }
 
-include '../includes/footer.php';
+include '../../includes/footer.php';
 ?>

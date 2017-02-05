@@ -1,5 +1,5 @@
 <?php
-require '../includes/functions.php';
+require '../../includes/functions.php';
 
 if (empty($_GET['host']) || empty($_GET['type']))
 	die();
@@ -14,7 +14,7 @@ if ($_GET['type'] === 'ANY' && !empty($_SERVER['HTTP_REFERER'])) {
 $_GET['host'] = clean_hostname($_GET['host']);
 
 $page['title'] = 'DNS Lookup for ' . $_GET['host'];
-include '../includes/header.php';
+include '../../includes/header.php';
 
 echo '
 	<form class="form-inline" method="get" action="lookup.php">
@@ -156,5 +156,5 @@ function do_lookup($servers)
 	}
 }
 
-include '../includes/footer.php';
+include '../../includes/footer.php';
 ?>
