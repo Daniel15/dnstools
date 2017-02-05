@@ -1,0 +1,115 @@
+/* General styles */
+body
+{
+	font-family: Verdana, sans-serif;
+}
+
+h1
+{
+	text-align: center;
+}
+
+a
+{
+	color: blue;
+	text-decoration: none;
+}
+
+a:hover
+{
+	text-decoration: underline;	
+}
+
+#header
+{
+	border-bottom: 1px dotted #999999;
+	margin-bottom: 10px;
+}
+
+#footer
+{
+	text-align: right;
+	color: #888888;
+	font-size: small;
+	border-top: 1px dotted #999999;
+	margin-top: 20px;
+}
+
+#footer_message
+{
+	float: left;
+}
+
+#footer_powered
+{
+	float: right;
+}
+
+/* Homepage styles */
+.column
+{
+	float: left;
+	width: 33%;
+}
+
+.tool
+{
+	border: 1px solid #000000;
+	background-color: #EEEEEE;
+	margin-right: 5px;
+	margin-bottom: 5px;
+	padding: 10px;
+}
+
+.tool h3
+{
+	margin: 0;
+	padding: 0;
+	text-align: center;
+}
+
+.tool p
+{
+	margin: 0;
+	padding: 0;
+	font-size: small;
+	padding-bottom: 5px;
+}
+
+/* Table of results */
+table.results
+{
+	width: 100%;
+}
+
+/* ANSWER section */
+table.results tr.answer
+{
+	background-color: #FFFFFF;
+}
+
+/* AUTHORITY section */
+table.results tr.authority
+{
+	background-color: #CCCCCC;
+}
+
+/* ADDITIONAL section */
+table.results tr.additional
+{
+	background-color: #EEEEEE;
+}
+
+
+/* Errors */
+.error
+{
+	color: red;
+	font-weight: bold;
+}
+
+.success
+{
+	color: green;
+	font-weight: bold;
+}
