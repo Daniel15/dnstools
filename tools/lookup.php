@@ -9,7 +9,7 @@ if ($_GET['type'] === 'ANY' && !empty($_SERVER['HTTP_REFERER'])) {
 	die();
 }
 
-	
+
 // Get rid of bad characters.
 $_GET['host'] = clean_hostname($_GET['host']);
 
@@ -17,20 +17,25 @@ $page['title'] = 'DNS Lookup for ' . $_GET['host'];
 include '../includes/header.php';
 
 echo '
-	<form method="get" action="lookup.php">
-		<label>Host: <input type="text" name="host" value="', $_GET['host'], '" /></label>
-		<label for="type">Type: </label>
-		<select name="type" id="type">
-			<option value="A">A</option>
-			<option value="AAAA">AAAA/IPv6</option>
-			<option value="CNAME">CNAME</option>
-			<option value="MX">MX</option>
-			<option value="NS">NS</option>
-			<option value="PTR">PTR (reverse DNS)</option>
-			<option value="SOA">SOA</option>
-			<!-- <option value="TXT">TXT</option> -->
-		</select>
-		<input value="Lookup" type="submit" />
+	<form class="form-inline" method="get" action="lookup.php">
+		<div class="form-group">
+			<label for="host" class="col-2">Host:</label>
+			<input type="text" class="form-control col-9" name="host" id="host" value="', $_GET['host'], '" />
+		</div>
+		<div class="form-group">
+			<label for="type" class="col-2">Type:</label>
+			<select name="type" id="type" class="form-control col-9">
+				<option value="A">A</option>
+				<option value="AAAA">AAAA/IPv6</option>
+				<option value="CNAME">CNAME</option>
+				<option value="MX">MX</option>
+				<option value="NS">NS</option>
+				<option value="PTR">PTR (reverse DNS)</option>
+				<option value="SOA">SOA</option>
+				<!-- <option value="TXT">TXT</option> -->
+			</select>
+		</div>
+		<input value="Lookup" type="submit" class="btn btn-primary ml-2" />
 	</form>';
 
 // Do the lookup.
@@ -60,10 +65,12 @@ function do_lookup($servers)
 	if ($response->header->rcode != 'NOERROR')
 	{
 		echo '<span class="error">Failed: ', $response->header->rcode, '</span><br /><br />
-		There is a problem with the DNS server at ', $response->answerfrom, '.';
+		<div class="alert alert-danger" role="alert">
+			There is a problem with the DNS server at ', $response->answerfrom, '.
+		</div>';
 		return;
 	}
-	
+
 	// Was this server non-authoritive?
 	if ($response->header->ancount == 0)
 	{
@@ -72,7 +79,7 @@ function do_lookup($servers)
 		$name_servers = array();
 		// Loop through all of them.
 		foreach ($response->authority as $authority)
-		{			
+		{
 			// Add this one to the list.
 			//if ($authority->nsdname != '')
 			if (!empty($authority->nsdname))
@@ -85,7 +92,7 @@ function do_lookup($servers)
 		This DNS record does not exist.';
 			return;
 		}
-		
+
 		// Pick one.
 		$name_server = $name_servers[array_rand($name_servers)];
 
@@ -96,52 +103,56 @@ function do_lookup($servers)
 	else
 	{
 		echo '[took ', number_format(($end_time - $start_time) * 1000), ' ms]<br />
-	<table class="results" border="1">
-		<tr>
-			<th>Name</th>
-			<th>Type</th>
-			<th>Class</th>
-			<th>TTL</th>
-			<th>Answer</th>
-		</tr>';
-		
+	<table class="table mt-2">
+		<thead class="thead-default">
+			<tr>
+				<th>Name</th>
+				<th>Type</th>
+				<th>Class</th>
+				<th>TTL</th>
+				<th>Answer</th>
+			</tr>
+		</thead>
+		<tbody>';
+
 		foreach ($response->answer as $answer)
 		{
 			echo '
-		<tr class="answer">
-			<td>', $answer->name, '</td>
-			<td>', $answer->type, '</td>
-			<td>', $answer->class, '</td>
-			<td>', $answer->ttl, '</td>
-			<td>', format_answer($answer), '</td>
-		</tr>';
+			<tr class="answer">
+				<td>', $answer->name, '</td>
+				<td>', $answer->type, '</td>
+				<td>', $answer->class, '</td>
+				<td>', $answer->ttl, '</td>
+				<td>', format_answer($answer), '</td>
+			</tr>';
 		}
-		
+
 		foreach ($response->authority as $answer)
 		{
 			echo '
-		<tr class="authority">
-			<td>', $answer->name, '</td>
-			<td>', $answer->type, '</td>
-			<td>', $answer->class, '</td>
-			<td>', $answer->ttl, '</td>
-			<td>', $answer->nsdname, '</td>
-		</tr>';
+			<tr class="authority">
+				<td>', $answer->name, '</td>
+				<td>', $answer->type, '</td>
+				<td>', $answer->class, '</td>
+				<td>', $answer->ttl, '</td>
+				<td>', $answer->nsdname, '</td>
+			</tr>';
 		}
-		
+
 		foreach ($response->additional as $answer)
 		{
 			echo '
-		<tr class="additional">
-			<td>', $answer->name, '</td>
-			<td>', $answer->type, '</td>
-			<td>', $answer->class, '</td>
-			<td>', $answer->ttl, '</td>
-			<td>', $answer->address, '</td>
-		</tr>';
+			<tr class="additional">
+				<td>', $answer->name, '</td>
+				<td>', $answer->type, '</td>
+				<td>', $answer->class, '</td>
+				<td>', $answer->ttl, '</td>
+				<td>', $answer->address, '</td>
+			</tr>';
 		}
 		echo '
-	</table>';		
+		</tbody>
+	</table>';
 	}
 }
 

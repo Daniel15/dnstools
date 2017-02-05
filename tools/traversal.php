@@ -17,14 +17,17 @@ function do_lookup($servers)
 {
 	global $resolver;
 	echo 'Looking on ', count($servers), ' servers:
-	<table class="results" border="1">
-		<tr>
-			<th>Server</th>
-			<th>Response</th>
-			<th>Time</th>
-		</tr>';
+	<table class="table table-striped">
+		<thead>
+			<tr>
+				<th>Server</th>
+				<th>Response</th>
+				<th>Time</th>
+			</tr>
+		</thead>
+		<tbody>';
 	$name_servers = array();
-	
+
 	// Loop through each server
 	foreach ($servers as $server)
 	{
@@ -36,16 +39,16 @@ function do_lookup($servers)
 		$response = $resolver->rawQuery($_GET['host'], $_GET['type']);
 		// Get the end time
 		$time = number_format((microtime(true) - $start_time) * 1000, 2) . ' ms';
-		
+
 		// Did the query fail?
 		if ($response->header->rcode != 'NOERROR')
 		{
 			echo '
-		<tr>
-			<td>', $response->answerfrom, '</td>
-			<td>Failed: ', $response->header->rcode, '</td>
-			<td>', $time, '</td>
-		</tr>'; 
+			<tr>
+				<td>', $response->answerfrom, '</td>
+				<td>Failed: ', $response->header->rcode, '</td>
+				<td>', $time, '</td>
+			</tr>';
 		}
 		else
 		{
@@ -64,14 +67,14 @@ function do_lookup($servers)
 				asort($name_servers_temp);
 				// Add them to the overall list.
 				$name_servers = array_unique(array_merge($name_servers, $name_servers_temp));
-				
+
 				echo '
-		<tr>
-			<td>', $response->answerfrom, '</td>
-			<td>', implode(', ', $name_servers_temp), '</td>
-			<td>', $time, '</td>
-		</tr>'; 
-				
+			<tr>
+				<td>', $response->answerfrom, '</td>
+				<td>', implode(', ', $name_servers_temp), '</td>
+				<td>', $time, '</td>
+			</tr>';
+
 			}
 			// Authoritive, you say?
 			else
@@ -83,22 +86,23 @@ function do_lookup($servers)
 					$answers[] = format_answer($answer);
 				}
 				asort($answers);
-				
+
 				echo '
-		<tr>
-			<td>', $response->answerfrom, '</td>
-			<td>', implode(', ', $answers), '</td>
-			<td>', $time, '</td>
-		</tr>'; 
-				
+			<tr>
+				<td>', $response->answerfrom, '</td>
+				<td>', implode(', ', $answers), '</td>
+				<td>', $time, '</td>
+			</tr>';
+
 			}
 		}
 
 	}
-	
+
 	echo '
+		<tbody>
 	</table><br />';
-	
+
 	// If it was not authoritive, we need to do another look.
 	//if ($response->header->ancount == 0)
 	if (count($name_servers) != 0)

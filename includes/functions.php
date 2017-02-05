@@ -1,5 +1,7 @@
 <?php
 //error_reporting(E_ALL);
+// Remove this once all the deprecated junk is cleaned up.
+error_reporting(E_ERROR | E_WARNING | E_PARSE | E_NOTICE);
 set_include_path(get_include_path() . PATH_SEPARATOR . __DIR__);
 
 require_once 'Net/DNS.php';
@@ -21,7 +23,7 @@ $root_servers = array(
 	'193.0.14.129', // k
 	'198.32.64.12', // l
 	'202.12.27.33', // m*/
-	
+
 	'a.root-servers.net',
 	'b.root-servers.net',
 	'c.root-servers.net',
