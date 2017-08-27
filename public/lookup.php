@@ -44,7 +44,7 @@ do_lookup($root_servers);
 echo '
 	<p>
 		These results are returned in real-time, and are not cached. This means that these results are what DNS servers all over the world are seeing at the moment.<br />
-		<a href="traversal.php?host=', $_GET['host'], '&type=', $_GET['type'], '">See a DNS traversal</a>.
+		<a href="/traversal/', $_GET['host'], '/', $_GET['type'], '/">See a DNS traversal</a>.
 	</p>';
 
 //function do_lookup($domain, &$servers)
