@@ -1,6 +1,6 @@
 <?php
+session_start();
 require '../includes/functions.php';
-include '../includes/3rdparty/php-captcha.inc.php';
 
 if (empty($_POST['host']))
 	die();
@@ -11,29 +11,38 @@ $_POST['host'] = clean_hostname($_POST['host']);
 $page['title'] = 'WHOIS for ' . $_POST['host'];
 include '../includes/header.php';
 
-echo '
-	<form method="post" action="/whois" class="mb-3 col-3">
-		<div class="form-group row">
-			<label for="whois-host" class="col-2 col-form-label">Host:</label>
-			<div class="col-10">
-				<input class="form-control" type="text" name="host" id="whois-host"  value="', $_POST['host'], '" />
-			</div>
-		</div>
-
-		<img src="../captcha.php" width="200" height="60" alt="Verification Code" /><br />
-		<input class="form-control" type="text" name="code" id="code" />
-		<p style="font-size: x-small">Please enter the code to prove you\'re not a bot.</p>
-
-		<input value="Lookup" type="submit" class="btn btn-primary" />
-	</form>';
-
 // Check the CAPTCHA.
-if (!(PhpCaptcha::Validate($_POST['code'])))
-{
-	echo '<div class="alert alert-danger" role="alert">Error: The visual verification code was entered incorrectly. Please try again.</div>';
+$errors = null;
+if (empty($_SESSION['passed_captcha'])) {
+	$recaptcha = new \ReCaptcha\ReCaptcha('6LfMTy4UAAAAAAdUR_HWr8vZSACuVnh3O6HUavRU');
+	$remote_ip = empty($_SERVER['HTTP_CF_CONNECTING_IP'])
+		? $_SERVER['REMOTE_ADDR']
+		: $_SERVER['HTTP_CF_CONNECTING_IP'];
+	$captcha_response = empty($_POST['g-recaptcha-response'])
+		? ''
+		: $_POST['g-recaptcha-response'];
+	$response = $recaptcha->verify($captcha_response, $remote_ip);
+
+	if (!$response->isSuccess()) {
+		$errors =
+			'<div class="alert alert-danger" role="alert">'.
+			'Error: The CAPTCHA was entered incorrectly. Please try again. '.
+			implode(', ', $response->getErrorCodes()).
+			'</div>';
+	}
 }
-else
-{
+
+if ($errors === null) {
+	$_SESSION['passed_captcha'] = true;
+}
+
+echo '<form method="post" action="/whois">';
+require '../includes/whois_form.php';
+echo '</form>';
+
+if ($errors !== null) {
+	echo $errors;
+} else {
 	echo '
 	<pre>';
 	// Run the whois.

@@ -23,4 +23,25 @@
       e.preventDefault();
     }, false);
   }
+
+  function renderCaptcha() {
+    grecaptcha.render(
+      document.getElementById('whois-captcha'),
+      {
+        sitekey: '6LfMTy4UAAAAAAnvemeft0rzk9pIOmJEEwoovEDC'
+      }
+    );
+  }
+
+  window.captchaReady = function() {
+    var $whoisHost = document.getElementById('whois-host');
+    var $whoisCaptcha = document.getElementById('whois-captcha');
+    if (!$whoisHost || !$whoisCaptcha) {
+      return;
+    }
+    $whoisHost.addEventListener('focus', function() {
+      renderCaptcha();
+      renderCaptcha = function() { };
+    }, false);
+  };
 }());

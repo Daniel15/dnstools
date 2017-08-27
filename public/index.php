@@ -1,6 +1,5 @@
 <?php
-include '../includes/3rdparty/php-captcha.inc.php';
-
+session_start();
 $page['title'] = 'Welcome to DNSTools.ws!';
 include '../includes/header.php';
 ?>
@@ -93,19 +92,7 @@ include '../includes/header.php';
 			  <div class="card-block">
 					<p class="card-text">Get information on a domain name or IP address.</p>
 					<form method="post" action="/whois">
-						<div class="form-group row">
-						  <label for="whois-host" class="col-2 col-form-label">Host:</label>
-						  <div class="col-10">
-						    <input class="form-control" type="text" name="host" id="whois-host" />
-						  </div>
-						</div>
-
-						<label for="code">Verification code:</label><br />
-						<img src="captcha.php" width="200" height="60" alt="Verification Code" /><br />
-						<input class="form-control" type="text" name="code" id="code" />
-						<p style="font-size: x-small">Please enter the code to prove you're not a bot.</p>
-
-						<input value="Lookup" type="submit" class="btn btn-primary" />
+						<?php require '../includes/whois_form.php'; ?>
 					</form>
 				</div>
 			</div>
