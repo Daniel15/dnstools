@@ -1,5 +1,5 @@
 <?php
-require '../../includes/functions.php';
+require '../includes/functions.php';
 
 if (empty($_GET['host']))
 	die();
@@ -8,10 +8,10 @@ if (empty($_GET['host']))
 $_GET['host'] = clean_hostname($_GET['host']);
 
 $page['title'] = 'Traceroute to ' . $_GET['host'];
-include '../../includes/header.php';
+include '../includes/header.php';
 
 echo '
-	<form method="get" action="traceroute.php" class="form-inline mb-3">
+	<form method="get" action="/traceroute" data-tool-url="/traceroute/{host}/" class="form-inline mb-3">
 		<div class="form-group">
 			<label for="host" class="col-2">Host:</label>
 			<input type="text" class="form-control col-10" name="host" id="host" value="', $_GET['host'], '" />
@@ -26,5 +26,5 @@ system('traceroute ' . $_GET['host']);
 echo '
 	</pre>';
 
-include '../../includes/footer.php';
+include '../includes/footer.php';
 ?>

@@ -11,7 +11,7 @@ include '../includes/header.php';
 				<h5 class="card-header">DNS Lookup</h5>
 			  <div class="card-block">
 					<p class="card-text">Look up a DNS record.</p>
-					<form method="get" action="tools/lookup.php">
+					<form method="get" action="/lookup" data-tool-url="/lookup/{host}/{type}/">
 						<div class="form-group row">
 						  <label for="dnslookup-host" class="col-2 col-form-label">Host:</label>
 						  <div class="col-10">
@@ -42,7 +42,7 @@ include '../includes/header.php';
 				<h5 class="card-header">DNS Traversal</h5>
 			  <div class="card-block">
 					<p class="card-text">Shows every DNS server that is (or may be) used for a DNS lookup, and what the servers return.</p>
-					<form method="get" action="tools/traversal.php">
+					<form method="get" action="/traversal" data-tool-url="/traversal/{host}/{type}/">
 						<div class="form-group row">
 						  <label for="traversal-host" class="col-2 col-form-label">Host:</label>
 						  <div class="col-10">
@@ -73,7 +73,7 @@ include '../includes/header.php';
 				<h5 class="card-header">Reverse DNS (PTR)</h5>
 			  <div class="card-block">
 					<p class="card-text">Convert an IP address into a hostname.</p>
-					<form method="get" action="tools/lookup.php">
+					<form method="get" action="/lookup" data-tool-url="/lookup/{host}/{type}/">
 						<input type="hidden" name="type" value="PTR" />
 						<div class="form-group row">
 						  <label for="ptr-host" class="col-4 col-form-label">IP address:</label>
@@ -92,7 +92,7 @@ include '../includes/header.php';
 				<h5 class="card-header">WHOIS</h5>
 			  <div class="card-block">
 					<p class="card-text">Get information on a domain name or IP address.</p>
-					<form method="post" action="tools/whois.php">
+					<form method="post" action="/whois">
 						<div class="form-group row">
 						  <label for="whois-host" class="col-2 col-form-label">Host:</label>
 						  <div class="col-10">
@@ -116,7 +116,7 @@ include '../includes/header.php';
 				<h5 class="card-header">Traceroute</h5>
 			  <div class="card-block">
 					<p class="card-text">Show the route packets take to a particular host.</p>
-					<form method="get" action="tools/traceroute.php">
+					<form method="get" action="/traceroute" data-tool-url="/traceroute/{host}/">
 						<div class="form-group row">
 						  <label for="tracert-host" class="col-2 col-form-label">Host:</label>
 						  <div class="col-10">
@@ -132,7 +132,7 @@ include '../includes/header.php';
 				<h5 class="card-header">Ping</h5>
 			  <div class="card-block">
 					<p class="card-text">Show the round trip time (RTT) to a server.</p>
-					<form method="get" action="tools/ping.php">
+					<form method="get" action="/ping" data-tool-url="/ping/{host}/">
 						<div class="form-group row">
 						  <label for="ping-host" class="col-2 col-form-label">Host:</label>
 						  <div class="col-10">
