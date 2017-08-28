@@ -9,7 +9,6 @@ if ($_GET['type'] === 'ANY' && !empty($_SERVER['HTTP_REFERER'])) {
 	die();
 }
 
-
 // Get rid of bad characters.
 $_GET['host'] = clean_hostname($_GET['host']);
 
@@ -32,14 +31,15 @@ echo '
 				<option value="NS">NS</option>
 				<option value="PTR">PTR (reverse DNS)</option>
 				<option value="SOA">SOA</option>
-				<!-- <option value="TXT">TXT</option> -->
+				<option value="TXT">TXT</option>
 			</select>
 		</div>
 		<input value="Lookup" type="submit" class="btn btn-primary ml-2" />
 	</form>';
 
-// Do the lookup.
-do_lookup($root_servers);
+$root_servers = get_root_servers();
+$root_server = $root_servers[array_rand($root_servers)];
+do_lookup($root_server);
 
 echo '
 	<p>
@@ -47,57 +47,58 @@ echo '
 		<a href="/traversal/', $_GET['host'], '/', $_GET['type'], '/">See a DNS traversal</a>.
 	</p>';
 
-//function do_lookup($domain, &$servers)
-function do_lookup($servers)
+function do_lookup($server_name, $server_ip = null)
 {
-	global $resolver;
-	// Set the name servers.
-	$resolver->nameservers = $servers;
-	// Save the start time
+  echo 'Searching for ', $_GET['host'], ' at ', $server_name, ': ';
+  if (empty($server_ip)) {
+		$server_ip = gethostbyname($server_name);
+	}
+
+	$resolver = new Net_DNS2_Resolver([
+		'nameservers' => [$server_ip],
+	]);
+
 	$start_time = microtime(true);
-	// Do this lookup.
-	$response = $resolver->rawQuery($_GET['host'], $_GET['type']);
-	// Get the end time
-	$end_time = microtime(true);
-	echo '
-	Searching for ', $_GET['host'], ' at ', $response->answerfrom, ': ';
-	// Did the query fail?
-	if ($response->header->rcode != 'NOERROR')
-	{
-		echo '<span class="error">Failed: ', $response->header->rcode, '</span><br /><br />
+	$response = null;
+	try {
+		$response = $resolver->query($_GET['host'], $_GET['type']);
+	} catch (Net_DNS2_Exception $e) {
+    echo '<span class="error">Failed: ', $e->getMessage(), '</span><br /><br />
 		<div class="alert alert-danger" role="alert">
-			There is a problem with the DNS server at ', $response->answerfrom, '.
+			There is a problem with the DNS server at ', $server_name, '.
 		</div>';
-		return;
+    return;
+	}
+	$end_time = microtime(true);
+
+	// DNS server was authoritive and no results exist
+	if ($response->header->aa && count($response->answer) === 0) {
+    echo '<span class="error">Failed: No results</span><br /><br />
+		<div class="alert alert-danger" role="alert">
+			This DNS record does not exist.
+		</div>';
+    return;
 	}
 
 	// Was this server non-authoritive?
-	if ($response->header->ancount == 0)
+	if (count($response->answer) === 0)
 	{
-		// Let's check who's in charge.
-		// Start with a blank array
-		$name_servers = array();
-		// Loop through all of them.
-		foreach ($response->authority as $authority)
-		{
-			// Add this one to the list.
-			//if ($authority->nsdname != '')
-			if (!empty($authority->nsdname))
-				$name_servers[] = $authority->nsdname;
-		}
-		// No servers?
-		if (count($name_servers) == 0)
-		{
-			echo '<span class="error">Failed: No results</span><br /><br />
-		This DNS record does not exist.';
-			return;
+    // Let's check who's in charge.
+    // Randomly pick one of the authoritive servers
+		$new_server = $response->authority[array_rand($response->authority)];
+    // See if glue was provided with an IP
+		$new_server_ip = null;
+		foreach ($response->additional as $additional) {
+			if (
+				$additional->name === $new_server->nsdname &&
+				$additional->type === 'A'
+			) {
+        $new_server_ip = $additional->address;
+			}
 		}
 
-		// Pick one.
-		$name_server = $name_servers[array_rand($name_servers)];
-
-		echo 'Got referral to ', $name_server, ' [took ', number_format(($end_time - $start_time) * 1000), ' ms]<br />';
-		do_lookup(array($name_server));
+		echo 'Got referral to ', $new_server->nsdname, ' [took ', number_format(($end_time - $start_time) * 1000), ' ms]<br />';
+		do_lookup($new_server->nsdname, $new_server_ip);
 	}
 	// It *was* authoritive.
 	else

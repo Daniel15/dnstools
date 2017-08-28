@@ -1,5 +1,6 @@
 {
     "require": {
-        "google/recaptcha": "^1.1"
+        "google/recaptcha": "^1.1",
+        "pear/net_dns2": "^1.4"
     }
 }

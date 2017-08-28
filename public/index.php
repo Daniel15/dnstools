@@ -28,7 +28,7 @@ include '../includes/header.php';
 									<option value="NS">NS</option>
 									<option value="PTR">PTR (reverse DNS)</option>
 									<option value="SOA">SOA</option>
-									<!-- <option value="TXT">TXT</option> -->
+									<option value="TXT">TXT</option>
 								</select>
 						  </div>
 						</div>

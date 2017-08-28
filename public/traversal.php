@@ -9,13 +9,14 @@ $_GET['host'] = clean_hostname($_GET['host']);
 $page['title'] = 'DNS Traversal for ' . $_GET['host'];
 include '../includes/header.php';
 
+$server_ips = [];
 // Do the lookup.
-do_lookup($root_servers);
+do_lookup(get_root_servers());
 
-//function do_lookup($domain, &$servers)
 function do_lookup($servers)
 {
-	global $resolver;
+	global $server_ips;
+
 	echo 'Looking on ', count($servers), ' servers:
 	<table class="table table-striped">
 		<thead>
@@ -31,27 +32,31 @@ function do_lookup($servers)
 	// Loop through each server
 	foreach ($servers as $server)
 	{
-		// Set the name servers.
-		$resolver->nameservers = array($server);
-		// Save the start time
-		$start_time = microtime(true);
-		// Do this lookup.
-		$response = $resolver->rawQuery($_GET['host'], $_GET['type']);
-		// Get the end time
-		$time = number_format((microtime(true) - $start_time) * 1000, 2) . ' ms';
+		if (!array_key_exists($server, $server_ips)) {
+			$server_ips[$server] = gethostbyname($server);
+		}
 
-		// Did the query fail?
-		if ($response->header->rcode != 'NOERROR')
-		{
-			echo '
+    $resolver = new Net_DNS2_Resolver([
+      'nameservers' => [$server_ips[$server]],
+    ]);
+    $start_time = microtime(true);
+    $response = null;
+    $error = null;
+    try {
+      $response = $resolver->query($_GET['host'], $_GET['type']);
+    } catch (Net_DNS2_Exception $e) {
+    	$error = $e;
+    }
+    $time = number_format((microtime(true) - $start_time) * 1000, 2) . ' ms';
+
+		if ($error !== null) {
+      echo '
 			<tr>
-				<td>', $response->answerfrom, '</td>
-				<td>Failed: ', $response->header->rcode, '</td>
+				<td>', $server, '</td>
+				<td>Failed: ', $error->getMessage(), '</td>
 				<td>', $time, '</td>
 			</tr>';
-		}
-		else
-		{
+		} else {
 			// Was this server non-authoritive?
 			if ($response->header->ancount == 0)
 			{
@@ -68,9 +73,16 @@ function do_lookup($servers)
 				// Add them to the overall list.
 				$name_servers = array_unique(array_merge($name_servers, $name_servers_temp));
 
+				// Add any IPs passed as glue records
+				foreach ($response->additional as $additional) {
+					if ($additional->type === 'A') {
+						$server_ips[$additional->name] = $additional->address;
+					}
+				}
+
 				echo '
 			<tr>
-				<td>', $response->answerfrom, '</td>
+				<td>', $server, '</td>
 				<td>', implode(', ', $name_servers_temp), '</td>
 				<td>', $time, '</td>
 			</tr>';
@@ -89,7 +101,7 @@ function do_lookup($servers)
 
 				echo '
 			<tr>
-				<td>', $response->answerfrom, '</td>
+				<td>', $server, '</td>
 				<td>', implode(', ', $answers), '</td>
 				<td>', $time, '</td>
 			</tr>';
@@ -112,4 +124,3 @@ function do_lookup($servers)
 }
 
 include '../includes/footer.php';
-?>

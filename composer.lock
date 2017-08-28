@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "f94ecdb5e84bf3b701c33394c70bcf0b",
+    "content-hash": "56f32daa5f90904c73045ed54156261c",
     "packages": [
         {
             "name": "google/recaptcha",
@@ -50,6 +50,50 @@
                 "spam"
             ],
             "time": "2017-03-09T18:44:34+00:00"
+        },
+        {
+            "name": "pear/net_dns2",
+            "version": "v1.4.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/mikepultz/netdns2.git",
+                "reference": "24c84c98c8a85a1f3b6aa9b17df60d32a2d254e9"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/mikepultz/netdns2/zipball/24c84c98c8a85a1f3b6aa9b17df60d32a2d254e9",
+                "reference": "24c84c98c8a85a1f3b6aa9b17df60d32a2d254e9",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.1.2"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Net_DNS2": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-2-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Mike Pultz",
+                    "email": "mike@mikepultz.com",
+                    "homepage": "https://mikepultz.com/",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Native PHP5 DNS Resolver and Updater Library",
+            "homepage": "https://netdns2.com/",
+            "keywords": [
+                "PEAR",
+                "dns",
+                "network"
+            ],
+            "time": "2017-02-12T21:14:52+00:00"
         }
     ],
     "packages-dev": [],
