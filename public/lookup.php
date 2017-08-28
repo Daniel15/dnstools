@@ -125,30 +125,62 @@ function do_lookup($server_name, $server_ip = null)
 				<td>', format_answer($answer), '</td>
 			</tr>';
 		}
-
-		foreach ($response->authority as $answer)
-		{
-			echo '
-			<tr class="authority">
-				<td>', $answer->name, '</td>
-				<td>', $answer->type, '</td>
-				<td>', $answer->ttl, '</td>
-				<td>', $answer->nsdname, '</td>
-			</tr>';
-		}
-
-		foreach ($response->additional as $answer)
-		{
-			echo '
-			<tr class="additional">
-				<td>', $answer->name, '</td>
-				<td>', $answer->type, '</td>
-				<td>', $answer->ttl, '</td>
-				<td>', $answer->address, '</td>
-			</tr>';
-		}
 		echo '
-		</tbody>
+		</tbody>';
+
+		if (count($response->authority) !== 0) {
+			echo '
+			<thead>
+				<tr>
+					<th colspan="4">Authority</th>
+				</tr>
+			</thead>
+			<tbody>';
+
+			$authority = $response->authority;
+			usort($authority, function($a, $b) { return strcasecmp($a->nsdname, $b->nsdname); });
+
+			foreach ($authority as $answer)
+			{
+				echo '
+				<tr class="authority">
+					<td>', $answer->name, '</td>
+					<td>', $answer->type, '</td>
+					<td>', $answer->ttl, '</td>
+					<td>', $answer->nsdname, '</td>
+				</tr>';
+			}
+			echo '
+			</tbody>';
+		}
+
+		if (count($response->additional) !== 0) {
+      echo '
+			<thead>
+				<tr>
+					<th colspan="4">Additional</th>
+				</tr>
+			</thead>
+			<tbody>';
+
+      $additional = $response->additional;
+      usort($additional, function($a, $b) { return strcasecmp($a->address, $b->address); });
+
+      foreach ($additional as $answer)
+      {
+        echo '
+				<tr class="additional">
+					<td>', $answer->name, '</td>
+					<td>', $answer->type, '</td>
+					<td>', $answer->ttl, '</td>
+					<td>', $answer->address, '</td>
+				</tr>';
+      }
+      echo '
+			</tbody>';
+		}
+
+		echo '
 	</table>';
 	}
 }
