@@ -109,7 +109,6 @@ function do_lookup($server_name, $server_ip = null)
 			<tr>
 				<th>Name</th>
 				<th>Type</th>
-				<th>Class</th>
 				<th>TTL</th>
 				<th>Answer</th>
 			</tr>
@@ -122,7 +121,6 @@ function do_lookup($server_name, $server_ip = null)
 			<tr class="answer">
 				<td>', $answer->name, '</td>
 				<td>', $answer->type, '</td>
-				<td>', $answer->class, '</td>
 				<td>', $answer->ttl, '</td>
 				<td>', format_answer($answer), '</td>
 			</tr>';
@@ -134,7 +132,6 @@ function do_lookup($server_name, $server_ip = null)
 			<tr class="authority">
 				<td>', $answer->name, '</td>
 				<td>', $answer->type, '</td>
-				<td>', $answer->class, '</td>
 				<td>', $answer->ttl, '</td>
 				<td>', $answer->nsdname, '</td>
 			</tr>';
@@ -146,7 +143,6 @@ function do_lookup($server_name, $server_ip = null)
 			<tr class="additional">
 				<td>', $answer->name, '</td>
 				<td>', $answer->type, '</td>
-				<td>', $answer->class, '</td>
 				<td>', $answer->ttl, '</td>
 				<td>', $answer->address, '</td>
 			</tr>';
