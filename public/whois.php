@@ -57,10 +57,12 @@ function format_contact(\Novutec\WhoisParser\Result\Contact $contact) {
   if (!empty($contact->fax)) {
     $output .= 'Fax: '.htmlspecialchars($contact->fax)."\n";
   }
-
-	$address = '';
+  $address = '';
   if (!empty($contact->address)) {
-    $address .= htmlspecialchars($contact->address).', ';
+    $raw_address = is_array($contact->address)
+      ? implode(", ", $contact->address)
+      : $contact->address;
+    $address .= htmlspecialchars($raw_address).', ';
   }
   if (!empty($contact->city)) {
     $address .= htmlspecialchars($contact->city).' ';
@@ -88,7 +90,11 @@ if ($errors !== null) {
 	try {
     $parser = new Novutec\WhoisParser\Parser();
     $result = $parser->lookup($_POST['host']);
-		?>
+    if (!empty($result->exception)) {
+        echo '<!-- Exception: ', htmlspecialchars($result->exception), ' -->';
+    }
+    echo '<!-- Template: ', json_encode($result->template), ' -->';
+      ?>
 		<table class="table table-striped mt-4">
 			<tbody>
 				<?php
