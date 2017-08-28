@@ -1,4 +1,4 @@
-(function() {
+(function () {
   // Find all forms and add an event handler so the submission goes to the
   // "pretty URL" rather than using querystrings.
   var forms = document.querySelectorAll('form');
@@ -11,7 +11,7 @@
   }
 
   function addSubmitHandler(form, urlTemplate) {
-    form.addEventListener('submit', function(e) {
+    form.addEventListener('submit', function (e) {
       var url = urlTemplate;
       for (var i = 0; i < form.elements.length; i++) {
         var el = form.elements[i];
@@ -33,15 +33,16 @@
     );
   }
 
-  window.captchaReady = function() {
+  window.captchaReady = function () {
     var $whoisHost = document.getElementById('whois-host');
     var $whoisCaptcha = document.getElementById('whois-captcha');
     if (!$whoisHost || !$whoisCaptcha) {
       return;
     }
-    $whoisHost.addEventListener('focus', function() {
+    $whoisHost.addEventListener('focus', function () {
       renderCaptcha();
-      renderCaptcha = function() { };
+      renderCaptcha = function () {
+      };
     }, false);
   };
 }());

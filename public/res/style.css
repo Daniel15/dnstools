@@ -19,13 +19,11 @@ footer {
 }
 
 /* AUTHORITY section */
-tr.authority > td
-{
-	background-color: /*#DDD*/ #fcf8e3;
+tr.authority > td {
+  background-color: /*#DDD*/ #fcf8e3;
 }
 
 /* ADDITIONAL section */
-tr.additional > td
-{
-	background-color: #EEE;
+tr.additional > td {
+  background-color: #EEE;
 }

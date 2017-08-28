@@ -2,7 +2,7 @@
 require '../includes/functions.php';
 
 if (empty($_GET['host']))
-	die();
+  die();
 
 // Get rid of bad characters.
 $_GET['host'] = clean_hostname($_GET['host']);
