@@ -45,4 +45,15 @@
       };
     }, false);
   };
+
+  // Make alerts closable
+  var $alertDismiss = document.querySelector('[data-dismiss=alert]');
+  if ($alertDismiss) {
+    $alertDismiss.addEventListener('click', function() {
+     debugger;
+     var $alert = $alertDismiss.parentNode;
+      $alert.parentNode.removeChild($alert);
+      document.cookie = 'birthday_dismissed=1; expires=Tue, 01 Jan 2030 00:00:00 GMT';
+   }, false);
+  }
 }());
