@@ -171,7 +171,7 @@ function do_lookup($server_name, $server_ip = null)
 					<td>', $answer->name, '</td>
 					<td>', $answer->type, '</td>
 					<td>', $answer->ttl, '</td>
-					<td>', $answer->address, '</td>
+					<td>', format_answer($answer), '</td>
 				</tr>';
       }
       echo '
