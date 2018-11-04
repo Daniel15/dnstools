@@ -95,6 +95,17 @@ if ($errors !== null) {
       echo '<!-- Exception: ', htmlspecialchars($result->exception), ' -->';
     }
     echo '<!-- Template: ', json_encode($result->template), ' -->';
+
+    if (count($result->rawdata) === 0) {
+      throw new Exception('PHP library failed to get whois');
+    }
+    if (empty($result->rawdata[count($result->rawdata) - 1])) {
+      throw new Exception('Raw data is empty');
+    }
+    $raw_data = $result->rawdata[count($result->rawdata) - 1];
+    if (strpos(strtolower($raw_data), strtolower($_POST['host'])) === false) {
+      throw new Exception('Bad response: Raw data does not include hostname');
+    }
     ?>
     <table class="table table-striped mt-4">
       <tbody>
@@ -182,10 +193,11 @@ if ($errors !== null) {
       </tbody>
     </table>
     <h5>Raw Response</h5>
-    <?= '<pre>' . htmlspecialchars($result->rawdata[count($result->rawdata) - 1]) . '</pre>'; ?>
+    <?= '<pre>' . htmlspecialchars($raw_data) . '</pre>'; ?>
     <?php
   } catch (Exception $ex) {
     // PHP library failed, so just fall back to system whois command
+    echo '<!-- Fallback: ' . htmlspecialchars($ex->getMessage()) . " -->\n";
     echo '<pre>';
     system('whois -H ' . $_POST['host']);
     echo '</pre>';
