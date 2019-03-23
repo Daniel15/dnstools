@@ -34,8 +34,8 @@ function format_answer($answer)
     case 'AAAA':
       return $answer->address;
       break;
-    case 'CNAME';
-      return $answer->cname;
+    case 'CNAME':
+      return '<a href="/lookup/' . $answer->cname . '/A/">' . $answer->cname . '</a>';
       break;
     case 'MX':
       return $answer->exchange . ' (priority ' . $answer->preference . ')';
