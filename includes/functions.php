@@ -66,7 +66,7 @@ function format_answer($answer)
 
 function clean_hostname($hostname)
 {
-  return preg_replace('/[^A-Za-z0-9.\-\_]/', '', $hostname);
+  return preg_replace('/[^A-Za-z0-9.\-\_:]/', '', $hostname);
 }
 
 ?>
