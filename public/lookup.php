@@ -86,18 +86,24 @@ function do_lookup($server_name, $server_ip = null)
     // Randomly pick one of the authoritive servers
     $new_server = $response->authority[array_rand($response->authority)];
     // See if glue was provided with an IP
-    $new_server_ip = null;
+		$new_server_ipv4 = null;
+		$new_server_ipv6 = null;
     foreach ($response->additional as $additional) {
       if (
         $additional->name === $new_server->nsdname &&
         $additional->type === 'A'
       ) {
-        $new_server_ip = $additional->address;
+        $new_server_ipv4 = $additional->address;
+      } else if (
+        $additional->name === $new_server->nsdname &&
+        $additional->type === 'AAAA'
+      ) {
+        $new_server_ipv6 = $additional->address;
       }
     }
 
     echo 'Got referral to ', $new_server->nsdname, ' [took ', number_format(($end_time - $start_time) * 1000), ' ms]<br />';
-    do_lookup($new_server->nsdname, $new_server_ip);
+    do_lookup($new_server->nsdname, $new_server_ipv4 ?? $new_server_ipv6);
   } // It *was* authoritive.
   else {
     echo '[took ', number_format(($end_time - $start_time) * 1000), ' ms]<br />
