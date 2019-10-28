@@ -1,0 +1,49 @@
+syntax = "proto3";
+
+option csharp_namespace = "DnsTools.Worker";
+
+service DnsToolsWorker {
+  rpc Ping (PingRequest) returns (stream PingResponse);
+}
+
+enum Protocol {
+  ANY = 0;
+  IPV4 = 1;
+  IPV6 = 2;
+}
+
+message PingRequest {
+  string host = 1;
+  Protocol protocol = 2;
+}
+
+message PingResponse {
+  oneof response {
+    PingReply reply = 1;
+    PingTimeout timeout = 2;
+    PingSummary summary = 3;
+    Error error = 4;
+  }
+}
+
+message PingReply {
+  float rtt = 1;
+  int32 ttl = 2;
+  int32 seq = 3;
+  int32 bytes = 4;
+  string raw_reply = 5;
+}
+
+message PingTimeout {
+  int32 seq = 1;
+}
+
+message PingSummary {
+  int32 sent = 1;
+  int32 received = 2;
+  string raw_reply = 3;
+}
+
+message Error {
+  string message = 1;
+}

@@ -1,0 +1,19 @@
+# To learn more about .editorconfig see https://aka.ms/editorconfigdocs
+root = true
+
+# All files
+[*]
+indent_style = tab
+indent_size = 4
+
+[*.{cs,csx,vb,vbx}]
+insert_final_newline = true
+charset = utf-8-bom
+
+[*.proto]
+indent_style = space
+indent_size = 2
+
+[*.{js,ts,tsx}]
+indent_style = space
+indent_size = 2
