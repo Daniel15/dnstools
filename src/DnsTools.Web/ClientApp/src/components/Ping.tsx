@@ -1,6 +1,10 @@
 import React from 'react';
 
-import {IPingRequest, PingResponseType} from '../types/generated';
+import {
+  IPingRequest,
+  PingResponseType,
+  WorkerResponse,
+} from '../types/generated';
 import {PingResponse} from '../types/protobuf';
 import useSignalrStream from '../hooks/useSignalrStream';
 
@@ -9,13 +13,17 @@ type Props = {
 };
 
 export default function Ping(props: Props) {
-  const data = useSignalrStream<PingResponse>('ping', props.request);
+  const data = useSignalrStream<WorkerResponse<PingResponse>>(
+    'ping',
+    props.request,
+  );
   return (
     <>
       {data.results.map(result => {
-        switch (result.responseCase) {
+        const {response} = result;
+        switch (response.responseCase) {
           case PingResponseType.Reply:
-            return <p>Reply: {result.reply.rtt}</p>;
+            return <p>Reply: {response.reply.rtt}</p>;
 
           case PingResponseType.Summary:
             return <p>SUmmary</p>;

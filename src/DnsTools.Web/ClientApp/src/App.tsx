@@ -29,7 +29,7 @@ const App: React.FC = () => {
       <button
         type="button"
         onClick={() => {
-          setHost('localhost');
+          setHost('google.com');
           /*connection.send("helloWorld", "Hello at " + Date.now());
           connection
             .invoke("helloWorld", "Hello2 at " + Date.now())

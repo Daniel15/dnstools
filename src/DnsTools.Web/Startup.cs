@@ -1,8 +1,9 @@
 ﻿using System;
 using DnsTools.Web.Hubs;
+using DnsTools.Web.Models.Config;
+using DnsTools.Web.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -22,6 +23,9 @@ namespace DnsTools.Web
 		// This method gets called by the runtime. Use this method to add services to the container.
 		public void ConfigureServices(IServiceCollection services)
 		{
+			services.Configure<AppConfig>(Configuration);
+			services.AddSingleton<IWorkerProvider, WorkerProvider>();
+
 			services.AddControllersWithViews();
 			services.AddSignalR();
 
