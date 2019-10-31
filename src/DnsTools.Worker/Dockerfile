@@ -6,6 +6,7 @@ EXPOSE 443
 RUN apt-get -y update && \
   apt-get install -y --no-install-recommends \
     iputils-ping \
+	traceroute \
   && \
   apt-get clean && \
   rm -rf /var/lib/apt/lists/*

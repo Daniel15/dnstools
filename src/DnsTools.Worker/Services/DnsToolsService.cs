@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using DnsTools.Worker.Tools;
 using Grpc.Core;
 
@@ -13,21 +12,16 @@ namespace DnsTools.Worker.Services
 			ServerCallContext context
 		)
 		{
-			var ping = new Ping();
-			try
-			{
-				await ping.RunAsync(request, responseStream, context.CancellationToken);
-			}
-			catch (Exception ex)
-			{
-				await responseStream.WriteAsync(new PingResponse
-				{
-					Error = new Error
-					{
-						Message = ex.Message,
-					}
-				});
-			}
+			await new Ping().RunAsync(request, responseStream, context.CancellationToken);
+		}
+
+		public override async Task Traceroute(
+			TracerouteRequest request,
+			IServerStreamWriter<TracerouteResponse> responseStream,
+			ServerCallContext context
+		)
+		{
+			await new Traceroute().RunAsync(request, responseStream, context.CancellationToken);
 		}
 	}
 }

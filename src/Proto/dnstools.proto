@@ -4,12 +4,33 @@ option csharp_namespace = "DnsTools.Worker";
 
 service DnsToolsWorker {
   rpc Ping (PingRequest) returns (stream PingResponse);
+  rpc Traceroute (TracerouteRequest) returns (stream TracerouteResponse);
 }
 
 enum Protocol {
   ANY = 0;
   IPV4 = 1;
   IPV6 = 2;
+}
+
+message TracerouteRequest {
+  string host = 1;
+  Protocol protocol = 2;
+}
+
+message TracerouteResponse {
+  oneof response {
+    TracerouteReply reply = 1;
+    PingTimeout timeout = 2;
+    Error error = 3;
+  }
+}
+
+message TracerouteReply {
+  int32 seq = 1;
+  string ip = 2;
+  float rtt = 3;
+  string raw_reply = 4;
 }
 
 message PingRequest {
