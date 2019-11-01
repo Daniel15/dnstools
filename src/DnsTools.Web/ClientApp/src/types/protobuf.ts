@@ -4,6 +4,8 @@ import {
   IPingTimeout,
   IPingSummary,
   IError,
+  TracerouteResponseType,
+  ITracerouteReply,
 } from './generated';
 
 export type PingResponse =
@@ -21,5 +23,19 @@ export type PingResponse =
     }
   | {
       responseCase: PingResponseType.Error;
+      error: IError;
+    };
+
+export type TracerouteResponse =
+  | {
+      responseCase: TracerouteResponseType.Reply;
+      reply: ITracerouteReply;
+    }
+  | {
+      responseCase: TracerouteResponseType.Timeout;
+      timeout: IPingTimeout;
+    }
+  | {
+      responseCase: TracerouteResponseType.Error;
       error: IError;
     };

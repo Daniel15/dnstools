@@ -23,7 +23,11 @@ namespace DnsTools.Web
 			builder.ExportAsInterface<PingTimeout>().WithPublicInstanceProperties();
 			builder.ExportAsInterface<PingSummary>().WithPublicInstanceProperties();
 
+			builder.ExportAsInterface<TracerouteRequest>().WithPublicInstanceProperties();
+			builder.ExportAsInterface<TracerouteReply>().WithPublicInstanceProperties();
+
 			builder.ExportAsEnum<PingResponse.ResponseOneofCase>().OverrideName("PingResponseType");
+			builder.ExportAsEnum<TracerouteResponse.ResponseOneofCase>().OverrideName("TracerouteResponseType");
 
 			builder.ExportAsInterface<Error>().WithPublicInstanceProperties();
 

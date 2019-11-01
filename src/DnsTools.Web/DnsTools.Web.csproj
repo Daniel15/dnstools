@@ -32,6 +32,11 @@
     <None Include="$(SpaRoot)**" Exclude="$(SpaRoot)node_modules\**" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Include="..\DnsTools.Worker\Models\IHasError.cs" Link="Models\IHasError.cs" />
+    <Compile Include="..\DnsTools.Worker\Models\ProtobufModelExtensions.cs" Link="Models\ProtobufModelExtensions.cs" />
+  </ItemGroup>
+
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">
     <!-- Ensure Node.js is installed -->
     <Exec Command="node --version" ContinueOnError="true">

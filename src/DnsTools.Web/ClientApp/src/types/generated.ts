@@ -30,12 +30,30 @@ export interface IPingSummary
 	received: number;
 	sent: number;
 }
+export interface ITracerouteRequest
+{
+	host: string;
+	protocol: Protocol;
+}
+export interface ITracerouteReply
+{
+	ip: string;
+	rawReply: string;
+	rtt: number;
+	seq: number;
+}
 export enum PingResponseType { 
 	None = 0, 
 	Reply = 1, 
 	Timeout = 2, 
 	Summary = 3, 
 	Error = 4
+}
+export enum TracerouteResponseType { 
+	None = 0, 
+	Reply = 1, 
+	Timeout = 2, 
+	Error = 3
 }
 export interface IError
 {

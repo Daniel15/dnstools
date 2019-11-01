@@ -4,6 +4,8 @@ import logo from './logo.svg';
 import './App.css';
 import useSignalrConnection from './hooks/useSignalrConnection';
 import Ping from './components/Ping';
+import Traceroute from './components/Traceroute';
+import {Protocol} from './types/generated';
 
 //import {Protocol} from './generated/dnstools';
 
@@ -18,11 +20,19 @@ const App: React.FC = () => {
 
   return (
     <div className="App">
-      {host && (
+      {/*host && (
         <Ping
           request={{
             host,
             protocol: 0, //Protocol.IPV4,
+          }}
+        />
+        )*/}
+      {host && (
+        <Traceroute
+          request={{
+            host,
+            protocol: Protocol.Ipv4,
           }}
         />
       )}
