@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
+using DnsTools.Web.Hubs;
 using DnsTools.Web.Models;
 using DnsTools.Web.Services;
 using DnsTools.Worker;
@@ -11,18 +12,18 @@ using Grpc.Core;
 
 namespace DnsTools.Web.Tools
 {
-	public class ToolRunner<TResponse> where TResponse : IHasError, new()
+	public abstract class ToolRunner<TRequest, TResponse> where TResponse : IHasError, new()
 	{
 		private readonly IWorkerProvider _workerProvider;
-
 		public ToolRunner(IWorkerProvider workerProvider)
 		{
 			_workerProvider = workerProvider;
 		}
 
 		public ChannelReader<WorkerResponse<TResponse>> Run(
-			CancellationToken cancellationToken,
-			Func<DnsToolsWorker.DnsToolsWorkerClient, AsyncServerStreamingCall<TResponse>> createRequest
+			TRequest request,
+			IToolsHub client,
+			CancellationToken cancellationToken
 		)
 		{
 			var channel = Channel.CreateUnbounded<WorkerResponse<TResponse>>(new UnboundedChannelOptions
@@ -30,21 +31,22 @@ namespace DnsTools.Web.Tools
 				SingleReader = true,
 				SingleWriter = false,
 			});
-			_ = RunAsync(cancellationToken, channel.Writer, createRequest);
+			_ = RunAsync(request, channel.Writer, client, cancellationToken);
 			return channel.Reader;
 		}
 
 		private async Task RunAsync(
-			CancellationToken cancellationToken,
+			TRequest request,
 			ChannelWriter<WorkerResponse<TResponse>> writer,
-			Func<DnsToolsWorker.DnsToolsWorkerClient, AsyncServerStreamingCall<TResponse>> createRequest
+			IToolsHub client,
+			CancellationToken cancellationToken
 		)
 		{
 			try
 			{
 				var clients = _workerProvider.CreateAllClients();
 				var requests = clients.Select(
-					kvp => RunWorkerAsync(kvp.Key, kvp.Value, cancellationToken, writer, createRequest)
+					kvp => RunWorkerAsync(kvp.Key, request, kvp.Value, writer, client, cancellationToken)
 				);
 				await Task.WhenAll(requests).ConfigureAwait(false);
 			}
@@ -56,24 +58,21 @@ namespace DnsTools.Web.Tools
 
 		private async Task RunWorkerAsync(
 			string workerId,
+			TRequest request,
 			DnsToolsWorker.DnsToolsWorkerClient client,
-			CancellationToken cancellationToken,
 			ChannelWriter<WorkerResponse<TResponse>> writer,
-			Func<DnsToolsWorker.DnsToolsWorkerClient, AsyncServerStreamingCall<TResponse>> createRequest
+			IToolsHub hub,
+			CancellationToken cancellationToken
 		)
 		{
-			var call = createRequest(client);
+			var call = CreateRequest(client, request, cancellationToken);
 			var responseStream = call.ResponseStream.ReadAllAsync(cancellationToken);
 
 			try
 			{
 				await foreach (var response in responseStream.WithCancellation(cancellationToken))
 				{
-					await writer.WriteAsync(new WorkerResponse<TResponse> 
-					{
-						Response = response,
-						WorkerId = workerId,
-					}, cancellationToken).ConfigureAwait(false);
+					await ProcessResponseAsync(workerId, writer, response, hub, cancellationToken);
 				}
 			}
 			catch (Exception ex)
@@ -90,6 +89,27 @@ namespace DnsTools.Web.Tools
 					WorkerId = workerId,
 				}, cancellationToken).ConfigureAwait(false);
 			}
+		}
+
+		protected abstract AsyncServerStreamingCall<TResponse> CreateRequest(
+			DnsToolsWorker.DnsToolsWorkerClient client,
+			TRequest request,
+			CancellationToken cancellationToken
+		);
+
+		protected virtual async Task ProcessResponseAsync(
+			string workerId,
+			ChannelWriter<WorkerResponse<TResponse>> writer,
+			TResponse response,
+			IToolsHub client,
+			CancellationToken cancellationToken
+		)
+		{
+			await writer.WriteAsync(new WorkerResponse<TResponse>
+			{
+				Response = response,
+				WorkerId = workerId,
+			}, cancellationToken).ConfigureAwait(false);
 		}
 	}
 }

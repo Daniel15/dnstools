@@ -2,6 +2,7 @@
 using DnsTools.Web.Hubs;
 using DnsTools.Web.Models.Config;
 using DnsTools.Web.Services;
+using DnsTools.Web.Tools;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
@@ -25,9 +26,16 @@ namespace DnsTools.Web
 		{
 			services.Configure<AppConfig>(Configuration);
 			services.AddSingleton<IWorkerProvider, WorkerProvider>();
+			services.AddSingleton<IMaxMind, Services.MaxMind>();
+			services.AddSingleton<IIpDataProvider, IpDataProvider>();
+
+			services.AddSingleton<TracerouteRunner>();
 
 			services.AddControllersWithViews();
-			services.AddSignalR();
+			services.AddSignalR().AddJsonProtocol(options =>
+			{
+				options.PayloadSerializerOptions.IgnoreNullValues = true;
+			});
 
 			// In production, the React files will be served from this directory
 			services.AddSpaStaticFiles(configuration =>
