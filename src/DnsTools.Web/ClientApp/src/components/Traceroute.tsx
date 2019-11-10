@@ -1,14 +1,17 @@
 import React from 'react';
 
 import {
+  IpData,
   ITracerouteRequest,
   TracerouteResponseType,
   WorkerResponse,
 } from '../types/generated';
 import {TracerouteResponse} from '../types/protobuf';
 import useSignalrStream from '../hooks/useSignalrStream';
+import ReactTracerouteResponse from './TracerouteResponse';
 
 type Props = {
+  ipData: ReadonlyMap<string, IpData>;
   request: ITracerouteRequest;
 };
 
@@ -19,24 +22,18 @@ export default function Traceroute(props: Props) {
   );
   return (
     <>
-      {data.results.map(result => {
-        const {response} = result;
-        switch (response.responseCase) {
-          case TracerouteResponseType.Reply:
-            return (
-              <p>
-                <b>{result.workerId}</b>
-                {response.reply.seq} Reply: {response.reply.rtt} from{' '}
-                {response.reply.ip}
-              </p>
-            );
-
-          case TracerouteResponseType.Error:
-            return <p>ERR</p>;
-
-          case TracerouteResponseType.Timeout:
-            return <p>TIMEOUT</p>;
-        }
+      {data.results.map((result, index) => {
+        const ipData =
+          result.response.responseCase === TracerouteResponseType.Reply
+            ? props.ipData.get(result.response.reply.ip)
+            : undefined;
+        return (
+          <ReactTracerouteResponse
+            ipData={ipData}
+            key={index}
+            result={result}
+          />
+        );
       })}
     </>
   );

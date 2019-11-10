@@ -1,25 +1,19 @@
 import React, {useState} from 'react';
 
 import logo from './logo.svg';
-import './App.css';
+import useIpData from './hooks/useIpData';
 import useSignalrConnection from './hooks/useSignalrConnection';
 import Ping from './components/Ping';
 import Traceroute from './components/Traceroute';
 import {Protocol} from './types/generated';
 
-//import {Protocol} from './generated/dnstools';
-
-// c:\apps\protobuf\bin\protoc --plugin=protoc-gen-ts_proto=.\node_modules\.bin\protoc-gen-ts_proto.cmd --ts_proto_out=./src/generated --proto_path=../../Proto ../../Proto/dnstools.proto
-
 const App: React.FC = () => {
-  const connection = useSignalrConnection();
+  const ipData = useIpData();
 
   const [host, setHost] = useState();
 
-  console.log(connection);
-
   return (
-    <div className="App">
+    <div>
       {/*host && (
         <Ping
           request={{
@@ -30,6 +24,7 @@ const App: React.FC = () => {
         )*/}
       {host && (
         <Traceroute
+          ipData={ipData}
           request={{
             host,
             protocol: Protocol.Ipv4,
@@ -64,19 +59,6 @@ const App: React.FC = () => {
         }}>
         Hello
       </button>
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload!!!.!!!!!!
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer">
-          Learn React
-        </a>
-      </header>
     </div>
   );
 };

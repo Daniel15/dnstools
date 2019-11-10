@@ -2,6 +2,15 @@
 //     Changes to this file may cause incorrect behavior and will be lost if
 //     the code is regenerated.
 
+export interface IpData
+{
+	asn?: number;
+	asnName?: string;
+	city?: string;
+	country?: string;
+	countryIso?: string;
+	hostName?: string;
+}
 export interface WorkerResponse<T>
 {
 	response: T;
