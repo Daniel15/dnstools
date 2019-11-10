@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Channels;
@@ -12,6 +13,11 @@ using Grpc.Core;
 
 namespace DnsTools.Web.Tools
 {
+	/// <summary>
+	/// Handles running a tool via gRPC request across all available workers
+	/// </summary>
+	/// <typeparam name="TRequest">Type of the request</typeparam>
+	/// <typeparam name="TResponse">Type of the response</typeparam>
 	public abstract class ToolRunner<TRequest, TResponse> where TResponse : IHasError, new()
 	{
 		private readonly IWorkerProvider _workerProvider;
@@ -70,10 +76,13 @@ namespace DnsTools.Web.Tools
 
 			try
 			{
+				var responseTasks = new List<Task>();
 				await foreach (var response in responseStream.WithCancellation(cancellationToken))
 				{
-					await ProcessResponseAsync(workerId, writer, response, hub, cancellationToken);
+					responseTasks.Add(ProcessResponseAsync(workerId, writer, response, hub, cancellationToken));
 				}
+
+				await Task.WhenAll(responseTasks);
 			}
 			catch (Exception ex)
 			{
