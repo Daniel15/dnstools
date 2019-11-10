@@ -16,5 +16,7 @@ namespace DnsTools.Web.Models
 		public string? Country { get; set; }
 
 		public string? CountryIso { get; set; }
+
+		public string? HostName { get; set; }
 	}
 }

@@ -1,9 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using DnsTools.Web.Hubs;
 using DnsTools.Web.Models;
+using Microsoft.Extensions.Logging;
 
 namespace DnsTools.Web.Services
 {
@@ -13,10 +14,12 @@ namespace DnsTools.Web.Services
 	public class IpDataProvider : IIpDataProvider
 	{
 		private readonly IMaxMind _maxMind;
+		private readonly ILogger<IpDataProvider> _logger;
 
-		public IpDataProvider(IMaxMind maxMind)
+		public IpDataProvider(IMaxMind maxMind, ILogger<IpDataProvider> logger)
 		{
 			_maxMind = maxMind;
+			_logger = logger;
 		}
 
 		/// <summary>
@@ -33,25 +36,20 @@ namespace DnsTools.Web.Services
 			Func<IpData, Task> onDataLoaded
 		)
 		{
-			var subTasks = new List<Task>();
-
-			var city = _maxMind.City(ip);
-			var asn = _maxMind.Asn(ip);
-
-			if (city != null || asn != null)
+			var subTasks = new[]
 			{
-				var data = new IpData
+				LoadMaxmind(ip),
+				LoadReverseDns(ip),
+			}.Select(async task =>
+			{
+				var result = await task.ConfigureAwait(false);
+				if (result != null)
 				{
-					Asn = asn?.AutonomousSystemNumber,
-					AsnName = asn?.AutonomousSystemOrganization,
-					City = city?.City?.Name,
-					Country = city?.Country?.Name,
-					CountryIso = city?.Country?.IsoCode,
-				};
-				subTasks.Add(onDataLoaded(data));
-			}
+					await onDataLoaded(result).ConfigureAwait(false);
+				}
+			});
 
-			await Task.WhenAll(subTasks);
+			await Task.WhenAll(subTasks).ConfigureAwait(false);
 		}
 
 		/// <summary>
@@ -67,6 +65,51 @@ namespace DnsTools.Web.Services
 			{
 				var ip = IPAddress.Parse(rawIp);
 				await LoadDataAsync(ip, async data => await client.IpDataLoaded(rawIp, data));
+			}
+		}
+
+		private Task<IpData?> LoadMaxmind(IPAddress ip)
+		{
+			IpData? data = null;
+
+			try
+			{
+				var city = _maxMind.City(ip);
+				var asn = _maxMind.Asn(ip);
+				if (city != null || asn != null)
+				{
+					data = new IpData
+					{
+						Asn = asn?.AutonomousSystemNumber,
+						AsnName = asn?.AutonomousSystemOrganization,
+						City = city?.City?.Name,
+						Country = city?.Country?.Name,
+						CountryIso = city?.Country?.IsoCode,
+					};
+				}
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, $"Could not load MaxMind data for {ip}: {ex.Message}");
+			}
+
+			return Task.FromResult(data);
+		}
+
+		private async Task<IpData?> LoadReverseDns(IPAddress ip)
+		{
+			try
+			{
+				var dns = await Dns.GetHostEntryAsync(ip);
+				return new IpData
+				{
+					HostName = dns.HostName,
+				};
+			} 
+			catch (Exception ex)
+			{
+				_logger.LogDebug(ex, $"Could not load reverse DNS data for {ip}: {ex.Message}");
+				return null;
 			}
 		}
 	}
