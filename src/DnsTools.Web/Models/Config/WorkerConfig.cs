@@ -10,26 +10,26 @@ namespace DnsTools.Web.Models.Config
 		/// <summary>
 		/// Internal identifier for the worker. Must be unique.
 		/// </summary>
-		public string Id { get; set; }
+		public string Id { get; set; } = default!;
 
 		/// <summary>
 		/// User-friendly name for the worker.
 		/// </summary>
-		public string Name { get; set; }
+		public string Name { get; set; } = default!;
 
 		/// <summary>
 		/// Two-letter country code where worker is based.
 		/// </summary>
-		public string Country { get; set; }
+		public string Country { get; set; } = default!;
 
 		/// <summary>
 		/// Specific location where worker is based.
 		/// </summary>
-		public string Location { get; set; }
+		public string Location { get; set; } = default!;
 
 		/// <summary>
 		/// URI to connect to worker.
 		/// </summary>
-		public Uri Endpoint { get; set; }
+		public Uri Endpoint { get; set; } = default!;
 	}
 }

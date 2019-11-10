@@ -12,11 +12,11 @@ namespace DnsTools.Web.Models
 		/// <summary>
 		/// ID of the worker that returned this response.
 		/// </summary>
-		public string WorkerId { get; set; }
+		public string WorkerId { get; set; } = default!;
 
 		/// <summary>
 		/// The actual response.
 		/// </summary>
-		public T Response { get; set; }
+		public T Response { get; set; } = default!;
 	}
 }

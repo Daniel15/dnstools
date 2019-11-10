@@ -7,6 +7,6 @@ namespace DnsTools.Web.Models.Config
 	/// </summary>
 	public class AppConfig
 	{
-		public IList<WorkerConfig> Workers { get; set; }
+		public IList<WorkerConfig> Workers { get; set; } = new List<WorkerConfig>();
 	}
 }
