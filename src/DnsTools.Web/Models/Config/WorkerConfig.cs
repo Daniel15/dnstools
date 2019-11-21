@@ -1,10 +1,13 @@
 ﻿using System;
+using System.Text.Json.Serialization;
+using Reinforced.Typings.Attributes;
 
 namespace DnsTools.Web.Models.Config
 {
 	/// <summary>
 	/// Represents the configuration for a worker.
 	/// </summary>
+	[TsInterface(AutoI = false)]
 	public class WorkerConfig
 	{
 		/// <summary>
@@ -30,6 +33,8 @@ namespace DnsTools.Web.Models.Config
 		/// <summary>
 		/// URI to connect to worker.
 		/// </summary>
+		[JsonIgnore]
+		[TsIgnore]
 		public Uri Endpoint { get; set; } = default!;
 	}
 }

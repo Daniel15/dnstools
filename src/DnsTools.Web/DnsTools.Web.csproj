@@ -26,6 +26,7 @@
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.9.5" />
     <PackageReference Include="Reinforced.Typings" Version="1.5.5" />
+    <PackageReference Include="WebpackTag" Version="1.0.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -38,6 +39,10 @@
   <ItemGroup>
     <Compile Include="..\DnsTools.Worker\Models\IHasError.cs" Link="Models\IHasError.cs" />
     <Compile Include="..\DnsTools.Worker\Models\ProtobufModelExtensions.cs" Link="Models\ProtobufModelExtensions.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Views\Home\" />
   </ItemGroup>
 
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">

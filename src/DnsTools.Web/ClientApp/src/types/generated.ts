@@ -16,6 +16,17 @@ export interface WorkerResponse<T>
 	response: T;
 	workerId: string;
 }
+export interface Config
+{
+	workers: WorkerConfig[];
+}
+export interface WorkerConfig
+{
+	country: string;
+	id: string;
+	location: string;
+	name: string;
+}
 export interface IPingRequest
 {
 	host: string;

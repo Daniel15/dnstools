@@ -5,24 +5,29 @@ import useIpData from './hooks/useIpData';
 import useSignalrConnection from './hooks/useSignalrConnection';
 import Ping from './components/Ping';
 import Traceroute from './components/Traceroute';
-import {Protocol} from './types/generated';
+import {Protocol, Config} from './types/generated';
 
-const App: React.FC = () => {
+type Props = {
+  config: Readonly<Config>;
+};
+
+const App: React.FC<Props> = (props: Props) => {
   const ipData = useIpData();
 
   const [host, setHost] = useState();
 
   return (
     <div>
-      {/*host && (
+      {host && (
         <Ping
           request={{
             host,
             protocol: 0, //Protocol.IPV4,
           }}
+          workers={props.config.workers}
         />
-        )*/}
-      {host && (
+      )}
+      {/*{host && (
         <Traceroute
           ipData={ipData}
           request={{
@@ -30,7 +35,7 @@ const App: React.FC = () => {
             protocol: Protocol.Ipv4,
           }}
         />
-      )}
+        )}*/}
       <button
         type="button"
         onClick={() => {

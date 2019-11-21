@@ -5,10 +5,10 @@ using DnsTools.Web.Services;
 using DnsTools.Web.Tools;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using WebpackTag;
 
 namespace DnsTools.Web
 {
@@ -31,6 +31,10 @@ namespace DnsTools.Web
 
 			services.AddSingleton<TracerouteRunner>();
 
+			services.AddWebpackTag(config =>
+			{
+				config.DevServerPort = 31429;
+			});
 			services.AddControllersWithViews();
 			services.AddSignalR().AddJsonProtocol(options =>
 			{
@@ -80,7 +84,8 @@ namespace DnsTools.Web
 
 				if (env.IsDevelopment())
 				{
-					spa.UseReactDevelopmentServer(npmScript: "start");
+					//spa.UseReactDevelopmentServer(npmScript: "start");
+					spa.UseProxyToSpaDevelopmentServer("http://localhost:31429");
 				}
 			});
 		}
