@@ -5,6 +5,7 @@ import {PingResponse} from '../types/protobuf';
 import useSignalrStream from '../hooks/useSignalrStream';
 import PingWorkerResult from './PingWorkerResult';
 import Spinner from './Spinner';
+import groupResponsesByWorker from '../groupResponsesByWorker';
 
 type Props = {
   request: IPingRequest;
@@ -16,16 +17,7 @@ export default function Ping(props: Props) {
     'ping',
     props.request,
   );
-
-  const responsesByWorker: Map<string, Array<PingResponse>> = new Map();
-  data.results.forEach(result => {
-    let workerResults = responsesByWorker.get(result.workerId);
-    if (!workerResults) {
-      workerResults = [];
-      responsesByWorker.set(result.workerId, workerResults);
-    }
-    workerResults.push(result.response);
-  });
+  const workerResponses = groupResponsesByWorker(props.workers, data.results);
 
   return (
     <>
@@ -43,10 +35,10 @@ export default function Ping(props: Props) {
           </tr>
         </thead>
         <tbody>
-          {props.workers.map(worker => (
+          {workerResponses.map(worker => (
             <PingWorkerResult
-              results={responsesByWorker.get(worker.id) || []}
-              worker={worker}
+              results={worker.responses}
+              worker={worker.worker}
             />
           ))}
         </tbody>

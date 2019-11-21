@@ -2,52 +2,90 @@ import React from 'react';
 
 import {
   IpData,
-  ITracerouteRequest,
+  ITracerouteReply,
   TracerouteResponseType,
-  WorkerResponse,
 } from '../types/generated';
-import {TracerouteResponse as TracerouteResponseData} from '../types/protobuf';
 import CountryFlag from './CountryFlag';
+import {milliseconds} from '../format';
+import {TracerouteResponse as TracerouteResponseData} from '../types/protobuf';
 
 type Props = {
+  index: number;
   ipData?: IpData | undefined;
-  result: WorkerResponse<TracerouteResponseData>;
+  response: TracerouteResponseData;
 };
 
 export default function TracerouteResponse(props: Props) {
-  const {response} = props.result;
+  const {response} = props;
+  let seq = props.index;
+  let contents;
   switch (response.responseCase) {
     case TracerouteResponseType.Reply:
-      return (
-        <p>
-          <b>{props.result.workerId}</b>
-          {response.reply.seq} Reply: {response.reply.rtt} from{' '}
-          {(props.ipData && props.ipData.hostName) || response.reply.ip}
-          <ul>
-            <li>{response.reply.ip}</li>
-            {props.ipData && props.ipData.countryIso && (
-              <li>
-                {props.ipData.countryIso && (
-                  <CountryFlag country={props.ipData.countryIso} />
-                )}
-                {[props.ipData.city, props.ipData.country]
-                  .filter(Boolean)
-                  .join(', ')}
-              </li>
-            )}
-            {props.ipData && props.ipData.asn && (
-              <li>
-                AS{props.ipData.asn} {props.ipData.asnName}
-              </li>
-            )}
-          </ul>
-        </p>
+      contents = (
+        <TracerouteReply ipData={props.ipData} reply={response.reply} />
       );
+      seq = response.reply.seq;
+      break;
 
     case TracerouteResponseType.Error:
-      return <p>ERR</p>;
+      contents = <p>Error: {response.error.message}</p>;
+      break;
 
     case TracerouteResponseType.Timeout:
-      return <p>TIMEOUT</p>;
+      contents = <p>Timed Out</p>;
+      seq = response.timeout.seq;
+      break;
   }
+
+  return (
+    <li className="list-group-item">
+      <div className="d-flex">
+        <div className="flex-grow-1">{contents}</div>
+        <span className="tracert-seq mr-2">{seq}</span>
+      </div>
+    </li>
+  );
+}
+
+type ReplyProps = {
+  ipData: IpData | undefined;
+  reply: ITracerouteReply;
+};
+
+function TracerouteReply(props: ReplyProps) {
+  const {ipData, reply} = props;
+  const metadata: Array<React.ReactNode> = [];
+  if (ipData) {
+    if (ipData.countryIso) {
+      metadata.push(
+        <>
+          <CountryFlag country={ipData.countryIso} />
+          {[ipData.city, ipData.country].filter(Boolean).join(', ')}
+        </>,
+      );
+    }
+    if (ipData.asn) {
+      metadata.push(`AS${ipData.asn} ${ipData.asnName}`);
+    }
+  }
+
+  return (
+    <>
+      <span className="badge badge-secondary">{milliseconds(reply.rtt)}</span>{' '}
+      {ipData && ipData.hostName ? (
+        <>
+          <strong>{ipData.hostName}</strong> ({reply.ip})
+        </>
+      ) : (
+        <strong>{reply.ip}</strong>
+      )}{' '}
+      <ul className="list-inline text-muted">
+        {metadata.map((item, index) => (
+          <li className="list-inline-item" key={index}>
+            {item}
+          </li>
+        ))}
+      </ul>
+    </>
+  );
 }
