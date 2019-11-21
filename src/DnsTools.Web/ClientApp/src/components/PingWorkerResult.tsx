@@ -3,6 +3,7 @@ import React from 'react';
 import {WorkerConfig, PingResponseType, IPingReply} from '../types/generated';
 import {PingResponse} from '../types/protobuf';
 import CountryFlag from './CountryFlag';
+import ShimmerBar from './ShimmerBar';
 import {average, standardDeviation} from '../math';
 import {milliseconds} from '../format';
 
@@ -39,7 +40,7 @@ export default function PingWorkerResult(props: Props) {
 
   let rowText = null;
   if (isLoading) {
-    rowText = 'Loading...';
+    rowText = <ShimmerBar />;
   } else if (errors.length > 0) {
     rowText = 'ERROR: ' + errors.join(', ');
   }
@@ -47,19 +48,23 @@ export default function PingWorkerResult(props: Props) {
   return (
     <>
       <tr>
-        <td>
+        <td className="align-middle">
           <CountryFlag country={props.worker.country} />
           {props.worker.location}
-          <br />
-          {props.worker.name}
         </td>
-        {rowText && <td colSpan={4}>{rowText}</td>}
+        {rowText && (
+          <td className="align-middle" colSpan={4}>
+            {rowText}
+          </td>
+        )}
         {!rowText && (
           <>
-            <td>{milliseconds(avgReply)}</td>
-            <td>{replyTimes.length > 1 && milliseconds(dev)}</td>
-            <td>{replyTimes.length}</td>
-            <td>{timeouts}</td>
+            <td className="align-middle">{milliseconds(avgReply)}</td>
+            <td className="align-middle">
+              {replyTimes.length > 1 && milliseconds(dev)}
+            </td>
+            <td className="align-middle">{replyTimes.length}</td>
+            <td className="align-middle">{timeouts}</td>
           </>
         )}
       </tr>

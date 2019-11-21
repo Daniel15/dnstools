@@ -4,6 +4,7 @@ import {IPingRequest, WorkerResponse, WorkerConfig} from '../types/generated';
 import {PingResponse} from '../types/protobuf';
 import useSignalrStream from '../hooks/useSignalrStream';
 import PingWorkerResult from './PingWorkerResult';
+import Spinner from './Spinner';
 
 type Props = {
   request: IPingRequest;
@@ -28,16 +29,17 @@ export default function Ping(props: Props) {
 
   return (
     <>
-      Pinging {props.request.host}...
-      {data.isComplete && 'DONE!'}
-      <table>
+      <h1 className="main-header">
+        Ping {props.request.host} {!data.isComplete && <Spinner />}
+      </h1>
+      <table className="table table-striped">
         <thead>
           <tr>
-            <th>Location</th>
-            <th>Response Time</th>
-            <th>Deviation</th>
-            <th>Replies</th>
-            <th>Timeouts</th>
+            <th scope="col">Location</th>
+            <th scope="col">Response Time</th>
+            <th scope="col">Deviation</th>
+            <th scope="col">Replies</th>
+            <th scope="col">Timeouts</th>
           </tr>
         </thead>
         <tbody>

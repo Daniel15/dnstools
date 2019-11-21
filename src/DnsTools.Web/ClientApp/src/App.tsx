@@ -17,7 +17,7 @@ const App: React.FC<Props> = (props: Props) => {
   const [host, setHost] = useState();
 
   return (
-    <div>
+    <div className="container">
       {host && (
         <Ping
           request={{

@@ -1,0 +1,24 @@
+@import '~bootswatch/dist/darkly/variables';
+@import '~bootstrap/scss/bootstrap';
+@import '~bootswatch/dist/darkly/bootswatch';
+
+.spinner {
+	height: 32px;
+	width: 32px;
+	color: rgba(90, 90, 90, 0.5);
+	position: relative;
+	display: inline-block;
+	border: 5px solid;
+	border-radius: 50%;
+	border-right-color: $gray-600;
+	animation: rotate 1s linear infinite;
+}
+
+@keyframes rotate {
+	0% {
+		transform: rotate(0);
+	}
+	100% {
+		transform: rotate(360deg);
+	}
+}
