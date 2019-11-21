@@ -1,6 +1,7 @@
 const autoprefixer = require('autoprefixer');
 const tailwindcss = require('tailwindcss');
 const purgecss = require('@fullhuman/postcss-purgecss');
+const {whenProd} = require('@craco/craco');
 
 module.exports = {
   style: {
@@ -8,9 +9,14 @@ module.exports = {
       plugins: [
         tailwindcss,
         autoprefixer,
-        purgecss({
-          content: ['./public/*.html', './src/**/*.tsx', './src/**/*.ts'],
-        }),
+        ...whenProd(
+          () => [
+            purgecss({
+              content: ['./public/*.html', './src/**/*.tsx', './src/**/*.ts'],
+            }),
+          ],
+          [],
+        ),
       ],
     },
   },
