@@ -1,12 +1,13 @@
 import React, {useState, useEffect} from 'react';
 import {BrowserRouter as Router, Switch, Route} from 'react-router-dom';
-import {Helmet} from 'react-helmet';
 import {HubConnectionBuilder} from '@microsoft/signalr';
 
 import useIpData from './hooks/useIpData';
-import Ping from './pages/Ping';
 import {Config} from './types/generated';
 import SignalrContext from './SignalrContext';
+
+import Index from './pages/Index';
+import Ping from './pages/Ping';
 import Traceroute from './pages/Traceroute';
 
 type Props = {
@@ -33,11 +34,9 @@ const App: React.FC<Props> = (props: Props) => {
   return (
     <SignalrContext.Provider value={{connection, isConnected}}>
       <Router>
-        <Helmet>
-          <title>Welcome to DNSTools!</title>
-        </Helmet>
         <div className="container">
           <Switch>
+            <Route path="/" exact component={Index} />
             <Route
               path="/ping/:host"
               render={routeProps => (
