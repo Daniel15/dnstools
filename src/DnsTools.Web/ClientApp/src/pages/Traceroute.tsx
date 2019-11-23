@@ -17,6 +17,7 @@ import CountryFlag from '../components/CountryFlag';
 import Spinner from '../components/Spinner';
 import useQueryString from '../hooks/useQueryString';
 import {getProtocol} from '../utils/queryString';
+import MainForm, {defaultInput, Tool} from '../components/MainForm';
 
 type Props = RouteComponentProps<{
   host: string;
@@ -78,6 +79,18 @@ export default function Traceroute(props: Props) {
           </div>
         ))}
       </div>
+      {data.isComplete && (
+        <MainForm
+          config={props.config}
+          initialInput={{
+            ...defaultInput,
+            host,
+            protocol,
+          }}
+          initialSelectedTool={Tool.Traceroute}
+          isStandalone={true}
+        />
+      )}
     </>
   );
 }

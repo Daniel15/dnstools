@@ -10,6 +10,7 @@ import Spinner from '../components/Spinner';
 import groupResponsesByWorker from '../groupResponsesByWorker';
 import useQueryString from '../hooks/useQueryString';
 import {getProtocol} from '../utils/queryString';
+import MainForm, {defaultInput, Tool} from '../components/MainForm';
 
 type Props = RouteComponentProps<{
   host: string;
@@ -60,6 +61,17 @@ export default function Ping(props: Props) {
           ))}
         </tbody>
       </table>
+
+      <MainForm
+        config={props.config}
+        initialInput={{
+          ...defaultInput,
+          host,
+          protocol,
+        }}
+        initialSelectedTool={Tool.Ping}
+        isStandalone={true}
+      />
     </>
   );
 }

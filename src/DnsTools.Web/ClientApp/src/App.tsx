@@ -45,8 +45,18 @@ const App: React.FC<Props> = (props: Props) => {
                 <Index {...routeProps} config={props.config} />
               )}
             />
-            <Route path="/lookup/:host/:type/" component={DnsLookup} />
-            <Route path="/traversal/:host/:type/" component={DnsTraversal} />
+            <Route
+              path="/lookup/:host/:type/"
+              render={routeProps => (
+                <DnsLookup {...routeProps} config={props.config} />
+              )}
+            />
+            <Route
+              path="/traversal/:host/:type/"
+              render={routeProps => (
+                <DnsTraversal {...routeProps} config={props.config} />
+              )}
+            />
             <Route
               path="/ping/:host/"
               render={routeProps => (

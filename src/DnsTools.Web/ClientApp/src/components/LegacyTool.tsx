@@ -4,8 +4,14 @@ import {useHistory} from 'react-router';
 
 import Spinner from './Spinner';
 import useLegacyApiCall from '../hooks/useLegacyApiCall';
+import ShimmerBar from './ShimmerBar';
+import MainForm, {Tool, ToolInput} from './MainForm';
+import {Config} from '../types/generated';
 
 type Props = {
+  config: Config;
+  initialSelectedTool?: Tool;
+  initialInput?: ToolInput;
   title: string;
   url: string;
 };
@@ -38,6 +44,15 @@ export default function LegacyTool(props: Props) {
         onClick={handleClick}
       />
       {error && <>ERROR: {error.message}</>}
+      {isLoading && <ShimmerBar />}
+      {!isLoading && (
+        <MainForm
+          config={props.config}
+          initialInput={props.initialInput}
+          initialSelectedTool={props.initialSelectedTool}
+          isStandalone={true}
+        />
+      )}
     </>
   );
 }
