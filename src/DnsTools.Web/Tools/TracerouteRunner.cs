@@ -6,6 +6,7 @@ using DnsTools.Web.Hubs;
 using DnsTools.Web.Models;
 using DnsTools.Web.Services;
 using DnsTools.Worker;
+using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 
 namespace DnsTools.Web.Tools
@@ -42,6 +43,22 @@ namespace DnsTools.Web.Tools
 		{
 			await base.ProcessResponseAsync(workerId, writer, response, client, cancellationToken);
 			await _ipData.LoadDataAsync(response.Reply?.Ip, client);
+		}
+
+		protected override async Task WorkerCompletedAsync(
+			string workerId,
+			ChannelWriter<WorkerResponse<TracerouteResponse>> writer,
+			CancellationToken cancellationToken
+		)
+		{
+			await writer.WriteAsync(new WorkerResponse<TracerouteResponse>
+			{
+				Response = new TracerouteResponse
+				{
+					Completed = new Empty()
+				},
+				WorkerId = workerId,
+			}, cancellationToken).ConfigureAwait(false);
 		}
 	}
 }

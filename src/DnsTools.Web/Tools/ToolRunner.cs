@@ -81,6 +81,7 @@ namespace DnsTools.Web.Tools
 				{
 					responseTasks.Add(ProcessResponseAsync(workerId, writer, response, hub, cancellationToken));
 				}
+				responseTasks.Add(WorkerCompletedAsync(workerId, writer, cancellationToken));
 
 				await Task.WhenAll(responseTasks);
 			}
@@ -119,6 +120,18 @@ namespace DnsTools.Web.Tools
 				Response = response,
 				WorkerId = workerId,
 			}, cancellationToken).ConfigureAwait(false);
+		}
+
+		/// <summary>
+		/// Hook to send any extra response data after the worker has completed
+		/// </summary>
+		protected virtual Task WorkerCompletedAsync(
+			string workerId,
+			ChannelWriter<WorkerResponse<TResponse>> writer,
+			CancellationToken cancellationToken
+		)
+		{
+			return Task.CompletedTask;
 		}
 	}
 }

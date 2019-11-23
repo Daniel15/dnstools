@@ -38,4 +38,7 @@ export type TracerouteResponse =
   | {
       responseCase: TracerouteResponseType.Error;
       error: IError;
+    }
+  | {
+      responseCase: TracerouteResponseType.Completed;
     };

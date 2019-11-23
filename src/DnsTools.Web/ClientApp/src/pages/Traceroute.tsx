@@ -5,19 +5,16 @@ import Helmet from 'react-helmet';
 import {
   IpData,
   ITracerouteRequest,
-  TracerouteResponseType,
   WorkerResponse,
   Config,
 } from '../types/generated';
 import {TracerouteResponse} from '../types/protobuf';
 import useSignalrStream from '../hooks/useSignalrStream';
-import ReactTracerouteResponse from '../components/TracerouteResponse';
 import groupResponsesByWorker from '../groupResponsesByWorker';
-import CountryFlag from '../components/CountryFlag';
-import Spinner from '../components/Spinner';
 import useQueryString from '../hooks/useQueryString';
 import {getProtocol} from '../utils/queryString';
 import MainForm, {defaultInput, Tool} from '../components/MainForm';
+import TracerouteWorker from '../components/TracerouteWorker';
 
 type Props = RouteComponentProps<{
   host: string;
@@ -49,34 +46,15 @@ export default function Traceroute(props: Props) {
       <Helmet>
         <title>Traceroute to {host}</title>
       </Helmet>
-      <h1 className="main-header">
-        Traceroute {host} {!data.isComplete && <Spinner />}
-      </h1>
+      <h1 className="main-header">Traceroute to {host}</h1>
       <div className="card-deck">
         {workerResponses.map(worker => (
-          <div className="card">
-            <div className="card-header">
-              <CountryFlag country={worker.worker.country} />
-              {worker.worker.location}
-            </div>
-            <ul className="list-group list-group-flush">
-              {worker.responses.map((response, index) => {
-                const ipData =
-                  response.responseCase === TracerouteResponseType.Reply
-                    ? props.ipData.get(response.reply.ip)
-                    : undefined;
-
-                return (
-                  <ReactTracerouteResponse
-                    index={index}
-                    ipData={ipData}
-                    key={index}
-                    response={response}
-                  />
-                );
-              })}
-            </ul>
-          </div>
+          <TracerouteWorker
+            areAllCompleted={data.isComplete}
+            ipData={props.ipData}
+            responses={worker.responses}
+            worker={worker.worker}
+          />
         ))}
       </div>
       {data.isComplete && (

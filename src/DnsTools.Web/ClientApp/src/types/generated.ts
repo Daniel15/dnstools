@@ -73,7 +73,8 @@ export enum TracerouteResponseType {
 	None = 0, 
 	Reply = 1, 
 	Timeout = 2, 
-	Error = 3
+	Error = 3, 
+	Completed = 4
 }
 export interface IError
 {

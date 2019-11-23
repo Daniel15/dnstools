@@ -2,6 +2,8 @@ syntax = "proto3";
 
 option csharp_namespace = "DnsTools.Worker";
 
+import "google/protobuf/empty.proto";
+
 service DnsToolsWorker {
   rpc Ping (PingRequest) returns (stream PingResponse);
   rpc Traceroute (TracerouteRequest) returns (stream TracerouteResponse);
@@ -23,6 +25,7 @@ message TracerouteResponse {
     TracerouteReply reply = 1;
     PingTimeout timeout = 2;
     Error error = 3;
+    google.protobuf.Empty completed = 4;
   }
 }
 
