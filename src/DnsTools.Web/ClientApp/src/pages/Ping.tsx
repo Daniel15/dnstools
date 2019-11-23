@@ -12,6 +12,7 @@ import useSignalrStream from '../hooks/useSignalrStream';
 import PingWorkerResult from '../components/PingWorkerResult';
 import Spinner from '../components/Spinner';
 import groupResponsesByWorker from '../groupResponsesByWorker';
+import Helmet from 'react-helmet';
 
 type Props = RouteComponentProps<{
   host: string;
@@ -41,6 +42,9 @@ export default function Ping(props: Props) {
 
   return (
     <>
+      <Helmet>
+        <title>Ping {host}</title>
+      </Helmet>
       <h1 className="main-header">
         Ping {host} {!data.isComplete && <Spinner />}
       </h1>

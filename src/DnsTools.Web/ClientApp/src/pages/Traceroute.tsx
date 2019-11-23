@@ -1,5 +1,6 @@
 import React, {useMemo} from 'react';
 import {RouteComponentProps} from 'react-router';
+import Helmet from 'react-helmet';
 
 import {
   IpData,
@@ -11,10 +12,10 @@ import {
 } from '../types/generated';
 import {TracerouteResponse} from '../types/protobuf';
 import useSignalrStream from '../hooks/useSignalrStream';
-import ReactTracerouteResponse from './TracerouteResponse';
+import ReactTracerouteResponse from '../components/TracerouteResponse';
 import groupResponsesByWorker from '../groupResponsesByWorker';
-import CountryFlag from './CountryFlag';
-import Spinner from './Spinner';
+import CountryFlag from '../components/CountryFlag';
+import Spinner from '../components/Spinner';
 
 type Props = RouteComponentProps<{
   host: string;
@@ -43,6 +44,9 @@ export default function Traceroute(props: Props) {
 
   return (
     <>
+      <Helmet>
+        <title>Traceroute to {host}</title>
+      </Helmet>
       <h1 className="main-header">
         Traceroute {host} {!data.isComplete && <Spinner />}
       </h1>
