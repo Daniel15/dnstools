@@ -22,6 +22,12 @@ export default function Index(props: Props) {
           world.
         </p>
         <MainForm config={props.config} isStandalone={false} />
+
+        <p className="mt-3">
+          <small>
+            &copy; 2007-2019 <a href="https://d.sb/">Daniel15</a>.
+          </small>
+        </p>
       </div>
     </>
   );
