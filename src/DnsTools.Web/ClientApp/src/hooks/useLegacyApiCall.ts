@@ -5,6 +5,8 @@ export default function useLegacyApiCall(uri: string) {
   const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
+    setResults(null);
+    setError(null);
     fetch(`/legacy/${uri}`)
       .then(response => response.text())
       .then(
