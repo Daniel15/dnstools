@@ -1,13 +1,10 @@
 <?php
-require '../includes/functions.php';
+require '../functions.php';
 
 if (empty($_GET['host']) || empty($_GET['type']))
   die();
 // Get rid of bad characters.
 $_GET['host'] = clean_hostname($_GET['host']);
-
-$page['title'] = 'DNS Traversal for ' . $_GET['host'];
-include '../includes/header.php';
 
 $server_ips = [];
 // Do the lookup.
@@ -115,5 +112,3 @@ function do_lookup($servers)
     do_lookup($name_servers);
   }
 }
-
-include '../includes/footer.php';

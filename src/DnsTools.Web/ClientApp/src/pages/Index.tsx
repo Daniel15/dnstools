@@ -37,12 +37,12 @@ const toolOptions: ReadonlyArray<ToolMetadata> = [
     label: 'DNS Lookup',
     description: 'Look up a DNS record.',
   },
-  /*{
+  {
     tool: Tool.DnsTraversal,
     label: 'DNS Traversal',
     description:
       'Shows every DNS server that is (or may be) used for a DNS lookup, and what the servers return.',
-  },*/
+  },
   /*{
     tool: Tool.ReverseDns,
     label: 'Reverse DNS (PTR)',
@@ -234,6 +234,10 @@ function buildToolURI(tool: Tool, input: ToolInput): string {
 
     case Tool.DnsLookup:
       uri = `/lookup/${input.host}/${DnsLookupType[input.dnsLookupType]}/`;
+      break;
+
+    case Tool.DnsTraversal:
+      uri = `/traversal/${input.host}/${DnsLookupType[input.dnsLookupType]}/`;
       break;
   }
 

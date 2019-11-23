@@ -7,6 +7,7 @@ import {Config} from './types/generated';
 import SignalrContext from './SignalrContext';
 
 import DnsLookup from './pages/DnsLookup';
+import DnsTraversal from './pages/DnsTraversal';
 import Index from './pages/Index';
 import Ping from './pages/Ping';
 import Traceroute from './pages/Traceroute';
@@ -45,6 +46,7 @@ const App: React.FC<Props> = (props: Props) => {
               )}
             />
             <Route path="/lookup/:host/:type/" component={DnsLookup} />
+            <Route path="/traversal/:host/:type/" component={DnsTraversal} />
             <Route
               path="/ping/:host/"
               render={routeProps => (

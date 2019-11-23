@@ -38,7 +38,7 @@ function do_lookup($server_name, $server_ip = null)
   try {
     $response = $resolver->query($_GET['host'], $_GET['type']);
   } catch (Net_DNS2_Exception $e) {
-    echo '<span class="error">Failed: ', $e->getMessage(), '</span><br /><br />
+    echo '<strong class="text-danger">Failed: ', $e->getMessage(), '</strong><br /><br />
 		<div class="alert alert-danger" role="alert">
 			There is a problem with the DNS server at ', $server_name, '.
 		</div>';

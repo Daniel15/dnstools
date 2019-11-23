@@ -8,12 +8,12 @@ type Props = RouteComponentProps<{
   type: string;
 }>;
 
-export default function DnsLookup(props: Props) {
+export default function DnsTraversal(props: Props) {
   const {host, type} = props.match.params;
   return (
     <LegacyTool
-      title={`DNS Lookup for ${host}`}
-      url={`lookup/${host}/${type.toUpperCase()}/`}
+      title={`DNS Traversal for ${host}`}
+      url={`traversal/${host}/${type.toUpperCase()}/`}
     />
   );
 }
