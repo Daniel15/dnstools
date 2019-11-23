@@ -1,11 +1,12 @@
 import {createContext} from 'react';
-import {HubConnectionBuilder} from '@microsoft/signalr';
+import {HubConnection} from '@microsoft/signalr';
 
-const connection = new HubConnectionBuilder()
-  .withUrl('/hub')
-  .withAutomaticReconnect()
-  .build();
+export type SignalrContextType = {
+  connection: HubConnection;
+  isConnected: boolean;
+};
 
-connection.start().catch(err => alert('Could not connect: ' + err.message));
-
-export default createContext(connection);
+export default createContext<SignalrContextType>({
+  connection: null!, // Always set in App.tsx
+  isConnected: false,
+});

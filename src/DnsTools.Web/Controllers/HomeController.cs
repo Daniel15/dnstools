@@ -8,6 +8,8 @@ namespace DnsTools.Web.Controllers
 	public class HomeController : Controller
 	{
 		[Route("")]
+		// Must match routes in JS
+		[Route("/ping/{host}")]
 		public IActionResult Index([FromServices] IWorkerProvider workerProvider)
 		{
 			var workers = workerProvider.GetWorkerConfigs();

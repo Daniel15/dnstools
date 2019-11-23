@@ -1,11 +1,10 @@
 import {useEffect, useState} from 'react';
 
-import useSignalrConnection from './useSignalrConnection';
 import {IpData} from '../types/generated';
+import {HubConnection} from '@microsoft/signalr';
 
-export default function useIpData() {
+export default function useIpData(connection: HubConnection) {
   const [ips, setIPs] = useState<ReadonlyMap<string, IpData>>(new Map());
-  const connection = useSignalrConnection();
   useEffect(() => {
     connection.on('IpDataLoaded', (ip: string, newData: IpData) => {
       setIPs(ips => {
@@ -21,7 +20,7 @@ export default function useIpData() {
     });
 
     return () => connection.off('IpDataLoaded');
-  }, []);
+  }, [connection]);
 
   return ips;
 }

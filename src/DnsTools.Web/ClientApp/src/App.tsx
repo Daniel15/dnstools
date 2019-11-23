@@ -1,70 +1,49 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
+import {BrowserRouter as Router, Switch, Route} from 'react-router-dom';
+import {HubConnectionBuilder} from '@microsoft/signalr';
 
-import logo from './logo.svg';
 import useIpData from './hooks/useIpData';
-import useSignalrConnection from './hooks/useSignalrConnection';
-import Ping from './components/Ping';
-import Traceroute from './components/Traceroute';
-import {Protocol, Config} from './types/generated';
+import Ping from './pages/Ping';
+import {Config} from './types/generated';
+import SignalrContext from './SignalrContext';
 
 type Props = {
   config: Readonly<Config>;
 };
 
-const App: React.FC<Props> = (props: Props) => {
-  const ipData = useIpData();
+const connection = new HubConnectionBuilder()
+  .withUrl('/hub')
+  .withAutomaticReconnect()
+  .build();
 
-  const [host, setHost] = useState();
+const App: React.FC<Props> = (props: Props) => {
+  const [isConnected, setIsConnected] = useState(false);
+
+  useEffect(() => {
+    connection
+      .start()
+      .then(() => setIsConnected(true))
+      .catch(err => alert('Could not connect: ' + err.message));
+    return () => {};
+  }, []);
+
+  //const ipData = useIpData(connection);
 
   return (
-    <div className="container">
-      {host && (
-        <Ping
-          request={{
-            host,
-            protocol: 0, //Protocol.IPV4,
-          }}
-          workers={props.config.workers}
-        />
-      )}
-      {/*{host && (
-        <Traceroute
-          ipData={ipData}
-          request={{
-            host,
-            protocol: Protocol.Ipv4,
-          }}
-        />
-        )}*/}
-      <button
-        type="button"
-        onClick={() => {
-          setHost('google.com');
-          /*connection.send("helloWorld", "Hello at " + Date.now());
-          connection
-            .invoke("helloWorld", "Hello2 at " + Date.now())
-            .then(result => {
-              console.log("res", result);
-            });*/
-          /*connection
-            .stream('ping', {
-              host: 'www.google.com',
-            })
-            .subscribe({
-              next: item => {
-                console.log('stream: ', item);
-              },
-              complete: () => {
-                console.log('stream complete');
-              },
-              error: err => {
-                console.error(err);
-              },
-            });*/
-        }}>
-        Hello
-      </button>
-    </div>
+    <SignalrContext.Provider value={{connection, isConnected}}>
+      <Router>
+        <div className="container">
+          <Switch>
+            <Route
+              path="/ping/:host"
+              render={routeProps => (
+                <Ping {...routeProps} config={props.config} />
+              )}
+            />
+          </Switch>
+        </div>
+      </Router>
+    </SignalrContext.Provider>
   );
 };
 
