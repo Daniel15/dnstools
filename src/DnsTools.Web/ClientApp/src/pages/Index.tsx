@@ -1,10 +1,14 @@
-import React, {useState, FormEventHandler, FormEvent} from 'react';
+import React, {useState, FormEvent} from 'react';
 import {Helmet} from 'react-helmet';
 import {useHistory} from 'react-router';
 
-import {Protocol} from '../types/generated';
+import {Protocol, DnsLookupType, Config} from '../types/generated';
 import FormRow from '../components/form/FormRow';
 import RadioList from '../components/form/RadioList';
+
+type Props = {
+  config: Config;
+};
 
 enum Tool {
   DnsLookup = 'DnsLookup',
@@ -22,23 +26,24 @@ type ToolMetadata = {
 };
 
 type ToolInput = {
+  dnsLookupType: DnsLookupType;
   host: string;
   protocol: Protocol;
 };
 
 const toolOptions: ReadonlyArray<ToolMetadata> = [
-  /*{
+  {
     tool: Tool.DnsLookup,
     label: 'DNS Lookup',
     description: 'Look up a DNS record.',
   },
-  {
+  /*{
     tool: Tool.DnsTraversal,
     label: 'DNS Traversal',
     description:
       'Shows every DNS server that is (or may be) used for a DNS lookup, and what the servers return.',
-  },
-  {
+  },*/
+  /*{
     tool: Tool.ReverseDns,
     label: 'Reverse DNS (PTR)',
     description: 'Convert an IP address into a hostname.',
@@ -46,12 +51,15 @@ const toolOptions: ReadonlyArray<ToolMetadata> = [
   {
     tool: Tool.Ping,
     label: 'Ping',
-    description: 'Show the round trip time (RTT) to a server.',
+    // TODO: Include number of hosts here ("from 5 locations around the world")
+    description:
+      'Show the round trip time (RTT) to a server, from {workerCount} locations around the world.',
   },
   {
     tool: Tool.Traceroute,
     label: 'Traceroute',
-    description: 'Show the route packets take to a particular host.',
+    description:
+      'Show the route packets take to a particular host, from {workerCount} locations around the world.',
   },
   /*{
     tool: Tool.Whois,
@@ -60,21 +68,26 @@ const toolOptions: ReadonlyArray<ToolMetadata> = [
   },*/
 ];
 
-export default function Index() {
+export default function Index(props: Props) {
   const [selectedTool, setSelectedTool] = useState<ToolMetadata>(
     toolOptions[0],
   );
   const [hoveredTool, setHoveredTool] = useState<ToolMetadata | null>(null);
   const [input, setInput] = useState<ToolInput>(() => ({
+    dnsLookupType: DnsLookupType.A,
     host: '',
     protocol: Protocol.Any,
   }));
   const history = useHistory();
-
   function onSubmit(evt: FormEvent<HTMLFormElement>) {
     evt.preventDefault();
     history.push(buildToolURI(selectedTool.tool, input));
   }
+
+  const description = (hoveredTool
+    ? hoveredTool.description
+    : selectedTool.description
+  ).replace('{workerCount}', '' + props.config.workers.length);
 
   return (
     <>
@@ -83,6 +96,11 @@ export default function Index() {
       </Helmet>
       <div className="jumbotron mt-5">
         <h1 className="display-4">Welcome to DNSTools!</h1>
+        <p className="lead">
+          DNSTools lets you perform DNS lookups, pings, traceroutes, and other
+          utilities, from {props.config.workers.length} locations around the
+          world.
+        </p>
         <form onSubmit={onSubmit}>
           <FormRow id="host" label="Host">
             <input
@@ -109,11 +127,16 @@ export default function Index() {
               onSelect={setSelectedTool}
             />
             <br />
-            <small>
-              {hoveredTool ? hoveredTool.description : selectedTool.description}
-            </small>
+            <small>{description}</small>
           </FormRow>
-          <PingInput input={input} onChangeInput={setInput} />
+          {(selectedTool.tool === Tool.Ping ||
+            selectedTool.tool === Tool.Traceroute) && (
+            <PingInput input={input} onChangeInput={setInput} />
+          )}
+          {(selectedTool.tool === Tool.DnsLookup ||
+            selectedTool.tool === Tool.DnsTraversal) && (
+            <DnsLookupInput input={input} onChangeInput={setInput} />
+          )}
           <button className="btn btn-primary btn-lg" type="submit">
             Do it!
           </button>
@@ -159,23 +182,58 @@ function PingInput(props: {
   );
 }
 
+function DnsLookupInput(props: {
+  input: ToolInput;
+  onChangeInput: (input: ToolInput) => void;
+}) {
+  return (
+    <>
+      <FormRow id="dns-lookup-type" label="Type">
+        <select
+          className="custom-select"
+          id="dns-lookup-type"
+          value={props.input.dnsLookupType}
+          onChange={evt =>
+            props.onChangeInput({
+              ...props.input,
+              dnsLookupType: +evt.target.value,
+            })
+          }>
+          <option value={DnsLookupType.A}>A</option>
+          <option value={DnsLookupType.Aaaa}>AAAA (IPv6)</option>
+          <option value={DnsLookupType.Cname}>CNAME</option>
+          <option value={DnsLookupType.Mx}>MX</option>
+          <option value={DnsLookupType.Ptr}>PTR (Reverse DNS)</option>
+          <option value={DnsLookupType.Ns}>NS</option>
+          <option value={DnsLookupType.Txt}>TXT</option>
+          <option value={DnsLookupType.Soa}>SOA</option>
+        </select>
+      </FormRow>
+    </>
+  );
+}
+
 function buildToolURI(tool: Tool, input: ToolInput): string {
   let uri;
   const params = new URLSearchParams();
 
   switch (tool) {
     case Tool.Ping:
-      uri = `/ping/${input.host}`;
+      uri = `/ping/${input.host}/`;
       if (input.protocol !== Protocol.Any) {
         params.append('proto', Protocol[input.protocol]);
       }
       break;
 
     case Tool.Traceroute:
-      uri = `/traceroute/${input.host}`;
+      uri = `/traceroute/${input.host}/`;
       if (input.protocol !== Protocol.Any) {
         params.append('proto', Protocol[input.protocol]);
       }
+      break;
+
+    case Tool.DnsLookup:
+      uri = `/lookup/${input.host}/${DnsLookupType[input.dnsLookupType]}/`;
       break;
   }
 

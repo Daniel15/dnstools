@@ -6,6 +6,7 @@ import useIpData from './hooks/useIpData';
 import {Config} from './types/generated';
 import SignalrContext from './SignalrContext';
 
+import DnsLookup from './pages/DnsLookup';
 import Index from './pages/Index';
 import Ping from './pages/Ping';
 import Traceroute from './pages/Traceroute';
@@ -36,15 +37,22 @@ const App: React.FC<Props> = (props: Props) => {
       <Router>
         <div className="container">
           <Switch>
-            <Route path="/" exact component={Index} />
             <Route
-              path="/ping/:host"
+              path="/"
+              exact
+              render={routeProps => (
+                <Index {...routeProps} config={props.config} />
+              )}
+            />
+            <Route path="/lookup/:host/:type/" component={DnsLookup} />
+            <Route
+              path="/ping/:host/"
               render={routeProps => (
                 <Ping {...routeProps} config={props.config} />
               )}
             />
             <Route
-              path="/traceroute/:host"
+              path="/traceroute/:host/"
               render={routeProps => (
                 <Traceroute
                   {...routeProps}

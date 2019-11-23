@@ -65,6 +65,17 @@ message PingSummary {
   string raw_reply = 3;
 }
 
+enum DnsLookupType {
+  A = 0;
+  AAAA = 1;
+  CNAME = 2;
+  MX = 3;
+  NS = 4;
+  PTR = 5;
+  SOA = 6;
+  TXT = 7;
+}
+
 message Error {
   string message = 1;
 }

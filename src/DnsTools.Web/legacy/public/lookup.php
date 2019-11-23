@@ -1,5 +1,5 @@
 <?php
-require '../includes/functions.php';
+require '../functions.php';
 
 if (empty($_GET['host']) || empty($_GET['type']))
   die();
@@ -11,31 +11,6 @@ if ($_GET['type'] === 'ANY' && !empty($_SERVER['HTTP_REFERER'])) {
 
 // Get rid of bad characters.
 $_GET['host'] = clean_hostname($_GET['host']);
-
-$page['title'] = 'DNS Lookup for ' . $_GET['host'];
-include '../includes/header.php';
-
-echo '
-	<form class="form-inline" method="get" action="/lookup" data-tool-url="/lookup/{host}/{type}/">
-		<div class="form-group">
-			<label for="host" class="col-2">Host:</label>
-			<input type="text" class="form-control col-9" name="host" id="host" value="', $_GET['host'], '" />
-		</div>
-		<div class="form-group">
-			<label for="type" class="col-2">Type:</label>
-			<select name="type" id="type" class="form-control col-9">
-				<option value="A">A</option>
-				<option value="AAAA">AAAA/IPv6</option>
-				<option value="CNAME">CNAME</option>
-				<option value="MX">MX</option>
-				<option value="NS">NS</option>
-				<option value="PTR">PTR (reverse DNS)</option>
-				<option value="SOA">SOA</option>
-				<option value="TXT">TXT</option>
-			</select>
-		</div>
-		<input value="Lookup" type="submit" class="btn btn-primary ml-2" />
-	</form>';
 
 $root_servers = get_root_servers();
 $root_server = $root_servers[array_rand($root_servers)];
@@ -188,6 +163,3 @@ function do_lookup($server_name, $server_ip = null)
 	</table>';
   }
 }
-
-include '../includes/footer.php';
-?>

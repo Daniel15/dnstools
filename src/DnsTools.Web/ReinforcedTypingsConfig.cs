@@ -32,6 +32,7 @@ namespace DnsTools.Web
 			builder.ExportAsInterface<Error>().WithPublicInstanceProperties();
 
 			builder.ExportAsEnum<Protocol>();
+			builder.ExportAsEnum<DnsLookupType>();
 		}
 	}
 }

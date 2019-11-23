@@ -84,3 +84,13 @@ export enum Protocol {
 	Ipv4 = 1, 
 	Ipv6 = 2
 }
+export enum DnsLookupType { 
+	A = 0, 
+	Aaaa = 1, 
+	Cname = 2, 
+	Mx = 3, 
+	Ns = 4, 
+	Ptr = 5, 
+	Soa = 6, 
+	Txt = 7
+}

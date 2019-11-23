@@ -11,6 +11,7 @@ namespace DnsTools.Web.Controllers
 		// Must match routes in JS
 		[Route("/ping/{host}")]
 		[Route("/traceroute/{host}")]
+		[Route("/lookup/{host}/{type}")]
 		public IActionResult Index([FromServices] IWorkerProvider workerProvider)
 		{
 			var workers = workerProvider.GetWorkerConfigs();

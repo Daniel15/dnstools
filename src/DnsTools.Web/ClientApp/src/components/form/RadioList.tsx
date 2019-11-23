@@ -23,6 +23,7 @@ export default function RadioList<TValue>(props: {
         <Radio
           id={option.id}
           isChecked={option.value === props.selectedValue}
+          key={option.label}
           label={option.label}
           name={props.name}
           onMouseEnter={
