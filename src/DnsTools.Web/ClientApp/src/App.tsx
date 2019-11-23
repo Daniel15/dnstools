@@ -6,6 +6,7 @@ import useIpData from './hooks/useIpData';
 import Ping from './pages/Ping';
 import {Config} from './types/generated';
 import SignalrContext from './SignalrContext';
+import Traceroute from './components/Traceroute';
 
 type Props = {
   config: Readonly<Config>;
@@ -27,8 +28,7 @@ const App: React.FC<Props> = (props: Props) => {
     return () => {};
   }, []);
 
-  //const ipData = useIpData(connection);
-
+  const ipData = useIpData(connection);
   return (
     <SignalrContext.Provider value={{connection, isConnected}}>
       <Router>
@@ -38,6 +38,16 @@ const App: React.FC<Props> = (props: Props) => {
               path="/ping/:host"
               render={routeProps => (
                 <Ping {...routeProps} config={props.config} />
+              )}
+            />
+            <Route
+              path="/traceroute/:host"
+              render={routeProps => (
+                <Traceroute
+                  {...routeProps}
+                  config={props.config}
+                  ipData={ipData}
+                />
               )}
             />
           </Switch>

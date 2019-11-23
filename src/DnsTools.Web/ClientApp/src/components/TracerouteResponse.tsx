@@ -17,7 +17,7 @@ type Props = {
 
 export default function TracerouteResponse(props: Props) {
   const {response} = props;
-  let seq = props.index;
+  let seq = props.index + 1;
   let contents;
   switch (response.responseCase) {
     case TracerouteResponseType.Reply:
@@ -39,7 +39,7 @@ export default function TracerouteResponse(props: Props) {
 
   return (
     <li className="list-group-item">
-      <div className="d-flex">
+      <div className="d-flex align-items-center">
         <div className="flex-grow-1">{contents}</div>
         <span className="tracert-seq mr-2">{seq}</span>
       </div>

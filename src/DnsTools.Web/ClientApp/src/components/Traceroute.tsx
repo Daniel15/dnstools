@@ -1,11 +1,13 @@
-import React from 'react';
+import React, {useMemo} from 'react';
+import {RouteComponentProps} from 'react-router';
 
 import {
   IpData,
   ITracerouteRequest,
   TracerouteResponseType,
   WorkerResponse,
-  WorkerConfig,
+  Config,
+  Protocol,
 } from '../types/generated';
 import {TracerouteResponse} from '../types/protobuf';
 import useSignalrStream from '../hooks/useSignalrStream';
@@ -14,23 +16,35 @@ import groupResponsesByWorker from '../groupResponsesByWorker';
 import CountryFlag from './CountryFlag';
 import Spinner from './Spinner';
 
-type Props = {
+type Props = RouteComponentProps<{
+  host: string;
+}> & {
   ipData: ReadonlyMap<string, IpData>;
-  request: ITracerouteRequest;
-  workers: ReadonlyArray<Readonly<WorkerConfig>>;
+  config: Config;
 };
 
 export default function Traceroute(props: Props) {
+  const host = props.match.params.host;
+  const request: ITracerouteRequest = useMemo(
+    () => ({
+      host,
+      protocol: Protocol.Any,
+    }),
+    [host],
+  );
   const data = useSignalrStream<WorkerResponse<TracerouteResponse>>(
     'traceroute',
-    props.request,
+    request,
   );
-  const workerResponses = groupResponsesByWorker(props.workers, data.results);
+  const workerResponses = groupResponsesByWorker(
+    props.config.workers,
+    data.results,
+  );
 
   return (
     <>
       <h1 className="main-header">
-        Traceroute {props.request.host} {!data.isComplete && <Spinner />}
+        Traceroute {host} {!data.isComplete && <Spinner />}
       </h1>
       <div className="card-deck">
         {workerResponses.map(worker => (
