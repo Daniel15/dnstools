@@ -1,18 +1,15 @@
 import React, {useMemo} from 'react';
+import Helmet from 'react-helmet';
 import {RouteComponentProps} from 'react-router';
 
-import {
-  IPingRequest,
-  WorkerResponse,
-  Protocol,
-  Config,
-} from '../types/generated';
+import {IPingRequest, WorkerResponse, Config} from '../types/generated';
 import {PingResponse} from '../types/protobuf';
 import useSignalrStream from '../hooks/useSignalrStream';
 import PingWorkerResult from '../components/PingWorkerResult';
 import Spinner from '../components/Spinner';
 import groupResponsesByWorker from '../groupResponsesByWorker';
-import Helmet from 'react-helmet';
+import useQueryString from '../hooks/useQueryString';
+import {getProtocol} from '../utils/queryString';
 
 type Props = RouteComponentProps<{
   host: string;
@@ -22,18 +19,13 @@ type Props = RouteComponentProps<{
 
 export default function Ping(props: Props) {
   const host = props.match.params.host;
-  //const query = new URLSearchParams(props.location.search);
-  //const rawProto: keyof typeof Protocol = query.get('proto') || 'Any';
-  //const proto = Protocol['aa'] || Protocol.Any;
+  const queryString = useQueryString();
+  const protocol = getProtocol(queryString);
 
-  const request: IPingRequest = useMemo(
-    () => ({
-      host,
-      protocol: Protocol.Any,
-    }),
-    [host],
-  );
-
+  const request: IPingRequest = useMemo(() => ({host, protocol}), [
+    host,
+    protocol,
+  ]);
   const data = useSignalrStream<WorkerResponse<PingResponse>>('ping', request);
   const workerResponses = groupResponsesByWorker(
     props.config.workers,

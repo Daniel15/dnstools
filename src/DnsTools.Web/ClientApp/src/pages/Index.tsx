@@ -73,16 +73,7 @@ export default function Index() {
 
   function onSubmit(evt: FormEvent<HTMLFormElement>) {
     evt.preventDefault();
-
-    switch (selectedTool.tool) {
-      case Tool.Ping:
-        history.push(`/ping/${input.host}`);
-        break;
-
-      case Tool.Traceroute:
-        history.push(`/traceroute/${input.host}`);
-        break;
-    }
+    history.push(buildToolURI(selectedTool.tool, input));
   }
 
   return (
@@ -166,4 +157,33 @@ function PingInput(props: {
       </FormRow>
     </>
   );
+}
+
+function buildToolURI(tool: Tool, input: ToolInput): string {
+  let uri;
+  const params = new URLSearchParams();
+
+  switch (tool) {
+    case Tool.Ping:
+      uri = `/ping/${input.host}`;
+      if (input.protocol !== Protocol.Any) {
+        params.append('proto', Protocol[input.protocol]);
+      }
+      break;
+
+    case Tool.Traceroute:
+      uri = `/traceroute/${input.host}`;
+      if (input.protocol !== Protocol.Any) {
+        params.append('proto', Protocol[input.protocol]);
+      }
+      break;
+  }
+
+  uri = uri || '';
+  const queryString = params.toString();
+  if (queryString !== '') {
+    uri += '?' + queryString;
+  }
+
+  return uri;
 }

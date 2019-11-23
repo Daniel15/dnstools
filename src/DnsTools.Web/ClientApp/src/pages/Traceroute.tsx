@@ -8,7 +8,6 @@ import {
   TracerouteResponseType,
   WorkerResponse,
   Config,
-  Protocol,
 } from '../types/generated';
 import {TracerouteResponse} from '../types/protobuf';
 import useSignalrStream from '../hooks/useSignalrStream';
@@ -16,6 +15,8 @@ import ReactTracerouteResponse from '../components/TracerouteResponse';
 import groupResponsesByWorker from '../groupResponsesByWorker';
 import CountryFlag from '../components/CountryFlag';
 import Spinner from '../components/Spinner';
+import useQueryString from '../hooks/useQueryString';
+import {getProtocol} from '../utils/queryString';
 
 type Props = RouteComponentProps<{
   host: string;
@@ -26,13 +27,13 @@ type Props = RouteComponentProps<{
 
 export default function Traceroute(props: Props) {
   const host = props.match.params.host;
-  const request: ITracerouteRequest = useMemo(
-    () => ({
-      host,
-      protocol: Protocol.Any,
-    }),
-    [host],
-  );
+  const queryString = useQueryString();
+  const protocol = getProtocol(queryString);
+
+  const request: ITracerouteRequest = useMemo(() => ({host, protocol}), [
+    host,
+    protocol,
+  ]);
   const data = useSignalrStream<WorkerResponse<TracerouteResponse>>(
     'traceroute',
     request,
