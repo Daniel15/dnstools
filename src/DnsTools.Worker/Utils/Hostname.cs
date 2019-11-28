@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Net;
+using DnsTools.Worker.Extensions;
 
 namespace DnsTools.Worker.Utils
 {
@@ -17,6 +19,11 @@ namespace DnsTools.Worker.Utils
 			if (result == UriHostNameType.Basic || result == UriHostNameType.Unknown)
 			{
 				throw new ArgumentException($"Invalid host name '{host}'");
+			}
+
+			if (IPAddress.TryParse(host, out var ip) && ip.IsPrivate())
+			{
+				throw new ArgumentException("Private IPs are not allowed");
 			}
 		}
 	}
