@@ -1,9 +1,11 @@
+import {LocationDescriptorObject} from 'history';
 import React, {useState, FormEvent} from 'react';
 import {useHistory} from 'react-router';
 
 import {Protocol, DnsLookupType, Config} from '../types/generated';
 import FormRow from '../components/form/FormRow';
 import RadioList from '../components/form/RadioList';
+import {navigateWithReload} from '../utils/routing';
 
 type Props = {
   config: Config;
@@ -92,7 +94,7 @@ export default function MainForm(props: Props) {
   const history = useHistory();
   function onSubmit(evt: FormEvent<HTMLFormElement>) {
     evt.preventDefault();
-    history.push(buildToolURI(selectedTool.tool, input));
+    navigateWithReload(history, buildToolURI(selectedTool.tool, input));
   }
 
   const description = (hoveredTool
@@ -211,7 +213,7 @@ function DnsLookupInput(props: {
   );
 }
 
-function buildToolURI(tool: Tool, input: ToolInput): string {
+function buildToolURI(tool: Tool, input: ToolInput): LocationDescriptorObject {
   let uri;
   const params = new URLSearchParams();
 
@@ -239,11 +241,9 @@ function buildToolURI(tool: Tool, input: ToolInput): string {
       break;
   }
 
-  uri = uri || '';
   const queryString = params.toString();
-  if (queryString !== '') {
-    uri += '?' + queryString;
-  }
-
-  return uri;
+  return {
+    pathname: uri,
+    search: queryString === '' ? '' : '?' + queryString,
+  };
 }

@@ -73,6 +73,9 @@ const App: React.FC<Props> = (props: Props) => {
                 />
               )}
             />
+
+            {/* Dummy route for navigateWithReload() */}
+            <Route path="/blank" render={() => null} />
           </Switch>
         </div>
       </Router>
