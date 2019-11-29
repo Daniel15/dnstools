@@ -1,0 +1,18 @@
+[Unit]
+Description=DNSTools Worker
+
+[Service]
+WorkingDirectory=/opt/dnstools-worker/
+ExecStart=/opt/dnstools-worker/DnsTools.Worker
+Restart=always
+# Restart service after 10 seconds if the dotnet service crashes:
+RestartSec=10
+KillSignal=SIGINT
+SyslogIdentifier=dnstools-worker
+User=www-data
+Environment=ASPNETCORE_ENVIRONMENT=Production
+# Workaround for https://github.com/dotnet/coreclr/issues/27955
+Environment=LD_PRELOAD=/usr/local/lib/libcoreclr-27955-workaround.so
+
+[Install]
+WantedBy=multi-user.target

@@ -18,4 +18,13 @@
     <PackageReference Include="System.Reactive" Version="4.2.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="deployment\dnstools-worker.service">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="deployment\letsencrypt-deploy-hook.sh">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
