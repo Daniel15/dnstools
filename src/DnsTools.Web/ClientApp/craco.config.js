@@ -10,7 +10,12 @@ module.exports = {
         ...whenProd(
           () => [
             purgecss({
-              content: ['./public/*.html', './src/**/*.tsx', './src/**/*.ts'],
+              content: [
+                './public/*.html',
+                './src/**/*.tsx',
+                './src/**/*.ts',
+                '../Views/**/*.cshtml',
+              ],
             }),
           ],
           [],
