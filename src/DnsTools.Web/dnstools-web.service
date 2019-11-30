@@ -1,0 +1,17 @@
+[Unit]
+Description=DNSTools Website
+
+[Service]
+WorkingDirectory=/var/www/dnstools/
+ExecStart=/usr/bin/dotnet /var/www/dnstools/DnsTools.Web.dll
+Restart=always
+# Restart service after 10 seconds if the dotnet service crashes:
+RestartSec=10
+KillSignal=SIGINT
+SyslogIdentifier=dnstools-web
+User=www-data
+Environment=ASPNETCORE_ENVIRONMENT=Production
+Environment=ASPNETCORE_URLS=http://unix:/tmp/dnstools.sock
+
+[Install]
+WantedBy=multi-user.target
