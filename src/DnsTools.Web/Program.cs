@@ -1,11 +1,10 @@
-using System;
-using System.Collections.Generic;
+﻿using System;
+using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Hosting.Server.Features;
+using Microsoft.AspNetCore.Http;
 
 namespace DnsTools.Web
 {
@@ -13,7 +12,22 @@ namespace DnsTools.Web
 	{
 		public static void Main(string[] args)
 		{
-			CreateWebHostBuilder(args).Build().Run();
+			var host = CreateWebHostBuilder(args).Build();
+			DeleteOldSocketIfExists(host);
+			host.Run();
+		}
+
+		private static void DeleteOldSocketIfExists(IWebHost host)
+		{
+			// Delete UNIX pipe if it exists at startup (eg. previous process crashed before cleaning it up)
+			// Workaround for https://github.com/aspnet/AspNetCore/issues/14134
+			var addressFeature = host.ServerFeatures.Get<IServerAddressesFeature>();
+			var url = BindingAddress.Parse(addressFeature.Addresses.First());
+			if (url.IsUnixPipe && File.Exists(url.UnixPipePath))
+			{
+				Console.WriteLine("UNIX pipe {0} already existed, deleting it.", url.UnixPipePath);
+				File.Delete(url.UnixPipePath);
+			}
 		}
 
 		public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
