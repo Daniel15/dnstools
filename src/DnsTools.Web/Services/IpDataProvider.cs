@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Linq;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
+using DnsClient;
 using DnsTools.Web.Hubs;
 using DnsTools.Web.Models;
 using Microsoft.Extensions.Logging;
@@ -14,11 +16,13 @@ namespace DnsTools.Web.Services
 	public class IpDataProvider : IIpDataProvider
 	{
 		private readonly IMaxMind _maxMind;
+		private readonly ILookupClient _dns;
 		private readonly ILogger<IpDataProvider> _logger;
 
-		public IpDataProvider(IMaxMind maxMind, ILogger<IpDataProvider> logger)
+		public IpDataProvider(IMaxMind maxMind, ILookupClient dns, ILogger<IpDataProvider> logger)
 		{
 			_maxMind = maxMind;
+			_dns = dns;
 			_logger = logger;
 		}
 
@@ -30,16 +34,18 @@ namespace DnsTools.Web.Services
 		/// Callback called when new data is available. This can be called multiple times,
 		/// as data becomes available (eg. DNS requests complete)
 		/// </param>
+		/// <param name="cancellationToken">Cancellation token for if the request is cancelled</param>
 		/// <returns>A task that resolves when all data lookups have completed</returns>
 		public async Task LoadDataAsync(
 			IPAddress ip,
-			Func<IpData, Task> onDataLoaded
+			Func<IpData, Task> onDataLoaded,
+			CancellationToken cancellationToken
 		)
 		{
 			var subTasks = new[]
 			{
 				LoadMaxmind(ip),
-				LoadReverseDns(ip),
+				LoadReverseDns(ip, cancellationToken),
 			}.Select(async task =>
 			{
 				var result = await task.ConfigureAwait(false);
@@ -58,13 +64,14 @@ namespace DnsTools.Web.Services
 		/// </summary>
 		/// <param name="rawIp">IP address to load data for</param>
 		/// <param name="client">SignalR client</param>
+		/// <param name="cancellationToken">Cancellation token for if the request is cancelled</param>
 		/// <returns>A task that resolves when all data lookups have completed</returns>
-		public async Task LoadDataAsync(string? rawIp, IToolsHub client)
+		public async Task LoadDataAsync(string? rawIp, IToolsHub client, CancellationToken cancellationToken)
 		{
 			if (rawIp != null)
 			{
 				var ip = IPAddress.Parse(rawIp);
-				await LoadDataAsync(ip, async data => await client.IpDataLoaded(rawIp, data));
+				await LoadDataAsync(ip, async data => await client.IpDataLoaded(rawIp, data), cancellationToken);
 			}
 		}
 
@@ -96,15 +103,18 @@ namespace DnsTools.Web.Services
 			return Task.FromResult(data);
 		}
 
-		private async Task<IpData?> LoadReverseDns(IPAddress ip)
+		private async Task<IpData?> LoadReverseDns(IPAddress ip, CancellationToken cancellationToken)
 		{
 			try
 			{
-				var dns = await Dns.GetHostEntryAsync(ip);
-				return new IpData
-				{
-					HostName = dns.HostName,
-				};
+				var response = await _dns.QueryReverseAsync(ip, cancellationToken);
+				var ptr = response.Answers.PtrRecords().FirstOrDefault();
+				return ptr == null
+					? null
+					: new IpData
+					{
+						HostName = ptr.PtrDomainName
+					};
 			} 
 			catch (Exception ex)
 			{

@@ -1,4 +1,5 @@
 ﻿using System;
+using DnsClient;
 using DnsTools.Web.Hubs;
 using DnsTools.Web.Models.Config;
 using DnsTools.Web.Services;
@@ -24,6 +25,12 @@ namespace DnsTools.Web
 		// This method gets called by the runtime. Use this method to add services to the container.
 		public void ConfigureServices(IServiceCollection services)
 		{
+			// Default caching DNS client, eg. for reverse DNS lookups
+			services.AddSingleton<ILookupClient>(_ => new LookupClient
+			{
+				UseCache = true
+			});
+
 			services.Configure<AppConfig>(Configuration);
 			services.AddSingleton<IWorkerProvider, WorkerProvider>();
 			services.AddSingleton<IMaxMind, Services.MaxMind>();

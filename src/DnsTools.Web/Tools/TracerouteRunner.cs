@@ -42,7 +42,7 @@ namespace DnsTools.Web.Tools
 		)
 		{
 			await base.ProcessResponseAsync(workerId, writer, response, client, cancellationToken);
-			await _ipData.LoadDataAsync(response.Reply?.Ip, client);
+			await _ipData.LoadDataAsync(response.Reply?.Ip, client, cancellationToken);
 		}
 
 		protected override async Task WorkerCompletedAsync(
