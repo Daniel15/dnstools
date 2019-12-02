@@ -113,7 +113,7 @@ namespace DnsTools.Web.Services
 					? null
 					: new IpData
 					{
-						HostName = ptr.PtrDomainName
+						HostName = ptr.PtrDomainName.ToString().TrimEnd('.')
 					};
 			} 
 			catch (Exception ex)
