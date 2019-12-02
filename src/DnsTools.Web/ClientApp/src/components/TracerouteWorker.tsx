@@ -28,6 +28,15 @@ export default function TracerouteWorker(props: Props) {
       x => x.responseCase === TracerouteResponseType.Completed,
     );
 
+  let finalReply: TracerouteResponse | null = responses[responses.length - 1];
+  if (
+    !isCompleted ||
+    !finalReply ||
+    finalReply.responseCase !== TracerouteResponseType.Reply
+  ) {
+    finalReply = null;
+  }
+
   const loadingPlaceholdersToShow = isCompleted
     ? 0
     : LOADING_PLACEHOLDER_COUNT - responses.length;
@@ -53,6 +62,7 @@ export default function TracerouteWorker(props: Props) {
               <ReactTracerouteResponse
                 index={index}
                 ipData={ipData}
+                isFinalReply={response === finalReply}
                 key={index}
                 response={response}
               />

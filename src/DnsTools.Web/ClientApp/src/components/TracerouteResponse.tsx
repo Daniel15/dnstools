@@ -12,6 +12,7 @@ import {TracerouteResponse as TracerouteResponseData} from '../types/protobuf';
 type Props = {
   index: number;
   ipData?: IpData | undefined;
+  isFinalReply: boolean;
   response: TracerouteResponseData;
 };
 
@@ -22,7 +23,11 @@ export default function TracerouteResponse(props: Props) {
   switch (response.responseCase) {
     case TracerouteResponseType.Reply:
       contents = (
-        <TracerouteReply ipData={props.ipData} reply={response.reply} />
+        <TracerouteReply
+          ipData={props.ipData}
+          isFinalReply={props.isFinalReply}
+          reply={response.reply}
+        />
       );
       seq = response.reply.seq;
       break;
@@ -38,7 +43,7 @@ export default function TracerouteResponse(props: Props) {
   }
 
   return (
-    <li className="list-group-item">
+    <li className={`list-group-item ${props.isFinalReply ? 'active' : ''}`}>
       <div className="d-flex align-items-center">
         <div className="flex-grow-1">{contents}</div>
         <span className="tracert-seq mr-2">{seq}</span>
@@ -49,6 +54,7 @@ export default function TracerouteResponse(props: Props) {
 
 type ReplyProps = {
   ipData: IpData | undefined;
+  isFinalReply: boolean;
   reply: ITracerouteReply;
 };
 
@@ -71,7 +77,12 @@ function TracerouteReply(props: ReplyProps) {
 
   return (
     <>
-      <span className="badge badge-secondary">{milliseconds(reply.rtt)}</span>{' '}
+      <span
+        className={`badge ${
+          props.isFinalReply ? 'badge-info' : 'badge-secondary'
+        }`}>
+        {milliseconds(reply.rtt)}
+      </span>{' '}
       {ipData && ipData.hostName ? (
         <>
           <strong>{ipData.hostName}</strong> ({reply.ip})
