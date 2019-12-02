@@ -15,6 +15,7 @@ module.exports = {
                 './src/**/*.tsx',
                 './src/**/*.ts',
                 '../Views/**/*.cshtml',
+                '../legacy/public/*.php',
               ],
             }),
           ],
