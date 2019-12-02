@@ -47,7 +47,7 @@ export default function Traceroute(props: Props) {
         <title>Traceroute to {host}</title>
       </Helmet>
       <h1 className="main-header">Traceroute to {host}</h1>
-      <div className="card-deck">
+      <div className="row row-cols-1 row-cols-md-2">
         {workerResponses.map(worker => (
           <TracerouteWorker
             areAllCompleted={data.isComplete}
