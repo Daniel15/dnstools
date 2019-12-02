@@ -47,8 +47,7 @@ export default function Ping(props: Props) {
             <th scope="col">Location</th>
             <th scope="col">Response Time</th>
             <th scope="col">Deviation</th>
-            <th scope="col">Replies</th>
-            <th scope="col">Timeouts</th>
+            <th scope="col">Info</th>
           </tr>
         </thead>
         <tbody>

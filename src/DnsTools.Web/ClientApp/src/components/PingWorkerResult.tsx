@@ -15,7 +15,6 @@ type Props = {
 export default function PingWorkerResult(props: Props) {
   const replies: Array<IPingReply> = [];
   const errors: Array<string> = [];
-  let timeouts = 0;
 
   props.results.forEach(result => {
     switch (result.responseCase) {
@@ -26,9 +25,6 @@ export default function PingWorkerResult(props: Props) {
       case PingResponseType.Error:
         errors.push(result.error.message);
         break;
-
-      case PingResponseType.Timeout:
-        timeouts++;
     }
   });
 
@@ -63,11 +59,51 @@ export default function PingWorkerResult(props: Props) {
             <td className="align-middle">
               {replyTimes.length > 1 && milliseconds(dev)}
             </td>
-            <td className="align-middle">{replyTimes.length}</td>
-            <td className="align-middle">{timeouts}</td>
+            <td className="align-middle">
+              <PingProgress results={props.results} />
+            </td>
           </>
         )}
       </tr>
     </>
+  );
+}
+
+const REPLY_COUNT = 5;
+const PROGRESS_BAR_PIECE_PERCENT = (1 / REPLY_COUNT) * 100;
+function PingProgress(props: {results: ReadonlyArray<PingResponse>}) {
+  if (props.results.length >= REPLY_COUNT) {
+    const timeouts = props.results.filter(
+      result => result.responseCase === PingResponseType.Error,
+    );
+    if (timeouts.length > 0) {
+      return <>{timeouts.length} timeouts</>;
+    }
+    return null;
+  }
+
+  return (
+    <div className="progress">
+      {props.results
+        .filter(
+          result =>
+            result.responseCase === PingResponseType.Reply ||
+            result.responseCase === PingResponseType.Error,
+        )
+        .map(response => (
+          <div
+            className={`progress-bar ${
+              response.responseCase === PingResponseType.Error
+                ? 'bg-danger'
+                : ''
+            }`}
+            role="progressbar"
+            style={{width: `${PROGRESS_BAR_PIECE_PERCENT}%`}}
+            aria-valuenow={PROGRESS_BAR_PIECE_PERCENT}
+            aria-valuemin={0}
+            aria-valuemax={100}
+          />
+        ))}
+    </div>
   );
 }
