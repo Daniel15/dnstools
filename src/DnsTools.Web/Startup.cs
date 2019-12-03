@@ -85,16 +85,14 @@ namespace DnsTools.Web
 					pattern: "{controller}/{action=Index}/{id?}");
 			});
 
-			app.UseSpa(spa =>
+			if (env.IsDevelopment())
 			{
-				spa.Options.SourcePath = "ClientApp";
-
-				if (env.IsDevelopment())
+				app.UseSpa(spa =>
 				{
-					//spa.UseReactDevelopmentServer(npmScript: "start");
+					spa.Options.SourcePath = "ClientApp";
 					spa.UseProxyToSpaDevelopmentServer("http://localhost:31429");
-				}
-			});
+				});
+			}
 		}
 	}
 }
