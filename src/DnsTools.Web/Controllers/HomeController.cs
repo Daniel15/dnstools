@@ -7,22 +7,60 @@ namespace DnsTools.Web.Controllers
 {
 	public class HomeController : Controller
 	{
-		[Route("")]
-		// Must match routes in JS
-		[Route("/ping/{host}/")]
-		[Route("/traceroute/{host}/")]
-		[Route("/lookup/{host}/{type}/")]
-		[Route("/traversal/{host}/{type}/")]
-		public IActionResult Index([FromServices] IWorkerProvider workerProvider)
+		private readonly IWorkerProvider _workerProvider;
+
+		public HomeController(IWorkerProvider workerProvider)
 		{
-			var workers = workerProvider.GetWorkerConfigs();
-			return View(new IndexViewModel
+			_workerProvider = workerProvider;
+		}
+
+		[Route("")]
+		public IActionResult Index()
+		{
+			return RenderIndex();
+		}
+
+		// ALL client-side routes must be covered below:
+
+		[Route("/ping/{host}/")]
+		public IActionResult Ping(string host)
+		{
+			return RenderIndex($"Ping {host}");
+		}
+
+		[Route("/traceroute/{host}/")]
+		public IActionResult Traceroute(string host)
+		{
+			return RenderIndex($"Traceroute to {host}");
+		}
+
+		[Route("/lookup/{host}/{type}/")]
+		public IActionResult Lookup(string host)
+		{
+			return RenderIndex($"DNS Lookup for {host}");
+		}
+
+		[Route("/traversal/{host}/{type}/")]
+		public IActionResult Traversal(string host)
+		{
+			return RenderIndex($"DNS Traversal for {host}");
+		}
+
+		private IActionResult RenderIndex(string? title = null)
+		{
+			var workers = _workerProvider.GetWorkerConfigs();
+			var model = new IndexViewModel
 			{
 				Config = new FrontEndConfig
 				{
 					Workers = workers,
-				}
-			});
+				},
+			};
+			if (title != null)
+			{
+				model.Title = title;
+			}
+			return View("Index", model);
 		}
 	}
 }
