@@ -5,6 +5,7 @@ import {HubConnectionBuilder} from '@microsoft/signalr';
 import useIpData from './hooks/useIpData';
 import {Config} from './types/generated';
 import SignalrContext from './SignalrContext';
+import NavigationSideEffects from './components/NavigationSideEffects';
 
 import DnsLookup from './pages/DnsLookup';
 import DnsTraversal from './pages/DnsTraversal';
@@ -36,6 +37,7 @@ const App: React.FC<Props> = (props: Props) => {
   return (
     <SignalrContext.Provider value={{connection, isConnected}}>
       <Router>
+        <NavigationSideEffects />
         <div className="container">
           <Switch>
             <Route
