@@ -1,0 +1,170 @@
+---
+- name: Prerequisite packages
+  apt:
+    name:
+      - apt-transport-https
+      - ca-certificates
+    state: present
+    update_cache: yes
+    cache_valid_time: 3600
+
+- name: .NET Core repository key
+  apt_key:
+    url: https://packages.microsoft.com/keys/microsoft.asc
+
+- name: .NET Core repository
+  apt_repository:
+    repo: deb [arch=amd64,arm64,armhf] https://packages.microsoft.com/debian/10/prod buster main
+    state: present
+
+- name: Debian unstable (for Wireguard)
+  apt_repository:
+    repo: deb http://deb.debian.org/debian/ unstable main
+    state: present
+
+- name: Lower priority of Debian unstable
+  copy:
+    dest: "/etc/apt/preferences.d/limit-unstable"
+    content: |
+      Package: *
+      Pin: release a=unstable
+      Pin-Priority: 90
+
+- name: Install packages
+  apt:
+    name:
+      - aspnetcore-runtime-3.0
+      - certbot
+      - dotnet-runtime-3.0
+      - htop
+      - iputils-ping
+      - python-requests
+      - rsync
+      - rsyslog
+      - traceroute
+      - wireguard-tools
+    state: present
+    install_recommends: false
+    update_cache: yes
+
+#################################################
+# .NET Core
+
+- name: Temporary hack for https://github.com/dotnet/coreclr/issues/27955
+  get_url:
+    url: https://d.ls/dotnet/bugs/libcoreclr-27955-workaround.so
+    dest: /usr/local/lib/libcoreclr-27955-workaround.so
+    mode: "0755"
+    checksum: sha256:be021161c98f69367745cd7d821b8175b6466eb5fa5921ecee3dcb6f9ff8f150
+
+#################################################
+# Certbot
+
+- name: Create acme-dns-auth.py for acme-dns
+  template:
+    src: acme-dns-auth.py.j2
+    dest: /etc/letsencrypt/acme-dns-auth.py
+    owner: root
+    group: root
+    mode: "0700"
+
+- name: Create certbot renewal hooks directory
+  file:
+    path: /etc/letsencrypt/renewal-hooks/deploy/
+    state: directory
+    mode: "0755"
+
+- name: Enable certbot renewal hook
+  file:
+    src: /opt/dnstools-worker/deployment/letsencrypt-deploy-hook.sh
+    dest: /etc/letsencrypt/renewal-hooks/deploy/01-dnstools-worker
+    state: link
+    force: yes
+
+#################################################
+# WireGuard
+
+- name: Install WireGuard kernel module (for non-OpenVZ)
+  apt:
+    name: wireguard
+    state: present
+  when: ansible_virtualization_type != "openvz"
+
+- name: Download wireguard-go for OpenVZ
+  get_url:
+    url: https://d.ls/wireguard/wireguard-go-v0.0.20191012
+    dest: /usr/local/bin/wireguard-go
+    mode: "0755"
+    checksum: sha256:4f69dc0c26f01d8b5ede65cbc0434312b908471ec393d6e211739bfbb0201c61
+  when: ansible_virtualization_type == "openvz"
+
+- name: Enable wireguard-go in systemd unit
+  lineinfile:
+    path: /lib/systemd/system/wg-quick@.service
+    insertafter: Environment=WG_ENDPOINT_RESOLUTION_RETRIES=infinity
+    line: Environment=WG_I_PREFER_BUGGY_USERSPACE_TO_POLISHED_KMOD=1
+  when: ansible_virtualization_type == "openvz"
+
+- name: Enable WireGuard
+  shell: |
+    systemctl daemon-reload
+    systemctl enable wg-quick@wg0
+
+- name: Check if WireGuard is configured
+  stat:
+    path: /etc/wireguard/wg0.conf
+  register: wireguard_configured
+
+- debug:
+    msg: "WireGuard is not configured yet! Please create /etc/wireguard/wg0.conf"
+  when: wireguard_configured.stat.exists == False
+
+- name: Start WireGuard if configured
+  shell: systemctl start wg-quick@wg0
+  when: wireguard_configured.stat.exists == True
+
+#################################################
+# dnstools-worker
+
+- name: Create worker directory
+  file:
+    path: /opt/dnstools-worker/
+    state: directory
+    owner: daniel-ansible
+    mode: "0755"
+
+- name: Copy worker
+  synchronize:
+    src: ../src/DnsTools.Worker/bin/Release/netcoreapp3.0/linux-x64/publish/
+    dest: /opt/dnstools-worker/
+    rsync_path: "/usr/bin/rsync" # Avoiding sudo for rsync
+
+- name: Edit IP in config
+  replace:
+    path: /opt/dnstools-worker/appsettings.Production.json
+    regexp: '"Url": "https://127.0.0.1:54561"'
+    replace: '"Url": "https://{{vpn_ip}}:54561"'
+
+- name: Enable dnstools-worker systemd
+  file:
+    src: /opt/dnstools-worker/deployment/dnstools-worker.service
+    dest: /etc/systemd/system/dnstools-worker.service
+    state: link
+
+- name: Reload systemd
+  shell: |
+    systemctl daemon-reload
+
+- name: Check if certbot has ran
+  stat:
+    path: /opt/dnstools-worker/key.pfx
+  register: cert_exists
+
+- debug:
+    msg: "Certbot has not been ran. Can't start the worker yet"
+  when: cert_exists.stat.exists == False
+
+- name: Start worker
+  shell: |
+    systemctl restart dnstools-worker
+  when: cert_exists.stat.exists == True

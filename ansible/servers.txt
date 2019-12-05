@@ -1,0 +1,22 @@
+[controller]
+control ansible_connection=local
+
+[workers]
+de01.d.sb   vpn_ip=10.123.1.16
+fr01.d.sb   vpn_ip=10.123.1.17
+it01.d.sb   vpn_ip=10.123.1.15
+lon01.d.sb  vpn_ip=10.123.1.21
+nl01.d.sb   vpn_ip=10.123.1.22
+no01.d.sb   vpn_ip=10.123.1.18
+nyc01.d.sb  vpn_ip=10.123.1.12
+phx01.d.sb  vpn_ip=10.123.1.23
+sg01.d.sb   vpn_ip=10.123.1.19
+syd02.d.sb  vpn_ip=10.123.1.11
+vps03.d.sb  vpn_ip=10.123.1.1
+
+[workers:vars]
+ansible_user=daniel-ansible
+ansible_become=yes
+ansible_become_method=sudo
+ansible_ssh_private_key_file=~/.ssh/id_ed25519_ansible
+ansible_become_pass='{{ sudo_pass }}'

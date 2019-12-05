@@ -1,0 +1,7 @@
+---
+- name: Configure servers
+  hosts: workers
+  become: yes
+
+  roles:
+    - dnstools-worker

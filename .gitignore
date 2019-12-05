@@ -258,3 +258,7 @@ _Pvt_Extensions
 
 # FAKE - F# Make
 .fake/
+
+# Ansible secrets
+ansible/vault-password
+ansible/passwd.yml
