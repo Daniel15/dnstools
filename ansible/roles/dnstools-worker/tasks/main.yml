@@ -47,6 +47,11 @@
     install_recommends: false
     update_cache: yes
 
+- name: Disable search domain in /etc/resolv.conf
+  lineinfile:
+    path: /etc/resolv.conf
+    line: search .  
+
 #################################################
 # .NET Core
 
@@ -106,9 +111,9 @@
   when: ansible_virtualization_type == "openvz"
 
 - name: Enable WireGuard
-  shell: |
-    systemctl daemon-reload
-    systemctl enable wg-quick@wg0
+  systemd:
+    name: wg-quick@wg0
+    enabled: yes
 
 - name: Check if WireGuard is configured
   stat:
@@ -120,7 +125,9 @@
   when: wireguard_configured.stat.exists == False
 
 - name: Start WireGuard if configured
-  shell: systemctl start wg-quick@wg0
+  systemd:
+    name: wg-quick@wg0
+    state: started
   when: wireguard_configured.stat.exists == True
 
 #################################################
@@ -152,8 +159,8 @@
     state: link
 
 - name: Reload systemd
-  shell: |
-    systemctl daemon-reload
+  systemd:
+    daemon_reload: yes
 
 - name: Check if certbot has ran
   stat:
@@ -165,6 +172,7 @@
   when: cert_exists.stat.exists == False
 
 - name: Start worker
-  shell: |
-    systemctl restart dnstools-worker
+  systemd:
+    name: dnstools-worker
+    state: restarted
   when: cert_exists.stat.exists == True
