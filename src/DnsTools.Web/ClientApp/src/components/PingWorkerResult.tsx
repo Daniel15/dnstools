@@ -1,12 +1,16 @@
 import React from 'react';
 
-import {WorkerConfig, PingResponseType, IPingReply} from '../types/generated';
-import {PingResponse, PingHostLookupResponse} from '../types/protobuf';
+import {
+  WorkerConfig,
+  PingResponseType,
+  IPingReply,
+  IPingSummary,
+} from '../types/generated';
+import {PingResponse} from '../types/protobuf';
 import CountryFlag from './CountryFlag';
 import ShimmerBar from './ShimmerBar';
 import {average, standardDeviation} from '../math';
 import {milliseconds} from '../format';
-import {sumIf} from '../utils/array';
 
 type Props = {
   results: ReadonlyArray<PingResponse>;
@@ -17,10 +21,18 @@ type Props = {
 export default function PingWorkerResult(props: Props) {
   const replies: Array<IPingReply> = [];
   const errors: Array<string> = [];
+  let summary: IPingSummary | undefined;
+  let ip: string | undefined;
   let timeouts = 0;
 
   props.results.forEach(result => {
     switch (result.responseCase) {
+      case PingResponseType.Lookup:
+        if (props.showIP) {
+          ip = result.lookup.ip;
+        }
+        break;
+
       case PingResponseType.Reply:
         replies.push(result.reply);
         break;
@@ -32,6 +44,10 @@ export default function PingWorkerResult(props: Props) {
       case PingResponseType.Timeout:
         timeouts++;
         break;
+
+      case PingResponseType.Summary:
+        summary = result.summary;
+        break;
     }
   });
 
@@ -39,12 +55,18 @@ export default function PingWorkerResult(props: Props) {
     replies.length === 0 && errors.length === 0 && timeouts === 0;
 
   const replyTimes = replies.map(reply => reply.rtt);
-  const avgReply = average(replyTimes);
+  const avgReply = replyTimes.length > 0 ? average(replyTimes) : null;
   const dev = standardDeviation(replyTimes);
 
   let rowText = null;
   if (errors.length > 0) {
     rowText = 'ERROR: ' + errors.join(', ');
+  } else if (summary != null && summary.received === 0) {
+    // All requests timed out
+    rowText = 'Timed out';
+    if (ip != null) {
+      rowText += `(${ip})`;
+    }
   } else if (isLoading) {
     rowText = <ShimmerBar />;
   }
@@ -63,12 +85,14 @@ export default function PingWorkerResult(props: Props) {
         )}
         {!rowText && (
           <>
-            <td className="align-middle">{milliseconds(avgReply)}</td>
+            <td className="align-middle">
+              {avgReply && milliseconds(avgReply)}
+            </td>
             <td className="align-middle">
               {replyTimes.length > 1 && milliseconds(dev)}
             </td>
             <td className="align-middle">
-              <PingProgress results={props.results} showIP={props.showIP} />
+              <PingProgress results={props.results} ip={ip} summary={summary} />
             </td>
           </>
         )}
@@ -80,31 +104,20 @@ export default function PingWorkerResult(props: Props) {
 const REPLY_COUNT = 5;
 const PROGRESS_BAR_PIECE_PERCENT = (1 / REPLY_COUNT) * 100;
 function PingProgress(props: {
-  showIP: boolean;
+  ip: string | undefined;
+  summary: IPingSummary | undefined;
   results: ReadonlyArray<PingResponse>;
 }) {
-  const replyCount = sumIf(
-    props.results,
-    result => result.responseCase === PingResponseType.Reply,
-  );
-  const timeoutCount = sumIf(
-    props.results,
-    result => result.responseCase === PingResponseType.Timeout,
-  );
-  if (replyCount + timeoutCount >= REPLY_COUNT) {
-    const textPieces = [];
+  if (props.summary != null) {
+    // Ping has completed, so show some summary info
 
-    if (props.showIP) {
-      const lookup = props.results.find(
-        (result): result is PingHostLookupResponse =>
-          result.responseCase === PingResponseType.Lookup,
-      );
-      if (lookup != null) {
-        textPieces.push(lookup.lookup.ip);
-      }
+    const textPieces = [];
+    if (props.ip != null) {
+      textPieces.push(props.ip);
     }
+    const timeoutCount = props.summary.sent - props.summary.received;
     if (timeoutCount > 0) {
-      textPieces.push(`{timeoutCount} timeouts`);
+      textPieces.push(`${timeoutCount} timeouts`);
     }
 
     return textPieces.length === 0 ? null : <>{textPieces.join(', ')}</>;
@@ -116,15 +129,18 @@ function PingProgress(props: {
         .filter(
           result =>
             result.responseCase === PingResponseType.Reply ||
-            result.responseCase === PingResponseType.Error,
+            result.responseCase === PingResponseType.Error ||
+            result.responseCase === PingResponseType.Timeout,
         )
-        .map(response => (
+        .map((response, index) => (
           <div
             className={`progress-bar ${
-              response.responseCase === PingResponseType.Error
+              response.responseCase === PingResponseType.Error ||
+              response.responseCase === PingResponseType.Timeout
                 ? 'bg-danger'
                 : ''
             }`}
+            key={index}
             role="progressbar"
             style={{width: `${PROGRESS_BAR_PIECE_PERCENT}%`}}
             aria-valuenow={PROGRESS_BAR_PIECE_PERCENT}
