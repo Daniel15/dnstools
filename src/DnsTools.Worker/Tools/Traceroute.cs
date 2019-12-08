@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using DnsTools.Worker.Utils;
+using Grpc.Core;
 
 namespace DnsTools.Worker.Tools
 {
@@ -11,28 +13,22 @@ namespace DnsTools.Worker.Tools
 	{
 		protected override string GetCommand(TracerouteRequest request) => "traceroute";
 
-		protected override IReadOnlyList<string> GetArguments(TracerouteRequest request)
+		protected override async Task<IReadOnlyList<string>> GetArguments(
+			TracerouteRequest request,
+			IServerStreamWriter<TracerouteResponse> writer
+		)
 		{
-			Hostname.AssertValid(request.Host);
-			var args = new List<string> {"-n", "-q 1", request.Host};
-			switch (request.Protocol)
+			var ip = await Hostname.GetIp(request.Host, request.Protocol);
+			var ipString = ip.ToString();
+			await writer.WriteAsync(new TracerouteResponse
 			{
-				case Protocol.Any:
-					break;
+				Lookup = new HostLookupResult
+				{
+					Ip = ipString
+				}
+			});
 
-				case Protocol.Ipv4:
-					args.Add("-4");
-					break;
-
-				case Protocol.Ipv6:
-					args.Add("-6");
-					break;
-
-				default:
-					throw new ArgumentOutOfRangeException();
-			}
-
-			return args;
+			return new List<string> {"-n", "-q 1", ipString };
 		}
 
 		protected override TracerouteResponse ParseResponse(string data)

@@ -34,7 +34,7 @@ namespace DnsTools.Worker.Tools
 			try
 			{
 				var wrap = Cli.Wrap(GetCommand(request))
-					.SetArguments(GetArguments(request))
+					.SetArguments(await GetArguments(request, responseStream))
 					.EnableExitCodeValidation(false)
 					.EnableStandardErrorValidation(false);
 
@@ -141,8 +141,14 @@ namespace DnsTools.Worker.Tools
 		/// Gets the arguments to pass to the command
 		/// </summary>
 		/// <param name="request">Incoming request</param>
+		/// <param name="writer">
+		/// Response writer, for if any responses need to be written *before* running the command
+		/// </param>
 		/// <returns>Arguments to use</returns>
-		protected abstract IReadOnlyList<string> GetArguments(TRequest request);
+		protected abstract Task<IReadOnlyList<string>> GetArguments(
+			TRequest request,
+			IServerStreamWriter<TResponse> writer
+		);
 
 		/// <summary>
 		/// Parses a raw stdout line into a structured response

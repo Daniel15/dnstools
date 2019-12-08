@@ -1,7 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Net.Sockets;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using DnsTools.Worker.Extensions;
 using DnsTools.Worker.Utils;
+using Grpc.Core;
 
 namespace DnsTools.Worker.Tools
 {
@@ -22,28 +28,22 @@ namespace DnsTools.Worker.Tools
 
 		protected override string GetCommand(PingRequest request) => "ping";
 
-		protected override IReadOnlyList<string> GetArguments(PingRequest request)
+		protected override async Task<IReadOnlyList<string>> GetArguments(
+			PingRequest request,
+			IServerStreamWriter<PingResponse> writer
+		)
 		{
-			Hostname.AssertValid(request.Host);
-			var args = new List<string> { "-i 0.5", "-c 5", "-O", request.Host };
-			switch (request.Protocol)
+			var ip = await Hostname.GetIp(request.Host, request.Protocol);
+			var ipString = ip.ToString();
+			await writer.WriteAsync(new PingResponse
 			{
-				case Protocol.Any:
-					break;
+				Lookup = new HostLookupResult
+				{
+					Ip = ipString
+				}
+			});
 
-				case Protocol.Ipv4:
-					args.Add("-4");
-					break;
-
-				case Protocol.Ipv6:
-					args.Add("-6");
-					break;
-
-				default:
-					throw new ArgumentOutOfRangeException();
-			}
-
-			return args;
+			return new List<string> { "-i 0.5", "-c 5", "-O", ipString };
 		}
 
 		protected override PingResponse ParseResponse(string reply)
