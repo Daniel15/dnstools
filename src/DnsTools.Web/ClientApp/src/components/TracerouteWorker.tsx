@@ -20,7 +20,9 @@ export default function TracerouteWorker(props: Props) {
   const {worker} = props;
 
   const responses = props.responses.filter(
-    x => x.responseCase !== TracerouteResponseType.Completed,
+    x =>
+      x.responseCase !== TracerouteResponseType.Completed &&
+      x.responseCase !== TracerouteResponseType.Lookup,
   );
   const isCompleted =
     props.areAllCompleted ||

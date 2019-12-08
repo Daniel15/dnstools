@@ -22,6 +22,7 @@ namespace DnsTools.Web
 			builder.ExportAsInterface<PingReply>().WithPublicInstanceProperties();
 			builder.ExportAsInterface<PingTimeout>().WithPublicInstanceProperties();
 			builder.ExportAsInterface<PingSummary>().WithPublicInstanceProperties();
+			builder.ExportAsInterface<HostLookupResult>().WithPublicInstanceProperties();
 
 			builder.ExportAsInterface<TracerouteRequest>().WithPublicInstanceProperties();
 			builder.ExportAsInterface<TracerouteReply>().WithPublicInstanceProperties();

@@ -6,9 +6,16 @@ import {
   IError,
   TracerouteResponseType,
   ITracerouteReply,
+  IHostLookupResult,
 } from './generated';
 
+export type PingHostLookupResponse = {
+  responseCase: PingResponseType.Lookup;
+  lookup: IHostLookupResult;
+};
+
 export type PingResponse =
+  | PingHostLookupResponse
   | {
       responseCase: PingResponseType.Reply;
       reply: IPingReply;
@@ -27,6 +34,10 @@ export type PingResponse =
     };
 
 export type TracerouteResponse =
+  | {
+      responseCase: TracerouteResponseType.Lookup;
+      lookup: IHostLookupResult;
+    }
   | {
       responseCase: TracerouteResponseType.Reply;
       reply: ITracerouteReply;

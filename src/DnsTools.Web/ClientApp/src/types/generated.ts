@@ -50,6 +50,10 @@ export interface IPingSummary
 	received: number;
 	sent: number;
 }
+export interface IHostLookupResult
+{
+	ip: string;
+}
 export interface ITracerouteRequest
 {
 	host: string;
@@ -67,14 +71,16 @@ export enum PingResponseType {
 	Reply = 1, 
 	Timeout = 2, 
 	Summary = 3, 
-	Error = 4
+	Error = 4, 
+	Lookup = 5
 }
 export enum TracerouteResponseType { 
 	None = 0, 
 	Reply = 1, 
 	Timeout = 2, 
 	Error = 3, 
-	Completed = 4
+	Completed = 4, 
+	Lookup = 5
 }
 export interface IError
 {
