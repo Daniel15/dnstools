@@ -3,6 +3,8 @@ require '../functions.php';
 
 if (empty($_GET['host']) || empty($_GET['type']))
   die();
+
+validate_lookup_type($_GET['type']);
 // Get rid of bad characters.
 $_GET['host'] = clean_hostname($_GET['host']);
 
