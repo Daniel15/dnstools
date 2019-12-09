@@ -69,4 +69,21 @@ function clean_hostname($hostname)
   return preg_replace('/[^A-Za-z0-9.\-\_:]/', '', $hostname);
 }
 
-?>
+function validate_lookup_type($type)
+{
+  $valid_types = [
+    'A' => true,
+    'AAAA' => true,
+    'ANY' => true,
+    'CNAME' => true,
+    'MX' => true,
+    'NS' => true,
+    'PTR' => true,
+    'SOA' => true,
+    'TXT' => true,
+  ];
+  if (!array_key_exists($type, $valid_types)) {
+    echo '<div class="alert alert-danger">Invalid lookup type.</div>';
+    die();
+  }
+}

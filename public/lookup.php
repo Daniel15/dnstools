@@ -9,6 +9,7 @@ if ($_GET['type'] === 'ANY' && !empty($_SERVER['HTTP_REFERER'])) {
   die();
 }
 
+validate_lookup_type($_GET['type']);
 // Get rid of bad characters.
 $_GET['host'] = clean_hostname($_GET['host']);
 
