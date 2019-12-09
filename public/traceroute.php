@@ -11,6 +11,9 @@ $page['title'] = 'Traceroute to ' . $_GET['host'];
 include '../includes/header.php';
 
 echo '
+	<div class="alert alert-info" role="alert">
+		<a href="https://beta.dnstools.ws/traceroute/', htmlspecialchars($_GET['host']), '/?utm_source=legacy-site&utm_medium=banner&utm_campaign=legacy-banner">Try this traceroute on the beta site</a>, now with support for 13 locations worldwide.
+	</div>
 	<form method="get" action="/traceroute" data-tool-url="/traceroute/{host}/" class="form-inline mb-3">
 		<div class="form-group">
 			<label for="host" class="col-2">Host:</label>

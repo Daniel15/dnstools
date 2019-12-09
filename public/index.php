@@ -4,6 +4,10 @@ $page['title'] = 'Welcome to DNSTools.ws!';
 include '../includes/header.php';
 ?>
 
+<div class="alert alert-info" role="alert">
+  <a href="https://beta.dnstools.ws/?utm_source=legacy-site&utm_medium=banner&utm_campaign=legacy-banner">Try the beta of the new DNSTools website</a>, now with support for pings and traceroutes from 13 locations worldwide.
+</div>
+
 <div class="row">
   <div class="col">
     <div class="card mb-4">

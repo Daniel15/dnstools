@@ -11,6 +11,9 @@ $page['title'] = 'Ping ' . $_GET['host'];
 include '../includes/header.php';
 
 echo '
+	<div class="alert alert-info" role="alert">
+	  <a href="https://beta.dnstools.ws/ping/', htmlspecialchars($_GET['host']), '/?utm_source=legacy-site&utm_medium=banner&utm_campaign=legacy-banner">Try this ping on the beta site</a>, now with support for 13 locations worldwide.
+	</div>
 	<form method="get" action="/ping" data-tool-url="/ping/{host}/" class="form-inline mb-3">
 		<div class="form-group">
 			<label for="host" class="col-2">Host:</label>
