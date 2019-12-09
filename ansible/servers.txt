@@ -3,9 +3,11 @@ control ansible_connection=local
 
 [workers]
 de01.d.sb   vpn_ip=10.123.1.16
+fi01.d.sb   vpn_ip=10.123.1.24
 fr01.d.sb   vpn_ip=10.123.1.17
 it01.d.sb   vpn_ip=10.123.1.15
 lon01.d.sb  vpn_ip=10.123.1.21
+lux01.d.sb  vpn_ip=10.123.1.13
 nl01.d.sb   vpn_ip=10.123.1.22
 no01.d.sb   vpn_ip=10.123.1.18
 nyc01.d.sb  vpn_ip=10.123.1.12
