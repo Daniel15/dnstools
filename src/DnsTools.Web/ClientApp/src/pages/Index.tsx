@@ -25,7 +25,8 @@ export default function Index(props: Props) {
 
         <p className="mt-3">
           <small>
-            &copy; 2007-2019 <a href="https://d.sb/">Daniel15</a>.
+            &copy; 2007-2019 <a href="https://d.sb/">Daniel15</a>. Send feedback
+            to <a href="mailto:feedback@dns.tg">feedback@dns.tg</a>
           </small>
         </p>
       </div>
