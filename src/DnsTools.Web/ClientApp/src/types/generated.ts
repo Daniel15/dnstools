@@ -11,6 +11,12 @@ export interface IpData
 	countryIso?: string;
 	hostName?: string;
 }
+export interface PingRequest
+{
+	host: string;
+	protocol: Protocol;
+	workers?: ReadonlyArray<string>;
+}
 export interface WorkerResponse<T>
 {
 	response: T;
@@ -26,11 +32,6 @@ export interface WorkerConfig
 	id: string;
 	location: string;
 	name: string;
-}
-export interface IPingRequest
-{
-	host: string;
-	protocol: Protocol;
 }
 export interface IPingReply
 {
@@ -53,11 +54,6 @@ export interface IPingSummary
 export interface IHostLookupResult
 {
 	ip: string;
-}
-export interface ITracerouteRequest
-{
-	host: string;
-	protocol: Protocol;
 }
 export interface ITracerouteReply
 {

@@ -3,7 +3,7 @@ import {RouteComponentProps} from 'react-router';
 
 import LegacyTool from '../components/LegacyTool';
 import {Config, DnsLookupType} from '../types/generated';
-import {defaultInput, Tool} from '../components/MainForm';
+import {getDefaultInput, Tool} from '../components/MainForm';
 
 type Props = RouteComponentProps<{
   host: string;
@@ -21,7 +21,7 @@ export default function DnsTraversal(props: Props) {
     <LegacyTool
       config={props.config}
       initialInput={{
-        ...defaultInput,
+        ...getDefaultInput(props.config),
         host,
         dnsLookupType: type,
       }}

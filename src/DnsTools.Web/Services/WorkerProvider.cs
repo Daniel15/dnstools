@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using DnsTools.Web.Models.Config;
 using DnsTools.Worker;
@@ -32,7 +34,20 @@ namespace DnsTools.Web.Services
 		/// </summary>
 		public IDictionary<string, DnsToolsWorker.DnsToolsWorkerClient> CreateAllClients()
 		{
-			return GetWorkerConfigs().ToDictionary(
+			return CreateClients(_ => true);
+		}
+
+		/// <summary>
+		/// Creates a client for the given worker configs
+		/// </summary>
+		public IDictionary<string, DnsToolsWorker.DnsToolsWorkerClient> CreateClients(ImmutableHashSet<string> workerIds)
+		{
+			return CreateClients(worker => workerIds.Contains(worker.Id));
+		}
+
+		private IDictionary<string, DnsToolsWorker.DnsToolsWorkerClient> CreateClients(Func<WorkerConfig, bool> filterFn)
+		{
+			return GetWorkerConfigs().Where(filterFn).ToDictionary(
 				config => config.Id,
 				config =>
 				{

@@ -2,19 +2,15 @@ import React, {useMemo} from 'react';
 import {RouteComponentProps} from 'react-router';
 import Helmet from 'react-helmet';
 
-import {
-  IpData,
-  ITracerouteRequest,
-  WorkerResponse,
-  Config,
-} from '../types/generated';
+import {IpData, PingRequest, WorkerResponse, Config} from '../types/generated';
 import {TracerouteResponse} from '../types/protobuf';
 import useSignalrStream from '../hooks/useSignalrStream';
 import groupResponsesByWorker from '../groupResponsesByWorker';
 import useQueryString from '../hooks/useQueryString';
-import {getProtocol} from '../utils/queryString';
-import MainForm, {defaultInput, Tool} from '../components/MainForm';
+import {getProtocol, getWorkers} from '../utils/queryString';
+import MainForm, {getDefaultInput, Tool} from '../components/MainForm';
 import TracerouteWorker from '../components/TracerouteWorker';
+import {serializeWorkers} from '../utils/workers';
 
 type Props = RouteComponentProps<{
   host: string;
@@ -27,17 +23,22 @@ export default function Traceroute(props: Props) {
   const host = props.match.params.host;
   const queryString = useQueryString();
   const protocol = getProtocol(queryString);
-
-  const request: ITracerouteRequest = useMemo(() => ({host, protocol}), [
-    host,
-    protocol,
+  const workers = useMemo(() => getWorkers(props.config, queryString), [
+    props.config,
+    queryString,
   ]);
+
+  const request: PingRequest = useMemo(
+    () => ({host, protocol, workers: serializeWorkers(props.config, workers)}),
+    [host, protocol, workers, props.config],
+  );
   const data = useSignalrStream<WorkerResponse<TracerouteResponse>>(
     'traceroute',
     request,
   );
   const workerResponses = groupResponsesByWorker(
     props.config.workers,
+    workers,
     data.results,
   );
 
@@ -52,23 +53,23 @@ export default function Traceroute(props: Props) {
           <TracerouteWorker
             areAllCompleted={data.isComplete}
             ipData={props.ipData}
+            key={worker.worker.id}
             responses={worker.responses}
             worker={worker.worker}
           />
         ))}
       </div>
-      {data.isComplete && (
-        <MainForm
-          config={props.config}
-          initialInput={{
-            ...defaultInput,
-            host,
-            protocol,
-          }}
-          initialSelectedTool={Tool.Traceroute}
-          isStandalone={true}
-        />
-      )}
+      <MainForm
+        config={props.config}
+        initialInput={{
+          ...getDefaultInput(props.config),
+          host,
+          protocol,
+          workers,
+        }}
+        initialSelectedTool={Tool.Traceroute}
+        isStandalone={true}
+      />
     </>
   );
 }

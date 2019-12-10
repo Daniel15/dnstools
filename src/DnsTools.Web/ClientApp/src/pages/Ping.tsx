@@ -3,7 +3,7 @@ import Helmet from 'react-helmet';
 import {RouteComponentProps} from 'react-router';
 
 import {
-  IPingRequest,
+  PingRequest,
   WorkerResponse,
   Config,
   PingResponseType,
@@ -14,8 +14,9 @@ import PingWorkerResult from '../components/PingWorkerResult';
 import Spinner from '../components/Spinner';
 import groupResponsesByWorker from '../groupResponsesByWorker';
 import useQueryString from '../hooks/useQueryString';
-import {getProtocol} from '../utils/queryString';
-import MainForm, {defaultInput, Tool} from '../components/MainForm';
+import {getProtocol, getWorkers} from '../utils/queryString';
+import {serializeWorkers} from '../utils/workers';
+import MainForm, {getDefaultInput, Tool} from '../components/MainForm';
 
 type Props = RouteComponentProps<{
   host: string;
@@ -27,14 +28,19 @@ export default function Ping(props: Props) {
   const host = props.match.params.host;
   const queryString = useQueryString();
   const protocol = getProtocol(queryString);
-
-  const request: IPingRequest = useMemo(() => ({host, protocol}), [
-    host,
-    protocol,
+  const workers = useMemo(() => getWorkers(props.config, queryString), [
+    props.config,
+    queryString,
   ]);
+
+  const request: PingRequest = useMemo(
+    () => ({host, protocol, workers: serializeWorkers(props.config, workers)}),
+    [host, protocol, workers, props.config],
+  );
   const data = useSignalrStream<WorkerResponse<PingResponse>>('ping', request);
   const workerResponses = groupResponsesByWorker(
     props.config.workers,
+    workers,
     data.results,
   );
 
@@ -73,9 +79,10 @@ export default function Ping(props: Props) {
       <MainForm
         config={props.config}
         initialInput={{
-          ...defaultInput,
+          ...getDefaultInput(props.config),
           host,
           protocol,
+          workers,
         }}
         initialSelectedTool={Tool.Ping}
         isStandalone={true}

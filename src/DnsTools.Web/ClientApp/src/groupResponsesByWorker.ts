@@ -2,6 +2,7 @@ import {WorkerResponse, WorkerConfig} from './types/generated';
 
 export default function groupResponsesByWorker<T>(
   workers: ReadonlyArray<WorkerConfig>,
+  selectedWorkers: ReadonlySet<string>,
   results: ReadonlyArray<WorkerResponse<T>>,
 ): ReadonlyArray<
   Readonly<{worker: WorkerConfig; responses: ReadonlyArray<T>}>
@@ -18,8 +19,10 @@ export default function groupResponsesByWorker<T>(
 
   // Add empty arrays for any workers that haven't returned yet, and keep
   // everything in the same order as the `workers` array.
-  return workers.map(worker => ({
-    worker,
-    responses: responsesByWorker.get(worker.id) || [],
-  }));
+  return workers
+    .filter(worker => selectedWorkers.has(worker.id))
+    .map(worker => ({
+      worker,
+      responses: responsesByWorker.get(worker.id) || [],
+    }));
 }

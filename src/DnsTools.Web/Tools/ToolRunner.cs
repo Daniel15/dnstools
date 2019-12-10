@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
 using System.Threading.Channels;
@@ -29,6 +30,7 @@ namespace DnsTools.Web.Tools
 		public ChannelReader<WorkerResponse<TResponse>> Run(
 			TRequest request,
 			IToolsHub client,
+			ImmutableHashSet<string>? workerIds,
 			CancellationToken cancellationToken
 		)
 		{
@@ -37,7 +39,7 @@ namespace DnsTools.Web.Tools
 				SingleReader = true,
 				SingleWriter = false,
 			});
-			_ = RunAsync(request, channel.Writer, client, cancellationToken);
+			_ = RunAsync(request, channel.Writer, client, workerIds, cancellationToken);
 			return channel.Reader;
 		}
 
@@ -45,12 +47,15 @@ namespace DnsTools.Web.Tools
 			TRequest request,
 			ChannelWriter<WorkerResponse<TResponse>> writer,
 			IToolsHub client,
+			ImmutableHashSet<string>? workerIds,
 			CancellationToken cancellationToken
 		)
 		{
 			try
 			{
-				var clients = _workerProvider.CreateAllClients();
+				var clients = workerIds == null 
+					? _workerProvider.CreateAllClients() 
+					: _workerProvider.CreateClients(workerIds);
 				var requests = clients.Select(
 					kvp => RunWorkerAsync(kvp.Key, request, kvp.Value, writer, client, cancellationToken)
 				);

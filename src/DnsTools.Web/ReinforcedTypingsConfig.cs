@@ -18,13 +18,11 @@ namespace DnsTools.Web
 	{
 		public static void Configure(ConfigurationBuilder builder)
 		{
-			builder.ExportAsInterface<PingRequest>().WithPublicInstanceProperties();
 			builder.ExportAsInterface<PingReply>().WithPublicInstanceProperties();
 			builder.ExportAsInterface<PingTimeout>().WithPublicInstanceProperties();
 			builder.ExportAsInterface<PingSummary>().WithPublicInstanceProperties();
 			builder.ExportAsInterface<HostLookupResult>().WithPublicInstanceProperties();
 
-			builder.ExportAsInterface<TracerouteRequest>().WithPublicInstanceProperties();
 			builder.ExportAsInterface<TracerouteReply>().WithPublicInstanceProperties();
 
 			builder.ExportAsEnum<PingResponse.ResponseOneofCase>().OverrideName("PingResponseType");

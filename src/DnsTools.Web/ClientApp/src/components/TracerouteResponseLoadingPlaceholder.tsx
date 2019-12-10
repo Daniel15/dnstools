@@ -10,7 +10,7 @@ export default function TracerouteResponseLoadingPlaceholder(props: Props) {
   const placeholders = [];
   for (let i = 0; i < props.count; i++) {
     placeholders.push(
-      <li className="list-group-item">
+      <li className="list-group-item" key={i}>
         <div className="d-flex align-items-center">
           <div className="flex-grow-1 mr-5">
             <ShimmerBar />

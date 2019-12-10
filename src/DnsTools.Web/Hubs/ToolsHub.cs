@@ -7,6 +7,7 @@ using DnsTools.Web.Tools;
 using DnsTools.Worker;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
+using PingRequest = DnsTools.Web.Models.PingRequest;
 
 namespace DnsTools.Web.Hubs
 {
@@ -26,23 +27,26 @@ namespace DnsTools.Web.Hubs
 			CancellationToken cancellationToken
 		)
 		{
-
 			return new GenericRunner<PingRequest, PingResponse>(
 				_workerProvider,
-				client => client.Ping(new PingRequest
+				client => client.Ping(new Worker.PingRequest
 				{
 					Host = request.Host,
 					Protocol = request.Protocol
-				}, cancellationToken: cancellationToken)).Run(request, Clients.Caller, cancellationToken);
+				}, cancellationToken: cancellationToken)).Run(request, Clients.Caller, request.Workers, cancellationToken);
 		}
 
 		public ChannelReader<WorkerResponse<TracerouteResponse>> Traceroute(
-			TracerouteRequest request,
+			PingRequest request,
 			CancellationToken cancellationToken
 		)
 		{
 			return _serviceProvider.GetRequiredService<TracerouteRunner>()
-				.Run(request, Clients.Caller, cancellationToken);
+				.Run(new TracerouteRequest
+				{
+					Host = request.Host,
+					Protocol = request.Protocol
+				}, Clients.Caller, request.Workers, cancellationToken);
 		}
 	}
 }

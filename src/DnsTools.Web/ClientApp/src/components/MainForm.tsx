@@ -3,9 +3,12 @@ import React, {useState, FormEvent} from 'react';
 import {useHistory} from 'react-router';
 
 import {Protocol, DnsLookupType, Config} from '../types/generated';
+import CheckboxList from './form/CheckboxList';
+import DropdownButton from './DropdownButton';
 import FormRow from '../components/form/FormRow';
 import RadioList from '../components/form/RadioList';
 import {navigateWithReload} from '../utils/routing';
+import CountryFlag from './CountryFlag';
 
 type Props = {
   config: Config;
@@ -33,6 +36,7 @@ export type ToolInput = {
   dnsLookupType: DnsLookupType;
   host: string;
   protocol: Protocol;
+  workers: ReadonlySet<string>;
 };
 
 const toolOptions: ReadonlyArray<ToolMetadata> = [
@@ -71,11 +75,14 @@ const toolOptions: ReadonlyArray<ToolMetadata> = [
   },*/
 ];
 
-export const defaultInput: ToolInput = Object.freeze({
-  dnsLookupType: DnsLookupType.A,
-  host: '',
-  protocol: Protocol.Any,
-});
+export function getDefaultInput(config: Config): ToolInput {
+  return {
+    dnsLookupType: DnsLookupType.A,
+    host: '',
+    protocol: Protocol.Any,
+    workers: new Set(config.workers.map(worker => worker.id)),
+  };
+}
 
 export default function MainForm(props: Props) {
   const [selectedTool, setSelectedTool] = useState<ToolMetadata>(() => {
@@ -89,12 +96,15 @@ export default function MainForm(props: Props) {
   });
   const [hoveredTool, setHoveredTool] = useState<ToolMetadata | null>(null);
   const [input, setInput] = useState<ToolInput>(
-    props.initialInput || defaultInput,
+    () => props.initialInput || getDefaultInput(props.config),
   );
   const history = useHistory();
   function onSubmit(evt: FormEvent<HTMLFormElement>) {
     evt.preventDefault();
-    navigateWithReload(history, buildToolURI(selectedTool.tool, input));
+    navigateWithReload(
+      history,
+      buildToolURI({config: props.config, tool: selectedTool.tool, input}),
+    );
   }
 
   const description = (hoveredTool
@@ -133,7 +143,11 @@ export default function MainForm(props: Props) {
       </FormRow>
       {(selectedTool.tool === Tool.Ping ||
         selectedTool.tool === Tool.Traceroute) && (
-        <PingInput input={input} onChangeInput={setInput} />
+        <PingInput
+          config={props.config}
+          input={input}
+          onChangeInput={setInput}
+        />
       )}
       {(selectedTool.tool === Tool.DnsLookup ||
         selectedTool.tool === Tool.DnsTraversal) && (
@@ -147,6 +161,7 @@ export default function MainForm(props: Props) {
 }
 
 function PingInput(props: {
+  config: Config;
   input: ToolInput;
   onChangeInput: (input: ToolInput) => void;
 }) {
@@ -178,6 +193,11 @@ function PingInput(props: {
           }
         />
       </FormRow>
+      <Locations
+        config={props.config}
+        input={props.input}
+        onChangeInput={props.onChangeInput}
+      />
     </>
   );
 }
@@ -213,23 +233,66 @@ function DnsLookupInput(props: {
   );
 }
 
-function buildToolURI(tool: Tool, input: ToolInput): LocationDescriptorObject {
+function Locations(props: {
+  config: Config;
+  input: ToolInput;
+  onChangeInput: (input: ToolInput) => void;
+}) {
+  let label = 'All';
+  if (props.input.workers.size < props.config.workers.length) {
+    const selectedWorkers = props.config.workers.filter(worker =>
+      props.input.workers.has(worker.id),
+    );
+    label = selectedWorkers.map(worker => worker.location).join('; ');
+  }
+
+  return (
+    <FormRow id="locations" label="Locations">
+      <DropdownButton id="locations-dropdown" label={label}>
+        <div className="px-3 py-2">
+          <CheckboxList
+            id="locations-list"
+            options={props.config.workers
+              .sort((a, b) => a.country.localeCompare(b.country))
+              .map(worker => ({
+                id: worker.id,
+                label: (
+                  <>
+                    <CountryFlag country={worker.country} />
+                    {worker.location}
+                  </>
+                ),
+              }))}
+            selectedOptions={props.input.workers}
+            onChange={newWorkers =>
+              props.onChangeInput({...props.input, workers: newWorkers})
+            }
+          />
+        </div>
+      </DropdownButton>
+    </FormRow>
+  );
+}
+
+function buildToolURI({
+  config,
+  tool,
+  input,
+}: {
+  config: Config;
+  tool: Tool;
+  input: ToolInput;
+}): LocationDescriptorObject {
   let uri;
   const params = new URLSearchParams();
 
   switch (tool) {
     case Tool.Ping:
       uri = `/ping/${input.host}/`;
-      if (input.protocol !== Protocol.Any) {
-        params.append('proto', Protocol[input.protocol]);
-      }
       break;
 
     case Tool.Traceroute:
       uri = `/traceroute/${input.host}/`;
-      if (input.protocol !== Protocol.Any) {
-        params.append('proto', Protocol[input.protocol]);
-      }
       break;
 
     case Tool.DnsLookup:
@@ -241,9 +304,18 @@ function buildToolURI(tool: Tool, input: ToolInput): LocationDescriptorObject {
       break;
   }
 
+  if (tool === Tool.Ping || tool === Tool.Traceroute) {
+    if (input.protocol !== Protocol.Any) {
+      params.append('proto', Protocol[input.protocol]);
+    }
+    if (input.workers.size < config.workers.length) {
+      params.append('workers', Array.from(input.workers).join(','));
+    }
+  }
+
   const queryString = params.toString();
   return {
     pathname: uri,
-    search: queryString === '' ? '' : '?' + queryString,
+    search: queryString === '' ? '' : '?' + queryString.replace(/%2C/g, ','),
   };
 }
