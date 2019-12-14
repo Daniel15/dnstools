@@ -35,7 +35,6 @@ message TracerouteReply {
   int32 seq = 1;
   string ip = 2;
   float rtt = 3;
-  string raw_reply = 4;
 }
 
 message PingRequest {
@@ -58,7 +57,6 @@ message PingReply {
   int32 ttl = 2;
   int32 seq = 3;
   int32 bytes = 4;
-  string raw_reply = 5;
 }
 
 message PingTimeout {
@@ -68,7 +66,6 @@ message PingTimeout {
 message PingSummary {
   int32 sent = 1;
   int32 received = 2;
-  string raw_reply = 3;
 }
 
 message HostLookupResult {

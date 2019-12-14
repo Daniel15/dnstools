@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Sockets;
+﻿using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using DnsTools.Worker.Extensions;
 using DnsTools.Worker.Utils;
 using Grpc.Core;
 
@@ -71,7 +66,6 @@ namespace DnsTools.Worker.Tools
 					Reply = new PingReply
 					{
 						Bytes = int.Parse(_bytesRegex.Match(reply).Groups["bytes"].Value),
-						RawReply = reply,
 						Rtt = float.Parse(_rttRegex.Match(reply).Groups["rtt"].Value),
 						Seq = int.Parse(_seqRegex.Match(reply).Groups["seq"].Value),
 						Ttl = int.Parse(_ttlRegex.Match(reply).Groups["ttl"].Value),
@@ -87,7 +81,6 @@ namespace DnsTools.Worker.Tools
 				{
 					Summary = new PingSummary
 					{
-						RawReply = reply,
 						Received = int.Parse(receivedMatch.Groups["received"].Value),
 						Sent = int.Parse(sentMatch.Groups["sent"].Value),
 					}

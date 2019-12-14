@@ -59,7 +59,6 @@ namespace DnsTools.Worker.Tools
 					Reply = new TracerouteReply
 					{
 						Ip = pieces[1],
-						RawReply = data,
 						Seq = seq,
 						Rtt = float.Parse(pieces[2]),
 					}

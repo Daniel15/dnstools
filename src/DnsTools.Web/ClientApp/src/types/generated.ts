@@ -36,7 +36,6 @@ export interface WorkerConfig
 export interface IPingReply
 {
 	bytes: number;
-	rawReply: string;
 	rtt: number;
 	seq: number;
 	ttl: number;
@@ -47,7 +46,6 @@ export interface IPingTimeout
 }
 export interface IPingSummary
 {
-	rawReply: string;
 	received: number;
 	sent: number;
 }
@@ -58,7 +56,6 @@ export interface IHostLookupResult
 export interface ITracerouteReply
 {
 	ip: string;
-	rawReply: string;
 	rtt: number;
 	seq: number;
 }
