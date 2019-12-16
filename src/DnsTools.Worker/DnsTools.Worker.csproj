@@ -5,6 +5,8 @@
     <UserSecretsId>00cb3cca-d2b7-4c88-87e5-e2d2fdd702a5</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     <DockerfileContext>..\..</DockerfileContext>
+	<LangVersion>8.0</LangVersion>
+	<Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
@@ -13,6 +15,7 @@
 
   <ItemGroup>
     <PackageReference Include="CliWrap" Version="2.5.0" />
+    <PackageReference Include="DnsClient" Version="1.2.0" />
     <PackageReference Include="Grpc.AspNetCore" Version="2.23.1" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.9.5" />
     <PackageReference Include="System.Reactive" Version="4.2.0" />

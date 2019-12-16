@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using DnsTools.Worker.Models;
 using DnsTools.Worker.Tools;
 using Grpc.Core;
@@ -26,16 +27,38 @@ namespace DnsTools.Worker.Services
 			await RunTool<TracerouteRequest, TracerouteResponse, Traceroute>(request, responseStream, context);
 		}
 
+		public override async Task DnsLookup(
+			DnsLookupRequest request, 
+			IServerStreamWriter<DnsLookupResponse> responseStream, 
+			ServerCallContext context
+		)
+		{
+			await RunTool<DnsLookupRequest, DnsLookupResponse, DnsLookup>(request, responseStream, context);
+		}
+
 		private async Task RunTool<TRequest, TResponse, TTool>(
 			TRequest request,
 			IServerStreamWriter<TResponse> responseStream,
 			ServerCallContext context
 		) 
-			where TTool : BaseCliTool<TRequest, TResponse> 
+			where TTool : ITool<TRequest, TResponse> 
 			where TResponse : IHasError, new()
 		{
-			await context.GetHttpContext().RequestServices.GetRequiredService<TTool>()
-				.RunAsync(request, responseStream, context.CancellationToken);
+			try
+			{
+				await context.GetHttpContext().RequestServices.GetRequiredService<TTool>()
+					.RunAsync(request, responseStream, context.CancellationToken);
+			}
+			catch (Exception ex)
+			{
+				await responseStream.WriteAsync(new TResponse
+				{
+					Error = new Error
+					{
+						Message = ex.Message,
+					}
+				});
+			}
 		}
 	}
 }

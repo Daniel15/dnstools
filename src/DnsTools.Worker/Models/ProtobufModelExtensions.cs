@@ -6,4 +6,5 @@ namespace DnsTools.Worker
 
 	public sealed partial class PingResponse : IHasError { }
 	public sealed partial class TracerouteResponse : IHasError { }
+	public sealed partial class DnsLookupResponse : IHasError { }
 }

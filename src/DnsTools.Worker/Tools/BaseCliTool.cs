@@ -17,7 +17,8 @@ namespace DnsTools.Worker.Tools
 	/// </summary>
 	/// <typeparam name="TRequest">Protobuf type for incoming request</typeparam>
 	/// <typeparam name="TResponse">Protobuf type for response</typeparam>
-	public abstract class BaseCliTool<TRequest, TResponse> where TResponse : IHasError, new()
+	public abstract class BaseCliTool<TRequest, TResponse> : ITool<TRequest, TResponse> 
+		where TResponse : IHasError, new()
 	{
 		/// <summary>
 		/// Runs the tool
@@ -31,90 +32,77 @@ namespace DnsTools.Worker.Tools
 			CancellationToken cancellationToken
 		)
 		{
-			try
+			var wrap = Cli.Wrap(GetCommand(request))
+				.SetArguments(await GetArguments(request, responseStream))
+				.EnableExitCodeValidation(false)
+				.EnableStandardErrorValidation(false);
+
+			// We need to subscribe BEFORE starting the process, as CliWrap doesn't let us add
+			// subscribers once started. See https://github.com/Tyrrrz/CliWrap/pull/46
+
+			var outputObserver = Observable.Create<string>(observer =>
 			{
-				var wrap = Cli.Wrap(GetCommand(request))
-					.SetArguments(await GetArguments(request, responseStream))
-					.EnableExitCodeValidation(false)
-					.EnableStandardErrorValidation(false);
+				wrap.SetStandardOutputCallback(observer.OnNext);
+				wrap.SetStandardOutputClosedCallback(observer.OnCompleted);
+				return Disposable.Empty;
+			});
 
-				// We need to subscribe BEFORE starting the process, as CliWrap doesn't let us add
-				// subscribers once started. See https://github.com/Tyrrrz/CliWrap/pull/46
-
-				var outputObserver = Observable.Create<string>(observer =>
-				{
-					wrap.SetStandardOutputCallback(observer.OnNext);
-					wrap.SetStandardOutputClosedCallback(observer.OnCompleted);
-					return Disposable.Empty;
-				});
-
-				var errorObserver = Observable.Create<string>(observer =>
-				{
-					wrap.SetStandardErrorCallback(observer.OnNext);
-					wrap.SetStandardErrorClosedCallback(observer.OnCompleted);
-					return Disposable.Empty;
-				});
-
-				var outputTask = HandleStream(
-					outputObserver,
-					async data =>
-					{
-						if (string.IsNullOrWhiteSpace(data))
-						{
-							return;
-						}
-
-						TResponse response;
-						try
-						{
-							response = ParseResponse(data);
-						}
-						catch (Exception ex)
-						{
-							response = new TResponse
-							{
-								Error = new Error
-								{
-									Message = $"Could not parse reply: {ex.Message}",
-								},
-							};
-						}
-
-						if (response != null)
-						{
-							await responseStream.WriteAsync(response);
-						}
-					},
-					cancellationToken
-				);
-				var errorTask = HandleStream(
-					errorObserver,
-					async data =>
-					{
-						if (!string.IsNullOrWhiteSpace(data))
-						{
-							await responseStream.WriteAsync(new TResponse
-							{
-								Error = ParseError(data),
-							});
-						}
-					},
-					cancellationToken
-				);
-
-				var process = wrap.ExecuteAsync();
-				await Task.WhenAll(process, outputTask, errorTask);
-			}
-			catch (Exception ex)
+			var errorObserver = Observable.Create<string>(observer =>
 			{
-				await responseStream.WriteAsync(new TResponse
+				wrap.SetStandardErrorCallback(observer.OnNext);
+				wrap.SetStandardErrorClosedCallback(observer.OnCompleted);
+				return Disposable.Empty;
+			});
+
+			var outputTask = HandleStream(
+				outputObserver,
+				async data =>
 				{
-					Error = new Error
+					if (string.IsNullOrWhiteSpace(data))
 					{
-						Message = ex.Message,
+						return;
 					}
-				});
-			}
+
+					TResponse response;
+					try
+					{
+						response = ParseResponse(data);
+					}
+					catch (Exception ex)
+					{
+						response = new TResponse
+						{
+							Error = new Error
+							{
+								Message = $"Could not parse reply: {ex.Message}",
+							},
+						};
+					}
+
+					if (response != null)
+					{
+						await responseStream.WriteAsync(response);
+					}
+				},
+				cancellationToken
+			);
+			var errorTask = HandleStream(
+				errorObserver,
+				async data =>
+				{
+					if (!string.IsNullOrWhiteSpace(data))
+					{
+						await responseStream.WriteAsync(new TResponse
+						{
+							Error = ParseError(data),
+						});
+					}
+				},
+				cancellationToken
+			);
+
+			var process = wrap.ExecuteAsync();
+			await Task.WhenAll(process, outputTask, errorTask);
 		}
 
 		private async Task HandleStream(

@@ -7,6 +7,7 @@ import "google/protobuf/empty.proto";
 service DnsToolsWorker {
   rpc Ping (PingRequest) returns (stream PingResponse);
   rpc Traceroute (TracerouteRequest) returns (stream TracerouteResponse);
+  rpc DnsLookup (DnsLookupRequest) returns (stream DnsLookupResponse);
 }
 
 enum Protocol {
@@ -72,6 +73,94 @@ message HostLookupResult {
   string ip = 1;
 }
 
+message DnsLookupRequest {
+  string host = 1;
+  DnsLookupType type = 2;
+}
+
+message DnsLookupResponse {
+  uint32 duration = 1;
+  oneof response {
+    DnsLookupReply reply = 2;
+    Error error = 3;
+    DnsLookupReferral referral = 4;
+  }
+}
+
+message DnsLookupReferral {
+  string prev_server_name = 1;
+  string prev_server_ip = 2;
+  string next_server_name = 3;
+  string next_server_ip = 4;
+  DnsLookupReply reply = 5;
+}
+
+message DnsLookupReply {
+  string from = 1;
+  repeated DnsRecord answers = 2;
+  repeated DnsRecord authorities = 3;
+  repeated DnsRecord additionals = 4;
+}
+
+message DnsRecord {
+  string name = 1;
+  int32 ttl = 2;
+  oneof record {
+    DnsARecord a = 3;
+    DnsAAAARecord aaaa = 4;
+    DnsCAARecord caa = 5;
+    DnsCNAMERecord cname = 6;
+    DnsMXRecord mx = 7;
+    DnsNSRecord ns = 8;
+    DnsPTRRecord ptr = 9;
+    DnsSOARecord soa = 10;
+    DnsTXTRecord txt = 11;
+  }
+}
+
+message DnsARecord {
+  string address = 1;
+}
+
+message DnsAAAARecord {
+  string address = 1;
+}
+
+message DnsCAARecord {
+  string value = 1;
+}
+
+message DnsCNAMERecord {
+  string cname = 1;
+}
+
+message DnsMXRecord {
+  string exchange = 1;
+  uint32 preference = 2;
+}
+
+message DnsNSRecord {
+  string nsdname = 1;
+}
+
+message DnsPTRRecord {
+  string ptrdname = 1;
+}
+
+message DnsSOARecord {
+  string mname = 1;
+  string rname = 2;
+  uint32 serial = 3;
+  uint32 refresh = 4;
+  uint32 retry = 5;
+  uint32 expire = 6;
+  uint32 minimum = 7;
+}
+
+message DnsTXTRecord {
+  string text = 1;
+}
+
 enum DnsLookupType {
   A = 0;
   AAAA = 1;
@@ -81,8 +170,10 @@ enum DnsLookupType {
   PTR = 5;
   SOA = 6;
   TXT = 7;
+  CAA = 8;
 }
 
 message Error {
   string message = 1;
+  string title = 2;
 }

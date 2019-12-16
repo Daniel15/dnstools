@@ -18,6 +18,7 @@ namespace DnsTools.Worker
 
 			services.AddTransient<Ping>();
 			services.AddTransient<Traceroute>();
+			services.AddTransient<DnsLookup>();
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
