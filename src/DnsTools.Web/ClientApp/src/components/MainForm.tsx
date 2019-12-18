@@ -3,8 +3,9 @@ import React, {useState, FormEvent} from 'react';
 import {useHistory} from 'react-router';
 
 import {Protocol, DnsLookupType, Config} from '../types/generated';
-import CheckboxList from './form/CheckboxList';
+import CheckboxList, {Option} from './form/CheckboxList';
 import DropdownButton from './DropdownButton';
+import DropdownList from './form/FormRowDropdownList';
 import FormRow from '../components/form/FormRow';
 import RadioList from '../components/form/RadioList';
 import {navigateWithReload} from '../utils/routing';
@@ -36,7 +37,10 @@ export type ToolInput = {
   dnsLookupType: DnsLookupType;
   host: string;
   protocol: Protocol;
+  // For tools that allow selection of multiple workers
   workers: ReadonlySet<string>;
+  // For tools that only allow one worker
+  worker: string;
 };
 
 const toolOptions: ReadonlyArray<ToolMetadata> = [
@@ -81,6 +85,7 @@ export function getDefaultInput(config: Config): ToolInput {
     host: '',
     protocol: Protocol.Any,
     workers: new Set(config.workers.map(worker => worker.id)),
+    worker: config.defaultWorker,
   };
 }
 
@@ -111,6 +116,16 @@ export default function MainForm(props: Props) {
     ? hoveredTool.description
     : selectedTool.description
   ).replace('{workerCount}', '' + props.config.workers.length);
+
+  const workerOptions = props.config.workers.map(worker => ({
+    id: worker.id,
+    label: (
+      <>
+        <CountryFlag country={worker.country} />
+        {worker.location}
+      </>
+    ),
+  }));
 
   return (
     <form
@@ -147,11 +162,18 @@ export default function MainForm(props: Props) {
           config={props.config}
           input={input}
           onChangeInput={setInput}
+          workerOptions={workerOptions}
         />
       )}
       {(selectedTool.tool === Tool.DnsLookup ||
         selectedTool.tool === Tool.DnsTraversal) && (
-        <DnsLookupInput input={input} onChangeInput={setInput} />
+        <DnsLookupInput
+          config={props.config}
+          input={input}
+          onChangeInput={setInput}
+          tool={selectedTool.tool}
+          workerOptions={workerOptions}
+        />
       )}
       <button className="btn btn-primary btn-lg" type="submit">
         Do it!
@@ -164,6 +186,7 @@ function PingInput(props: {
   config: Config;
   input: ToolInput;
   onChangeInput: (input: ToolInput) => void;
+  workerOptions: ReadonlyArray<Option>;
 }) {
   return (
     <>
@@ -197,14 +220,18 @@ function PingInput(props: {
         config={props.config}
         input={props.input}
         onChangeInput={props.onChangeInput}
+        workerOptions={props.workerOptions}
       />
     </>
   );
 }
 
 function DnsLookupInput(props: {
+  config: Config;
   input: ToolInput;
   onChangeInput: (input: ToolInput) => void;
+  tool: Tool;
+  workerOptions: ReadonlyArray<Option>;
 }) {
   return (
     <>
@@ -229,6 +256,19 @@ function DnsLookupInput(props: {
           <option value={DnsLookupType.Soa}>SOA</option>
         </select>
       </FormRow>
+      {props.tool === Tool.DnsLookup && (
+        <DropdownList
+          label="Location"
+          options={props.workerOptions}
+          selectedItem={props.input.worker}
+          onSelect={newWorker =>
+            props.onChangeInput({
+              ...props.input,
+              worker: newWorker || props.config.defaultWorker,
+            })
+          }
+        />
+      )}
     </>
   );
 }
@@ -237,6 +277,7 @@ function Locations(props: {
   config: Config;
   input: ToolInput;
   onChangeInput: (input: ToolInput) => void;
+  workerOptions: ReadonlyArray<Option>;
 }) {
   let label = 'All';
   if (props.input.workers.size < props.config.workers.length) {
@@ -252,17 +293,7 @@ function Locations(props: {
         <div className="px-3 py-2">
           <CheckboxList
             id="locations-list"
-            options={props.config.workers
-              .sort((a, b) => a.country.localeCompare(b.country))
-              .map(worker => ({
-                id: worker.id,
-                label: (
-                  <>
-                    <CountryFlag country={worker.country} />
-                    {worker.location}
-                  </>
-                ),
-              }))}
+            options={props.workerOptions}
             selectedOptions={props.input.workers}
             onChange={newWorkers =>
               props.onChangeInput({...props.input, workers: newWorkers})
@@ -310,6 +341,12 @@ function buildToolURI({
     }
     if (input.workers.size < config.workers.length) {
       params.append('workers', Array.from(input.workers).join(','));
+    }
+  }
+
+  if (tool === Tool.DnsLookup) {
+    if (input.worker !== config.defaultWorker) {
+      params.append('workers', input.worker);
     }
   }
 

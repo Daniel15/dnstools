@@ -9,11 +9,12 @@ export function getProtocol(queryString: URLSearchParams): Protocol {
 export function getWorkers(
   config: Config,
   queryString: URLSearchParams,
+  def?: ReadonlyArray<string>,
 ): ReadonlySet<string> {
   const rawWorkers = queryString.get('workers');
   return new Set(
     rawWorkers
       ? rawWorkers.split(',')
-      : config.workers.map(worker => worker.id),
+      : def || config.workers.map(worker => worker.id),
   );
 }

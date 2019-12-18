@@ -29,11 +29,15 @@ export default function DnsLookup(props: Props) {
   const {host, type: rawType} = props.match.params;
   const type: DnsLookupType =
     DnsLookupType[rawType as keyof typeof DnsLookupType];
-  //const queryString = useQueryString();
+  const queryString = useQueryString();
+  const workers = useMemo(
+    () => getWorkers(props.config, queryString, [props.config.defaultWorker]),
+    [props.config, queryString],
+  );
 
   const request: DnsLookupRequest = useMemo(
-    () => ({host, type, workers: undefined /* TODO */}),
-    [host, type],
+    () => ({host, type, workers: Array.from(workers)}),
+    [host, type, workers],
   );
   const data = useSignalrStream<WorkerResponse<DnsLookupResponse>>(
     'dnslookup',
@@ -105,6 +109,7 @@ export default function DnsLookup(props: Props) {
               ...getDefaultInput(props.config),
               host,
               dnsLookupType: type,
+              worker: workers.values().next().value,
             }}
             initialSelectedTool={Tool.DnsLookup}
             isStandalone={true}
