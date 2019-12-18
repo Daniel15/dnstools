@@ -8,12 +8,14 @@ using System.Threading;
 using System.Threading.Tasks;
 using DnsClient;
 using DnsTools.Worker.Extensions;
+using Google.Protobuf.Collections;
 using Grpc.Core;
 
 namespace DnsTools.Worker.Tools
 {
 	public class DnsLookup : ITool<DnsLookupRequest, DnsLookupResponse>
 	{
+		private static readonly TimeSpan _timeout = TimeSpan.FromSeconds(3);
 		private static readonly IReadOnlyList<string> _rootServers = new List<string>
 		{
 			"a.root-servers.net",
@@ -44,16 +46,16 @@ namespace DnsTools.Worker.Tools
 		)
 		{
 			var serverName = _rootServers.Random();
-			var serverIp = (await Dns.GetHostAddressesAsync(serverName)).First();
+			var serverIps = await Dns.GetHostAddressesAsync(serverName);
 			await responseStream.WriteAsync(new DnsLookupResponse
 			{
 				Referral = new DnsLookupReferral
 				{
 					NextServerName = serverName,
-					NextServerIp = serverIp.ToString(),
+					NextServerIps = {serverIps.Select(x => x.ToString())},
 				}
 			});
-			await DoLookup(request, responseStream, cancellationToken, serverName, serverIp);
+			await DoLookup(request, responseStream, cancellationToken, serverName, serverIps);
 		}
 
 		private async Task DoLookup(
@@ -61,13 +63,15 @@ namespace DnsTools.Worker.Tools
 			IServerStreamWriter<DnsLookupResponse> responseStream,
 			CancellationToken cancellationToken,
 			string serverName,
-			IPAddress serverIp
+			IEnumerable<IPAddress> serverIps
 		)
 		{
-			var client = new LookupClient(serverIp, 53)
+			var client = new LookupClient(serverIps.ToArray())
 			{
 				UseCache = false,
 				ThrowDnsErrors = true,
+				Retries = 0,
+				Timeout = _timeout,
 			};
 			IDnsQueryResponse response;
 			var stopwatch = new Stopwatch();
@@ -119,21 +123,20 @@ namespace DnsTools.Worker.Tools
 				var newServer = response.Authorities.NsRecords().Random();
 
 				// See if glue was provided with an IP
-				var newServerIp = response.Additionals.ARecords()
-					.FirstOrDefault(x => x.DomainName.Value == newServer.NSDName.Value)
-					?.Address;
+				var newServerIps = response.Additionals.ARecords()
+					.Where(x => x.DomainName.Value == newServer.NSDName.Value)
+					.Select(x => x.Address)
+					.Concat(
+						response.Additionals.AaaaRecords()
+							.Where(x => x.DomainName.Value == newServer.NSDName.Value)
+							.Select(x => x.Address)
+					)
+					.ToArray();
 
-				if (newServerIp == null)
-				{
-					newServerIp = response.Additionals.AaaaRecords()
-						.FirstOrDefault(x => x.DomainName.Value == newServer.NSDName.Value)
-						?.Address;
-				}
-
-				if (newServerIp == null)
+				if (newServerIps.Length == 0)
 				{
 					// No glue, so we need to look up the server IP
-					newServerIp = (await Dns.GetHostAddressesAsync(newServer.NSDName.Value)).First();
+					newServerIps = await Dns.GetHostAddressesAsync(newServer.NSDName.Value);
 				}
 
 				await responseStream.WriteAsync(new DnsLookupResponse
@@ -142,13 +145,13 @@ namespace DnsTools.Worker.Tools
 					Referral = new DnsLookupReferral
 					{
 						PrevServerName = serverName,
-						PrevServerIp = serverIp.ToString(),
+						PrevServerIp = response.NameServer.Endpoint.Address.ToString(),
 						NextServerName = newServer.NSDName.Value.TrimEnd('.'),
-						NextServerIp = newServerIp?.ToString() ?? "",
+						NextServerIps = {newServerIps.Select(x => x.ToString())},
 						Reply = response.ToReply(),
 					}
 				});
-				await DoLookup(request, responseStream, cancellationToken, newServer.NSDName.Value, newServerIp);
+				await DoLookup(request, responseStream, cancellationToken, newServer.NSDName.Value, newServerIps);
 				return;
 			}
 

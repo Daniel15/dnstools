@@ -91,7 +91,7 @@ message DnsLookupReferral {
   string prev_server_name = 1;
   string prev_server_ip = 2;
   string next_server_name = 3;
-  string next_server_ip = 4;
+  repeated string next_server_ips = 4;
   DnsLookupReply reply = 5;
 }
 
