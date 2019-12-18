@@ -7,6 +7,17 @@ import {
   TracerouteResponseType,
   ITracerouteReply,
   IHostLookupResult,
+  DnsRecordType,
+  IDnsARecord,
+  IDnsAAAARecord,
+  IDnsCAARecord,
+  IDnsCNAMERecord,
+  IDnsMXRecord,
+  IDnsNSRecord,
+  IDnsPTRRecord,
+  IDnsSOARecord,
+  IDnsTXTRecord,
+  DnsLookupResponseType,
 } from './generated';
 
 export type PingHostLookupResponse = {
@@ -53,3 +64,77 @@ export type TracerouteResponse =
   | {
       responseCase: TracerouteResponseType.Completed;
     };
+
+export type DnsRecord = {
+  name: string;
+  ttl: number;
+} & (
+  | {
+      recordCase: DnsRecordType.A;
+      a: IDnsARecord;
+    }
+  | {
+      recordCase: DnsRecordType.Aaaa;
+      aaaa: IDnsAAAARecord;
+    }
+  | {
+      recordCase: DnsRecordType.Caa;
+      caa: IDnsCAARecord;
+    }
+  | {
+      recordCase: DnsRecordType.Cname;
+      cname: IDnsCNAMERecord;
+    }
+  | {
+      recordCase: DnsRecordType.Mx;
+      mx: IDnsMXRecord;
+    }
+  | {
+      recordCase: DnsRecordType.Ns;
+      ns: IDnsNSRecord;
+    }
+  | {
+      recordCase: DnsRecordType.Ptr;
+      ptr: IDnsPTRRecord;
+    }
+  | {
+      recordCase: DnsRecordType.Soa;
+      soa: IDnsSOARecord;
+    }
+  | {
+      recordCase: DnsRecordType.Txt;
+      txt: IDnsTXTRecord;
+    }
+);
+
+export type DnsLookupReply = {
+  from: string;
+  answers: ReadonlyArray<DnsRecord>;
+  authorities: ReadonlyArray<DnsRecord>;
+  additionals: ReadonlyArray<DnsRecord>;
+};
+
+export type DnsLookupReferral = {
+  nextServerName: string;
+  nextServerIp: string;
+  prevServerName: string | undefined;
+  prevServerIp: string | undefined;
+  reply: DnsLookupReply | undefined;
+};
+
+export type DnsLookupResponse = {
+  duration: number;
+} & (
+  | {
+      responseCase: DnsLookupResponseType.Reply;
+      reply: DnsLookupReply;
+    }
+  | {
+      responseCase: DnsLookupResponseType.Error;
+      error: IError;
+    }
+  | {
+      responseCase: DnsLookupResponseType.Referral;
+      referral: DnsLookupReferral;
+    }
+);

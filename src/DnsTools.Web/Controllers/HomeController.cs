@@ -2,16 +2,19 @@
 using DnsTools.Web.Services;
 using DnsTools.Web.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 
 namespace DnsTools.Web.Controllers
 {
 	public class HomeController : Controller
 	{
 		private readonly IWorkerProvider _workerProvider;
+		private readonly string _defaultWorker;
 
-		public HomeController(IWorkerProvider workerProvider)
+		public HomeController(IWorkerProvider workerProvider, IOptions<AppConfig> config)
 		{
 			_workerProvider = workerProvider;
+			_defaultWorker = config.Value.DefaultWorker;
 		}
 
 		[Route("")]
@@ -53,6 +56,7 @@ namespace DnsTools.Web.Controllers
 			{
 				Config = new FrontEndConfig
 				{
+					DefaultWorker = _defaultWorker,
 					Workers = workers,
 				},
 			};

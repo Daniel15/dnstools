@@ -2,6 +2,12 @@
 //     Changes to this file may cause incorrect behavior and will be lost if
 //     the code is regenerated.
 
+export interface DnsLookupRequest
+{
+	host: string;
+	type: DnsLookupType;
+	workers?: ReadonlyArray<string>;
+}
 export interface IpData
 {
 	asn?: number;
@@ -24,6 +30,7 @@ export interface WorkerResponse<T>
 }
 export interface Config
 {
+	defaultWorker: string;
 	workers: WorkerConfig[];
 }
 export interface WorkerConfig
@@ -59,6 +66,57 @@ export interface ITracerouteReply
 	rtt: number;
 	seq: number;
 }
+export interface IDnsLookupReferral
+{
+	nextServerIps: string[];
+	nextServerName: string;
+	prevServerIp: string;
+	prevServerName: string;
+	reply: any;
+}
+export interface IDnsARecord
+{
+	address: string;
+}
+export interface IDnsAAAARecord
+{
+	address: string;
+}
+export interface IDnsCAARecord
+{
+	value: string;
+}
+export interface IDnsCNAMERecord
+{
+	cname: string;
+}
+export interface IDnsMXRecord
+{
+	exchange: string;
+	preference: number;
+}
+export interface IDnsNSRecord
+{
+	nsdname: string;
+}
+export interface IDnsPTRRecord
+{
+	ptrdname: string;
+}
+export interface IDnsSOARecord
+{
+	expire: number;
+	minimum: number;
+	mname: string;
+	refresh: number;
+	retry: number;
+	rname: string;
+	serial: number;
+}
+export interface IDnsTXTRecord
+{
+	text: string;
+}
 export enum PingResponseType { 
 	None = 0, 
 	Reply = 1, 
@@ -75,9 +133,28 @@ export enum TracerouteResponseType {
 	Completed = 4, 
 	Lookup = 5
 }
+export enum DnsLookupResponseType { 
+	None = 0, 
+	Reply = 2, 
+	Error = 3, 
+	Referral = 4
+}
+export enum DnsRecordType { 
+	None = 0, 
+	A = 3, 
+	Aaaa = 4, 
+	Caa = 5, 
+	Cname = 6, 
+	Mx = 7, 
+	Ns = 8, 
+	Ptr = 9, 
+	Soa = 10, 
+	Txt = 11
+}
 export interface IError
 {
 	message: string;
+	title: string;
 }
 export enum Protocol { 
 	Any = 0, 
@@ -92,5 +169,6 @@ export enum DnsLookupType {
 	Ns = 4, 
 	Ptr = 5, 
 	Soa = 6, 
-	Txt = 7
+	Txt = 7, 
+	Caa = 8
 }

@@ -9,6 +9,8 @@ namespace DnsTools.Web.Models.Config
 	{
 		public IList<WorkerConfig> Workers { get; set; } = new List<WorkerConfig>();
 
+		public string DefaultWorker { get; set; } = default!;
+
 		public string MaxMindCityPath { get; set; } = default!;
 
 		public string MaxMindAsnPath { get; set; } = default!;

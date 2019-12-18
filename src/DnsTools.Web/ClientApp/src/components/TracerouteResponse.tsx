@@ -6,7 +6,7 @@ import {
   TracerouteResponseType,
 } from '../types/generated';
 import CountryFlag from './CountryFlag';
-import {milliseconds} from '../format';
+import {milliseconds} from '../utils/format';
 import {TracerouteResponse as TracerouteResponseData} from '../types/protobuf';
 
 type Props = {

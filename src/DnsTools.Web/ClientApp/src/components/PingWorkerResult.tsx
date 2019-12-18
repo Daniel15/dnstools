@@ -10,7 +10,7 @@ import {PingResponse} from '../types/protobuf';
 import CountryFlag from './CountryFlag';
 import ShimmerBar from './ShimmerBar';
 import {average, standardDeviation} from '../math';
-import {milliseconds} from '../format';
+import {milliseconds} from '../utils/format';
 
 type Props = {
   results: ReadonlyArray<PingResponse>;

@@ -7,5 +7,7 @@ namespace DnsTools.Web.Models.Config
 	public class FrontEndConfig
 	{
 		public IEnumerable<WorkerConfig> Workers { get; set; } = default!;
+
+		public string DefaultWorker { get; set; } = default!;
 	}
 }
