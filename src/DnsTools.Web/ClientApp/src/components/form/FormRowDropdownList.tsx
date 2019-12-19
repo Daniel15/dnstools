@@ -13,7 +13,7 @@ type Props = {
   onSelect: (value: string | null) => void;
 };
 
-export default function DropdownList(props: Props) {
+export default function FormRowDropdownList(props: Props) {
   const {
     isOpen,
     selectedItem,

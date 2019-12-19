@@ -67,3 +67,20 @@ tr.additional > td {
 	overflow-y: auto;
 }
 
+/* Scrollbar colour */
+$scrollbar-bg: $gray-700;
+$scrollbar-thumb-bg: $gray-600;
+::-webkit-scrollbar {
+	width: 8px;
+}
+body {
+	scrollbar-width: thin;
+	scrollbar-color: $scrollbar-thumb-bg $scrollbar-bg;
+}
+::-webkit-scrollbar-track {
+	background: $scrollbar-bg;
+}
+::-webkit-scrollbar-thumb {
+	background-color: $scrollbar-thumb-bg;
+	border-radius: 6px;
+}

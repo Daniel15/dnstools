@@ -5,8 +5,8 @@ import {useHistory} from 'react-router';
 import {Protocol, DnsLookupType, Config} from '../types/generated';
 import CheckboxList, {Option} from './form/CheckboxList';
 import DropdownButton from './DropdownButton';
-import DropdownList from './form/FormRowDropdownList';
 import FormRow from '../components/form/FormRow';
+import FormRowDropdownList from './form/FormRowDropdownList';
 import RadioList from '../components/form/RadioList';
 import {navigateWithReload} from '../utils/routing';
 import CountryFlag from './CountryFlag';
@@ -257,8 +257,8 @@ function DnsLookupInput(props: {
         </select>
       </FormRow>
       {props.tool === Tool.DnsLookup && (
-        <DropdownList
-          label="Location"
+        <FormRowDropdownList
+          label="From"
           options={props.workerOptions}
           selectedItem={props.input.worker}
           onSelect={newWorker =>
