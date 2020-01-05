@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Security.Cryptography.X509Certificates;
 
 namespace DnsTools.Web.Models.Config
 {
@@ -14,5 +15,15 @@ namespace DnsTools.Web.Models.Config
 		public string MaxMindCityPath { get; set; } = default!;
 
 		public string MaxMindAsnPath { get; set; } = default!;
+
+		public ReCaptchaConfig ReCaptcha { get; set; } = default!;
+
+		public class ReCaptchaConfig
+		{
+			public string SiteKey { get; set; } = default!;
+
+			public string SecretKey { get; set; } = default!;
+		}
+
 	}
 }

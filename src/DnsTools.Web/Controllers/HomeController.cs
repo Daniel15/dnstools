@@ -9,12 +9,12 @@ namespace DnsTools.Web.Controllers
 	public class HomeController : Controller
 	{
 		private readonly IWorkerProvider _workerProvider;
-		private readonly string _defaultWorker;
+		private readonly AppConfig _config;
 
 		public HomeController(IWorkerProvider workerProvider, IOptions<AppConfig> config)
 		{
 			_workerProvider = workerProvider;
-			_defaultWorker = config.Value.DefaultWorker;
+			_config = config.Value;
 		}
 
 		[Route("")]
@@ -49,6 +49,12 @@ namespace DnsTools.Web.Controllers
 			return RenderIndex($"DNS Traversal for {host}");
 		}
 
+		[Route("/whois/{host}/")]
+		public IActionResult Whois(string host)
+		{
+			return RenderIndex($"WHOIS for {host}");
+		}
+
 		private IActionResult RenderIndex(string? title = null)
 		{
 			var workers = _workerProvider.GetWorkerConfigs();
@@ -56,8 +62,9 @@ namespace DnsTools.Web.Controllers
 			{
 				Config = new FrontEndConfig
 				{
-					DefaultWorker = _defaultWorker,
+					DefaultWorker = _config.DefaultWorker,
 					Workers = workers,
+					ReCaptchaKey = _config.ReCaptcha.SiteKey,
 				},
 			};
 			if (title != null)

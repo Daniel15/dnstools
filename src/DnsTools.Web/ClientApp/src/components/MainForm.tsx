@@ -72,11 +72,11 @@ const toolOptions: ReadonlyArray<ToolMetadata> = [
     description:
       'Show the route packets take to a particular host, from {workerCount} locations around the world.',
   },
-  /*{
+  {
     tool: Tool.Whois,
     label: 'WHOIS',
     description: 'Get information on a domain name or IP address.',
-  },*/
+  },
 ];
 
 export function getDefaultInput(config: Config): ToolInput {
@@ -332,6 +332,10 @@ function buildToolURI({
 
     case Tool.DnsTraversal:
       uri = `/traversal/${input.host}/${DnsLookupType[input.dnsLookupType]}/`;
+      break;
+
+    case Tool.Whois:
+      uri = `/whois/${input.host}/`;
       break;
   }
 

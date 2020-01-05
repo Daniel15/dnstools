@@ -2,6 +2,11 @@
 //     Changes to this file may cause incorrect behavior and will be lost if
 //     the code is regenerated.
 
+export interface CaptchaResponse
+{
+	error: string;
+	success: boolean;
+}
 export interface DnsLookupRequest
 {
 	host: string;
@@ -31,6 +36,7 @@ export interface WorkerResponse<T>
 export interface Config
 {
 	defaultWorker: string;
+	reCaptchaKey: string;
 	workers: WorkerConfig[];
 }
 export interface WorkerConfig

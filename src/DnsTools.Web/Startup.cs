@@ -4,8 +4,10 @@ using DnsTools.Web.Hubs;
 using DnsTools.Web.Models.Config;
 using DnsTools.Web.Services;
 using DnsTools.Web.Tools;
+using DnsTools.Web.Utils;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -35,6 +37,7 @@ namespace DnsTools.Web
 			services.AddSingleton<IWorkerProvider, WorkerProvider>();
 			services.AddSingleton<IMaxMind, Services.MaxMind>();
 			services.AddSingleton<IIpDataProvider, IpDataProvider>();
+			services.AddScoped<ICaptcha, Captcha>();
 
 			services.AddSingleton<TracerouteRunner>();
 
@@ -52,6 +55,16 @@ namespace DnsTools.Web
 			services.AddSpaStaticFiles(configuration =>
 			{
 				configuration.RootPath = "ClientApp/build";
+			});
+
+			services.AddDistributedMemoryCache();
+			services.AddSession(options =>
+			{
+				options.IdleTimeout = TimeSpan.FromHours(1);
+				options.Cookie.HttpOnly = true;
+				options.Cookie.IsEssential = true;
+				options.Cookie.Name = ".DnsTools.Session";
+				options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
 			});
 		}
 
@@ -74,6 +87,7 @@ namespace DnsTools.Web
 			app.UseHttpsRedirection();
 			app.UseStaticFiles();
 			app.UseSpaStaticFiles();
+			app.UseSession();
 
 			app.UseRouting();
 

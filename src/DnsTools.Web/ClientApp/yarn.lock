@@ -1288,6 +1288,11 @@
   resolved "https://registry.yarnpkg.com/@types/google.analytics/-/google.analytics-0.0.40.tgz#35526e9d78333423c430ade1c821ce54d0f0f850"
   integrity sha512-R3HpnLkqmKxhUAf8kIVvDVGJqPtaaZlW4yowNwjOZUTmYUQEgHh8Nh5wkSXKMroNAuQM8gbXJHmNbbgA8tdb7Q==
 
+"@types/grecaptcha@^3.0.0":
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/@types/grecaptcha/-/grecaptcha-3.0.0.tgz#d297801b373b2fcbdb3e5386103a37c98b1889ca"
+  integrity sha512-+KhdEi3nGJLOjoi3geaVxqivSr0j1Q9eWCspd4rKQfs90uNyphNdSzEjYVSmu0b702b0tCatbhRjJ9rYFWATNw==
+
 "@types/history@*":
   version "4.7.3"
   resolved "https://registry.yarnpkg.com/@types/history/-/history-4.7.3.tgz#856c99cdc1551d22c22b18b5402719affec9839a"

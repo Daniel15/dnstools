@@ -12,6 +12,7 @@ import DnsTraversal from './pages/DnsTraversal';
 import Index from './pages/Index';
 import Ping from './pages/Ping';
 import Traceroute from './pages/Traceroute';
+import Whois from './pages/Whois';
 
 type Props = {
   config: Readonly<Config>;
@@ -73,6 +74,12 @@ const App: React.FC<Props> = (props: Props) => {
                   config={props.config}
                   ipData={ipData}
                 />
+              )}
+            />
+            <Route
+              path="/whois/:host/"
+              render={routeProps => (
+                <Whois {...routeProps} config={props.config} />
               )}
             />
 
