@@ -11,7 +11,9 @@ export function navigateWithReload(
   const currentURI = history.location;
   if (
     newURI.pathname !== currentURI.pathname ||
-    newURI.search !== currentURI.search
+    (newURI.search != null &&
+      newURI.search !== '' &&
+      newURI.search !== currentURI.search)
   ) {
     history.push(newURI);
     return;
@@ -21,7 +23,7 @@ export function navigateWithReload(
   // (eg. resubmitting the form with the same data). React Router doesn't
   // provide a way to do this, so we need to navigate *away*, then navigate
   // back.
-  history.push('/blank');
+  history.replace('/blank');
   setTimeout(() => {
     history.replace(newURI);
   }, 0);
