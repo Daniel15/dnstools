@@ -12,10 +12,17 @@
   apt_key:
     url: https://packages.microsoft.com/keys/microsoft.asc
 
-- name: .NET Core repository
+- name: .NET Core repository (buster)
   apt_repository:
     repo: deb [arch=amd64,arm64,armhf] https://packages.microsoft.com/debian/10/prod buster main
     state: present
+  when: ansible_distribution_release == "buster" or ansible_distribution_release == "bullseye"
+
+- name: .NET Core repository (stretch)
+  apt_repository:
+    repo: deb [arch=amd64,arm64,armhf] https://packages.microsoft.com/debian/9/prod stretch main
+    state: present
+  when: ansible_distribution_release == "stretch"
 
 - name: Debian unstable (for Wireguard)
   apt_repository:
@@ -50,7 +57,7 @@
 - name: Disable search domain in /etc/resolv.conf
   lineinfile:
     path: /etc/resolv.conf
-    line: search .  
+    line: search .
 
 #################################################
 # .NET Core
@@ -175,4 +182,5 @@
   systemd:
     name: dnstools-worker
     state: restarted
+    enabled: yes
   when: cert_exists.stat.exists == True
