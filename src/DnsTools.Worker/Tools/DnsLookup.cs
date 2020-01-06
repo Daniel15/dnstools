@@ -45,6 +45,16 @@ namespace DnsTools.Worker.Tools
 			CancellationToken cancellationToken
 		)
 		{
+			// When doing reverse DNS lookups, convert IP to the relevant .arpa domain
+			if (request.Type == DnsLookupType.Ptr)
+			{
+				var isIp = IPAddress.TryParse(request.Host, out var ip);
+				if (isIp)
+				{
+					request.Host = ip.GetArpaName();
+				}
+			}
+
 			var serverName = _rootServers.Random();
 			var serverIps = await Dns.GetHostAddressesAsync(serverName);
 			await responseStream.WriteAsync(new DnsLookupResponse
