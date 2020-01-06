@@ -10,6 +10,7 @@ import FormRowDropdownList from './form/FormRowDropdownList';
 import RadioList from '../components/form/RadioList';
 import {navigateWithReload} from '../utils/routing';
 import CountryFlag from './CountryFlag';
+import ToolSelector from './ToolSelector';
 
 type Props = {
   config: Config;
@@ -27,7 +28,7 @@ export enum Tool {
   Whois = 'Whois',
 }
 
-type ToolMetadata = {
+export type ToolMetadata = {
   tool: Tool;
   label: string;
   description: string;
@@ -55,11 +56,11 @@ const toolOptions: ReadonlyArray<ToolMetadata> = [
     description:
       'Shows every DNS server that is (or may be) used for a DNS lookup, and what the servers return.',
   },
-  /*{
+  {
     tool: Tool.ReverseDns,
     label: 'Reverse DNS (PTR)',
     description: 'Convert an IP address into a hostname.',
-  },*/
+  },
   {
     tool: Tool.Ping,
     label: 'Ping',
@@ -99,7 +100,6 @@ export default function MainForm(props: Props) {
     }
     return initialTool;
   });
-  const [hoveredTool, setHoveredTool] = useState<ToolMetadata | null>(null);
   const [input, setInput] = useState<ToolInput>(
     () => props.initialInput || getDefaultInput(props.config),
   );
@@ -111,11 +111,6 @@ export default function MainForm(props: Props) {
       buildToolURI({config: props.config, tool: selectedTool.tool, input}),
     );
   }
-
-  const description = (hoveredTool
-    ? hoveredTool.description
-    : selectedTool.description
-  ).replace('{workerCount}', '' + props.config.workers.length);
 
   const workerOptions = props.config.workers.map(worker => ({
     id: worker.id,
@@ -141,20 +136,12 @@ export default function MainForm(props: Props) {
         />
       </FormRow>
       <FormRow id="tool" isInput={false} label="Tool">
-        <RadioList
-          name="tool"
-          options={toolOptions.map(tool => ({
-            id: tool.tool,
-            label: tool.label,
-            value: tool,
-          }))}
-          selectedValue={selectedTool}
-          onRadioMouseEnter={setHoveredTool}
-          onRadioMouseLeave={() => setHoveredTool(null)}
-          onSelect={setSelectedTool}
+        <ToolSelector
+          config={props.config}
+          selectedTool={selectedTool}
+          toolOptions={toolOptions}
+          onSelectTool={setSelectedTool}
         />
-        <br />
-        <small>{description}</small>
       </FormRow>
       {(selectedTool.tool === Tool.Ping ||
         selectedTool.tool === Tool.Traceroute) && (
@@ -175,7 +162,10 @@ export default function MainForm(props: Props) {
           workerOptions={workerOptions}
         />
       )}
-      <button className="btn btn-primary btn-lg" type="submit">
+      <button
+        className="btn btn-primary btn-lg"
+        disabled={input.host === ''}
+        type="submit">
         Do it!
       </button>
     </form>
