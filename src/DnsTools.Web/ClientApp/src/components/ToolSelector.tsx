@@ -20,7 +20,7 @@ export default function ToolSelector(props: Props) {
 
   return (
     <>
-      <div className="d-sm-none d-md-none d-lg-block">
+      <div className="d-none d-lg-block">
         <div className="card-deck" style={{marginBottom: '-1rem'}}>
           {props.toolOptions.map((tool, index) => {
             const isSelected = props.selectedTool.tool === tool.tool;

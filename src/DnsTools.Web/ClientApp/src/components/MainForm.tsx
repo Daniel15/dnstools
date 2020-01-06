@@ -153,7 +153,8 @@ export default function MainForm(props: Props) {
         />
       )}
       {(selectedTool.tool === Tool.DnsLookup ||
-        selectedTool.tool === Tool.DnsTraversal) && (
+        selectedTool.tool === Tool.DnsTraversal ||
+        selectedTool.tool === Tool.ReverseDns) && (
         <DnsLookupInput
           config={props.config}
           input={input}
@@ -225,28 +226,30 @@ function DnsLookupInput(props: {
 }) {
   return (
     <>
-      <FormRow id="dns-lookup-type" label="Type">
-        <select
-          className="custom-select"
-          id="dns-lookup-type"
-          value={props.input.dnsLookupType}
-          onChange={evt =>
-            props.onChangeInput({
-              ...props.input,
-              dnsLookupType: +evt.target.value,
-            })
-          }>
-          <option value={DnsLookupType.A}>A</option>
-          <option value={DnsLookupType.Aaaa}>AAAA (IPv6)</option>
-          <option value={DnsLookupType.Cname}>CNAME</option>
-          <option value={DnsLookupType.Mx}>MX</option>
-          <option value={DnsLookupType.Ptr}>PTR (Reverse DNS)</option>
-          <option value={DnsLookupType.Ns}>NS</option>
-          <option value={DnsLookupType.Txt}>TXT</option>
-          <option value={DnsLookupType.Soa}>SOA</option>
-        </select>
-      </FormRow>
-      {props.tool === Tool.DnsLookup && (
+      {props.tool !== Tool.ReverseDns && (
+        <FormRow id="dns-lookup-type" label="Type">
+          <select
+            className="custom-select"
+            id="dns-lookup-type"
+            value={props.input.dnsLookupType}
+            onChange={evt =>
+              props.onChangeInput({
+                ...props.input,
+                dnsLookupType: +evt.target.value,
+              })
+            }>
+            <option value={DnsLookupType.A}>A</option>
+            <option value={DnsLookupType.Aaaa}>AAAA (IPv6)</option>
+            <option value={DnsLookupType.Cname}>CNAME</option>
+            <option value={DnsLookupType.Mx}>MX</option>
+            <option value={DnsLookupType.Ptr}>PTR (Reverse DNS)</option>
+            <option value={DnsLookupType.Ns}>NS</option>
+            <option value={DnsLookupType.Txt}>TXT</option>
+            <option value={DnsLookupType.Soa}>SOA</option>
+          </select>
+        </FormRow>
+      )}
+      {(props.tool === Tool.DnsLookup || props.tool === Tool.ReverseDns) && (
         <FormRowDropdownList
           label="From"
           options={props.workerOptions}
@@ -324,6 +327,10 @@ function buildToolURI({
       uri = `/traversal/${input.host}/${DnsLookupType[input.dnsLookupType]}/`;
       break;
 
+    case Tool.ReverseDns:
+      uri = `/lookup/${input.host}/Ptr/`;
+      break;
+
     case Tool.Whois:
       uri = `/whois/${input.host}/`;
       break;
@@ -338,7 +345,7 @@ function buildToolURI({
     }
   }
 
-  if (tool === Tool.DnsLookup) {
+  if (tool === Tool.DnsLookup || tool === Tool.ReverseDns) {
     if (input.worker !== config.defaultWorker) {
       params.append('workers', input.worker);
     }

@@ -143,7 +143,9 @@ export default function DnsLookup(props: Props) {
               dnsLookupType: type,
               worker: workers.values().next().value,
             }}
-            initialSelectedTool={Tool.DnsLookup}
+            initialSelectedTool={
+              type === DnsLookupType.Ptr ? Tool.ReverseDns : Tool.DnsLookup
+            }
             isStandalone={true}
           />
         </>
