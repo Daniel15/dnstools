@@ -67,6 +67,10 @@ tr.additional > td {
 	overflow-y: auto;
 }
 
+.tool-card {
+	cursor: pointer;
+}
+
 /* Scrollbar colour */
 $scrollbar-bg: $gray-700;
 $scrollbar-thumb-bg: $gray-600;
