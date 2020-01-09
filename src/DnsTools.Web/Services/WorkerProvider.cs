@@ -15,10 +15,15 @@ namespace DnsTools.Web.Services
 	public class WorkerProvider : IWorkerProvider
 	{
 		private readonly IList<WorkerConfig> _configs;
+		private readonly IReadOnlyDictionary<string, GrpcChannel> _channels;
 
 		public WorkerProvider(IOptions<AppConfig> config)
 		{
 			_configs = config.Value.Workers;
+			_channels = _configs.ToImmutableDictionary(
+				x => x.Id,
+				x => GrpcChannel.ForAddress(x.Endpoint)
+			);
 		}
 
 		/// <summary>
@@ -49,11 +54,8 @@ namespace DnsTools.Web.Services
 		{
 			return GetWorkerConfigs().Where(filterFn).ToDictionary(
 				config => config.Id,
-				config =>
-				{
-					var channel = GrpcChannel.ForAddress(config.Endpoint);
-					return new DnsToolsWorker.DnsToolsWorkerClient(channel);
-				});
+				config => new DnsToolsWorker.DnsToolsWorkerClient(_channels[config.Id])
+			);
 		}
 	}
 }
