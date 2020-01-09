@@ -68,7 +68,12 @@ tr.additional > td {
 }
 
 .tool-card {
+	border-color: lighten($gray-900, 20%);
 	cursor: pointer;
+}
+
+.tool-card.active {
+	border-color: lighten($blue, 20%);
 }
 
 /* Scrollbar colour */

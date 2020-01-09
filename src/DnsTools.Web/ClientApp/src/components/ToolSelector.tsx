@@ -33,7 +33,7 @@ function LargeToolSelector(props: Props) {
             <React.Fragment key={tool.tool}>
               <div
                 className={`card tool-card mb-4 ${
-                  isSelected ? 'bg-primary' : 'border-light'
+                  isSelected ? 'bg-primary active' : ''
                 }`}
                 onClick={() => props.onSelectTool(tool)}>
                 <div className={`card-body`} role="button">
