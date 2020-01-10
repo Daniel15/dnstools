@@ -1,16 +1,21 @@
 ﻿using System;
 using DnsClient;
+using DnsTools.Web.HealthChecks;
 using DnsTools.Web.Hubs;
 using DnsTools.Web.Models.Config;
 using DnsTools.Web.Services;
 using DnsTools.Web.Tools;
 using DnsTools.Web.Utils;
+using HealthChecks.Publisher.Prometheus;
+using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
 using WebpackTag;
 
@@ -67,6 +72,17 @@ namespace DnsTools.Web
 				options.Cookie.Name = ".DnsTools.Session";
 				options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
 			});
+
+			ConfigureHealthChecks(services.AddHealthChecks());
+		}
+
+		private void ConfigureHealthChecks(IHealthChecksBuilder builder)
+		{
+			var config = Configuration.Get<AppConfig>();
+			foreach (var worker in config.Workers)
+			{
+				builder.AddTypeActivatedCheck<WorkerHealthCheck>($"worker_{worker.Id}", worker.Id);
+			}
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -98,6 +114,16 @@ namespace DnsTools.Web
 
 			app.UseEndpoints(endpoints =>
 			{
+				endpoints.MapHealthChecks("/health");
+				endpoints.MapHealthChecks("/health/json", new HealthCheckOptions
+				{
+					ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+				});
+				endpoints.MapHealthChecks("/health/prom", new HealthCheckOptions
+				{
+					ResponseWriter = (context, report) => PrometheusResponseWriter.WritePrometheusResultText(context, report)
+				});
+
 				endpoints.MapHub<ToolsHub>("/hub");
 				endpoints.MapControllerRoute(
 					name: "default",

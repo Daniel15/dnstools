@@ -24,5 +24,10 @@ namespace DnsTools.Web.Services
 		/// Creates a client for the given worker configs
 		/// </summary>
 		IDictionary<string, DnsToolsWorker.DnsToolsWorkerClient> CreateClients(ImmutableHashSet<string> workerIds);
+
+		/// <summary>
+		/// Creates a client for the given worker.
+		/// </summary>
+		DnsToolsWorker.DnsToolsWorkerClient CreateClient(string workerId);
 	}
 }

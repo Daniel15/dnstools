@@ -50,11 +50,19 @@ namespace DnsTools.Web.Services
 			return CreateClients(worker => workerIds.Contains(worker.Id));
 		}
 
+		/// <summary>
+		/// Creates a client for the given worker.
+		/// </summary>
+		public DnsToolsWorker.DnsToolsWorkerClient CreateClient(string workerId)
+		{
+			return new DnsToolsWorker.DnsToolsWorkerClient(_channels[workerId]);
+		}
+
 		private IDictionary<string, DnsToolsWorker.DnsToolsWorkerClient> CreateClients(Func<WorkerConfig, bool> filterFn)
 		{
 			return GetWorkerConfigs().Where(filterFn).ToDictionary(
 				config => config.Id,
-				config => new DnsToolsWorker.DnsToolsWorkerClient(_channels[config.Id])
+				config => CreateClient(config.Id)
 			);
 		}
 	}
