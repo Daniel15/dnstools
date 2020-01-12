@@ -176,7 +176,8 @@ export default function MainForm(props: Props) {
       <p className="mt-3">
         <small>
           &copy; 2007-2019 <a href="https://d.sb/">Daniel15</a>. Send feedback
-          to <a href="mailto:feedback@dns.tg">feedback@dns.tg</a>
+          to <a href="mailto:feedback@dns.tg">feedback@dns.tg</a>.{' '}
+          <a href="https://github.com/Daniel15/dnstools">I'm open-source!</a>
         </small>
       </p>
     </>
