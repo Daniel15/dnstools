@@ -53,7 +53,7 @@ export default function DnsLookup(props: Props) {
         <title>DNS Lookup for {host}</title>
       </Helmet>
       <h1 className="main-header">
-        DNS Lookup for {host} {!data.isComplete && <Spinner />}
+        DNS Lookup for {host} ({rawType}) {!data.isComplete && <Spinner />}
       </h1>
       {data.results.map(({response}, index) => {
         switch (response.responseCase) {

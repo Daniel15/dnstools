@@ -26,7 +26,7 @@ export default function DnsTraversal(props: Props) {
         dnsLookupType: type,
       }}
       initialSelectedTool={Tool.DnsTraversal}
-      title={`DNS Traversal for ${host}`}
+      title={`DNS Traversal for ${host} (${rawType})`}
       url={`traversal/${host}/${rawType.toUpperCase()}/`}
     />
   );
