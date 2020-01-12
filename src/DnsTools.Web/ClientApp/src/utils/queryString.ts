@@ -23,7 +23,7 @@ export function getLookupType(rawType: string): DnsLookupType {
   rawType = rawType.charAt(0).toUpperCase() + rawType.slice(1).toLowerCase();
   const type: DnsLookupType =
     DnsLookupType[rawType as keyof typeof DnsLookupType];
-  if (!type) {
+  if (type == null) {
     throw new Error(`Invalid lookup type: ${rawType}`);
   }
   return type;
