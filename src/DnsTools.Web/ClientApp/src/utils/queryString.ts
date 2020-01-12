@@ -1,4 +1,4 @@
-import {Protocol, Config} from '../types/generated';
+import {Protocol, Config, DnsLookupType} from '../types/generated';
 
 export function getProtocol(queryString: URLSearchParams): Protocol {
   const rawProtocol = queryString.get('proto') || Protocol[Protocol.Any];
@@ -17,4 +17,14 @@ export function getWorkers(
       ? rawWorkers.split(',')
       : def || config.workers.map(worker => worker.id),
   );
+}
+
+export function getLookupType(rawType: string): DnsLookupType {
+  rawType = rawType.charAt(0).toUpperCase() + rawType.slice(1).toLowerCase();
+  const type: DnsLookupType =
+    DnsLookupType[rawType as keyof typeof DnsLookupType];
+  if (!type) {
+    throw new Error(`Invalid lookup type: ${rawType}`);
+  }
+  return type;
 }

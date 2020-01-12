@@ -14,8 +14,8 @@ type Props = {
 export default function DnsRecordsTableRows(props: Props) {
   return (
     <tbody>
-      {props.records.map(record => (
-        <tr className={props.rowClass}>
+      {props.records.map((record, index) => (
+        <tr className={props.rowClass} key={index}>
           <td>{record.name}</td>
           <td>{DnsRecordType[record.recordCase].toUpperCase()}</td>
           <td>{formatDuration(record.ttl)}</td>

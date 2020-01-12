@@ -10,7 +10,7 @@ import {
 } from '../types/generated';
 import {DnsLookupResponse} from '../types/protobuf';
 import MainForm, {Tool, getDefaultInput} from '../components/MainForm';
-import {getWorkers} from '../utils/queryString';
+import {getWorkers, getLookupType} from '../utils/queryString';
 import useQueryString from '../hooks/useQueryString';
 import useSignalrStream from '../hooks/useSignalrStream';
 import Helmet from 'react-helmet';
@@ -27,8 +27,7 @@ type Props = RouteComponentProps<{
 
 export default function DnsLookup(props: Props) {
   const {host, type: rawType} = props.match.params;
-  const type: DnsLookupType =
-    DnsLookupType[rawType as keyof typeof DnsLookupType];
+  const type = getLookupType(rawType);
   const queryString = useQueryString();
   const workers = useMemo(
     () => getWorkers(props.config, queryString, [props.config.defaultWorker]),
@@ -56,7 +55,7 @@ export default function DnsLookup(props: Props) {
       <h1 className="main-header">
         DNS Lookup for {host} {!data.isComplete && <Spinner />}
       </h1>
-      {data.results.map(({response}) => {
+      {data.results.map(({response}, index) => {
         switch (response.responseCase) {
           case DnsLookupResponseType.Referral:
             const prevServerName = response.referral.prevServerName;
@@ -64,7 +63,7 @@ export default function DnsLookup(props: Props) {
               prevServerName != null &&
               showDetailsForReferral.has(prevServerName);
             return (
-              <>
+              <React.Fragment key={index}>
                 {prevServerName && (
                   <>
                     Got referral to {response.referral.nextServerName} [took{' '}
@@ -97,7 +96,7 @@ export default function DnsLookup(props: Props) {
                   </>
                 )}
                 Searching for {host} at {response.referral.nextServerName}:{' '}
-              </>
+              </React.Fragment>
             );
 
           case DnsLookupResponseType.Error:

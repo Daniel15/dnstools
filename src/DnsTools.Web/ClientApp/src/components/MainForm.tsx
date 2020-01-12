@@ -320,11 +320,15 @@ function buildToolURI({
       break;
 
     case Tool.DnsLookup:
-      uri = `/lookup/${input.host}/${DnsLookupType[input.dnsLookupType]}/`;
+      uri = `/lookup/${input.host}/${DnsLookupType[
+        input.dnsLookupType
+      ].toUpperCase()}/`;
       break;
 
     case Tool.DnsTraversal:
-      uri = `/traversal/${input.host}/${DnsLookupType[input.dnsLookupType]}/`;
+      uri = `/traversal/${input.host}/${DnsLookupType[
+        input.dnsLookupType
+      ].toUpperCase()}/`;
       break;
 
     case Tool.ReverseDns:

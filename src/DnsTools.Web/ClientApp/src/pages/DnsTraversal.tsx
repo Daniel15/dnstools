@@ -2,8 +2,9 @@ import React from 'react';
 import {RouteComponentProps} from 'react-router';
 
 import LegacyTool from '../components/LegacyTool';
-import {Config, DnsLookupType} from '../types/generated';
+import {Config} from '../types/generated';
 import {getDefaultInput, Tool} from '../components/MainForm';
+import {getLookupType} from '../utils/queryString';
 
 type Props = RouteComponentProps<{
   host: string;
@@ -14,8 +15,7 @@ type Props = RouteComponentProps<{
 
 export default function DnsTraversal(props: Props) {
   const {host, type: rawType} = props.match.params;
-  const type: DnsLookupType =
-    DnsLookupType[rawType as keyof typeof DnsLookupType];
+  const type = getLookupType(rawType);
 
   return (
     <LegacyTool
