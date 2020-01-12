@@ -65,7 +65,7 @@ export default function PingWorkerResult(props: Props) {
     // All requests timed out
     rowText = 'Timed out';
     if (ip != null) {
-      rowText += `(${ip})`;
+      rowText += ` (${ip})`;
     }
   } else if (isLoading) {
     rowText = <ShimmerBar />;
