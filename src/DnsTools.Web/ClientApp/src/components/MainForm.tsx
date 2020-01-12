@@ -123,53 +123,63 @@ export default function MainForm(props: Props) {
   }));
 
   return (
-    <form
-      className={props.isStandalone ? 'jumbotron mt-5' : ''}
-      onSubmit={onSubmit}>
-      <FormRow id="host" label="Host">
-        <input
-          type="text"
-          className="form-control"
-          id="host"
-          value={input.host}
-          onChange={evt => setInput({...input, host: evt.target.value.trim()})}
-        />
-      </FormRow>
-      <FormRow id="tool" isInput={false} label="Tool">
-        <ToolSelector
-          config={props.config}
-          selectedTool={selectedTool}
-          toolOptions={toolOptions}
-          onSelectTool={setSelectedTool}
-        />
-      </FormRow>
-      {(selectedTool.tool === Tool.Ping ||
-        selectedTool.tool === Tool.Traceroute) && (
-        <PingInput
-          config={props.config}
-          input={input}
-          onChangeInput={setInput}
-          workerOptions={workerOptions}
-        />
-      )}
-      {(selectedTool.tool === Tool.DnsLookup ||
-        selectedTool.tool === Tool.DnsTraversal ||
-        selectedTool.tool === Tool.ReverseDns) && (
-        <DnsLookupInput
-          config={props.config}
-          input={input}
-          onChangeInput={setInput}
-          tool={selectedTool.tool}
-          workerOptions={workerOptions}
-        />
-      )}
-      <button
-        className="btn btn-primary btn-lg"
-        disabled={input.host === ''}
-        type="submit">
-        Do it!
-      </button>
-    </form>
+    <>
+      <form
+        className={props.isStandalone ? 'jumbotron mt-5' : ''}
+        onSubmit={onSubmit}>
+        <FormRow id="host" label="Host">
+          <input
+            type="text"
+            className="form-control"
+            id="host"
+            value={input.host}
+            onChange={evt =>
+              setInput({...input, host: evt.target.value.trim()})
+            }
+          />
+        </FormRow>
+        <FormRow id="tool" isInput={false} label="Tool">
+          <ToolSelector
+            config={props.config}
+            selectedTool={selectedTool}
+            toolOptions={toolOptions}
+            onSelectTool={setSelectedTool}
+          />
+        </FormRow>
+        {(selectedTool.tool === Tool.Ping ||
+          selectedTool.tool === Tool.Traceroute) && (
+          <PingInput
+            config={props.config}
+            input={input}
+            onChangeInput={setInput}
+            workerOptions={workerOptions}
+          />
+        )}
+        {(selectedTool.tool === Tool.DnsLookup ||
+          selectedTool.tool === Tool.DnsTraversal ||
+          selectedTool.tool === Tool.ReverseDns) && (
+          <DnsLookupInput
+            config={props.config}
+            input={input}
+            onChangeInput={setInput}
+            tool={selectedTool.tool}
+            workerOptions={workerOptions}
+          />
+        )}
+        <button
+          className="btn btn-primary btn-lg"
+          disabled={input.host === ''}
+          type="submit">
+          Do it!
+        </button>
+      </form>
+      <p className="mt-3">
+        <small>
+          &copy; 2007-2019 <a href="https://d.sb/">Daniel15</a>. Send feedback
+          to <a href="mailto:feedback@dns.tg">feedback@dns.tg</a>
+        </small>
+      </p>
+    </>
   );
 }
 

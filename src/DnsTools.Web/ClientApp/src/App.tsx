@@ -23,7 +23,7 @@ const connection = new HubConnectionBuilder()
   .withAutomaticReconnect()
   .build();
 
-const App: React.FC<Props> = (props: Props) => {
+export default function App(props: Props) {
   const [isConnected, setIsConnected] = useState(false);
 
   useEffect(() => {
@@ -90,6 +90,4 @@ const App: React.FC<Props> = (props: Props) => {
       </Router>
     </SignalrContext.Provider>
   );
-};
-
-export default App;
+}
