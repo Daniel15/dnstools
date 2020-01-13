@@ -12,9 +12,37 @@ The website is a C# ASP .NET Core 3.0 website, built using React and SignalR.
 
 ## Worker
 
-The "worker" (or "agent") is a small app that runs on multiple servers around the world. It's a [gRPC](https://grpc.io/) service written in C# using .NET Core 3.0. In production, the workers are mix of KVM and OpenVZ7 VPSes running Debian Buster (10).
+The "worker" (or "agent") is a small app that runs on multiple servers around the world. It's a [gRPC](https://grpc.io/) service written in C# using .NET Core 3.0. In production, the workers are a mix of KVM and OpenVZ7 VPSes running Debian Buster (10).
 
-# Deployment of Workers
+# Development
+
+The `DnsTools.sln` VS2019 solution contains both the website and the worker.
+
+## Website
+
+To run the website, run `DnsTools.Web` from Visual Studio (or via `dotnet run` at the command-line), and also run `yarn start` in the `ClientApp` directory (which will start the Webpack development server).
+
+## Worker
+
+The worker requires a few Linux utilities (like `ping` and `traceroute`) to be available. On Windows, you can run the worker using Docker. VS2019's built-in Docker support is sufficient for this - Just start the project in Visual Studio and it'll automatically spin up the Docker container.
+
+# Deploying to Production
+
+## Website
+
+Build the site using `dotnet publish`:
+
+```sh
+dotnet publish --no-self-contained -r linux-x64 -c Release
+```
+
+`rsync` it to prod:
+
+```sh
+rsync -avz --progress src/DnsTools.Web/bin/release/netcoreapp3.0/linux-x64/publish/ dnstools-deploy@dnstools.ws:/var/www/dnstools/
+```
+
+## Workers
 
 The workers are all configured and deployed using [Ansible](https://www.ansible.com/).
 
