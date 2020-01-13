@@ -127,6 +127,14 @@ export default function MainForm(props: Props) {
       <form
         className={props.isStandalone ? 'jumbotron mt-5' : ''}
         onSubmit={onSubmit}>
+        <FormRow id="tool" isInput={false} label="Tool">
+          <ToolSelector
+            config={props.config}
+            selectedTool={selectedTool}
+            toolOptions={toolOptions}
+            onSelectTool={setSelectedTool}
+          />
+        </FormRow>
         <FormRow id="host" label="Host">
           <input
             type="text"
@@ -136,14 +144,6 @@ export default function MainForm(props: Props) {
             onChange={evt =>
               setInput({...input, host: evt.target.value.trim()})
             }
-          />
-        </FormRow>
-        <FormRow id="tool" isInput={false} label="Tool">
-          <ToolSelector
-            config={props.config}
-            selectedTool={selectedTool}
-            toolOptions={toolOptions}
-            onSelectTool={setSelectedTool}
           />
         </FormRow>
         {(selectedTool.tool === Tool.Ping ||
