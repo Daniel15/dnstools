@@ -4,6 +4,7 @@ import {HubConnectionBuilder} from '@microsoft/signalr';
 
 import useIpData from './hooks/useIpData';
 import {Config} from './types/generated';
+import DismissableNotice from './components/DismissableNotice';
 import SignalrContext from './SignalrContext';
 import NavigationSideEffects from './components/NavigationSideEffects';
 
@@ -37,6 +38,16 @@ export default function App(props: Props) {
   const ipData = useIpData(connection);
   return (
     <SignalrContext.Provider value={{connection, isConnected}}>
+      <DismissableNotice id="new-site">
+        <strong>2020-01-13</strong>: Welcome to the new DNSTools site! More
+        features will be coming in the future. Please feel free to provide any
+        feedback via{' '}
+        <a href="https://twitter.com/Daniel15/status/1216465241506115584">
+          Twitter
+        </a>
+        , <a href="https://www.facebook.com/daaniel">Facebook</a>, or email to{' '}
+        <a href="mailto:feedback@dns.tg">feedback@dns.tg</a>.
+      </DismissableNotice>
       <Router>
         <NavigationSideEffects />
         <div className="container">
