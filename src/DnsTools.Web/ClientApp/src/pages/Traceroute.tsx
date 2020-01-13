@@ -5,12 +5,11 @@ import Helmet from 'react-helmet';
 import {IpData, PingRequest, WorkerResponse, Config} from '../types/generated';
 import {TracerouteResponse} from '../types/protobuf';
 import useSignalrStream from '../hooks/useSignalrStream';
-import groupResponsesByWorker from '../groupResponsesByWorker';
 import useQueryString from '../hooks/useQueryString';
 import {getProtocol, getWorkers} from '../utils/queryString';
 import MainForm, {getDefaultInput, Tool} from '../components/MainForm';
 import TracerouteWorker from '../components/TracerouteWorker';
-import {serializeWorkers} from '../utils/workers';
+import {groupResponsesByWorker, serializeWorkers} from '../utils/workers';
 
 type Props = RouteComponentProps<{
   host: string;

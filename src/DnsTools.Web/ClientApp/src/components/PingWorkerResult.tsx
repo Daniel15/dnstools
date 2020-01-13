@@ -9,7 +9,7 @@ import {
 import {PingResponse} from '../types/protobuf';
 import CountryFlag from './CountryFlag';
 import ShimmerBar from './ShimmerBar';
-import {average, standardDeviation} from '../math';
+import {average, standardDeviation} from '../utils/math';
 import {milliseconds} from '../utils/format';
 
 type Props = {

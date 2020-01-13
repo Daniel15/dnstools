@@ -12,10 +12,9 @@ import {PingResponse, PingHostLookupResponse} from '../types/protobuf';
 import useSignalrStream from '../hooks/useSignalrStream';
 import PingWorkerResult from '../components/PingWorkerResult';
 import Spinner from '../components/Spinner';
-import groupResponsesByWorker from '../groupResponsesByWorker';
 import useQueryString from '../hooks/useQueryString';
 import {getProtocol, getWorkers} from '../utils/queryString';
-import {serializeWorkers} from '../utils/workers';
+import {serializeWorkers, groupResponsesByWorker} from '../utils/workers';
 import MainForm, {getDefaultInput, Tool} from '../components/MainForm';
 
 type Props = RouteComponentProps<{
