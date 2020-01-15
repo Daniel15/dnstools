@@ -36,6 +36,15 @@ namespace DnsTools.Worker.Services
 			await RunTool<DnsLookupRequest, DnsLookupResponse, DnsLookup>(request, responseStream, context);
 		}
 
+		public override async Task DnsTraversal(
+			DnsLookupRequest request,
+			IServerStreamWriter<DnsTraversalResponse> responseStream,
+			ServerCallContext context
+		)
+		{
+			await RunTool<DnsLookupRequest, DnsTraversalResponse, DnsTraversal>(request, responseStream, context);
+		}
+
 		private async Task RunTool<TRequest, TResponse, TTool>(
 			TRequest request,
 			IServerStreamWriter<TResponse> responseStream,

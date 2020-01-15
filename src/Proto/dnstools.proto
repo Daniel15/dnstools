@@ -8,6 +8,7 @@ service DnsToolsWorker {
   rpc Ping (PingRequest) returns (stream PingResponse);
   rpc Traceroute (TracerouteRequest) returns (stream TracerouteResponse);
   rpc DnsLookup (DnsLookupRequest) returns (stream DnsLookupResponse);
+  rpc DnsTraversal (DnsLookupRequest) returns (stream DnsTraversalResponse);
 }
 
 enum Protocol {
@@ -100,6 +101,16 @@ message DnsLookupReply {
   repeated DnsRecord answers = 2;
   repeated DnsRecord authorities = 3;
   repeated DnsRecord additionals = 4;
+}
+
+message DnsTraversalResponse {
+  string from = 1;
+  uint32 level = 2;
+  uint32 duration = 3;
+  oneof response {
+    DnsLookupReply reply = 4;
+    Error error = 5;
+  }
 }
 
 message DnsRecord {

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
@@ -8,31 +7,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using DnsClient;
 using DnsTools.Worker.Extensions;
-using Google.Protobuf.Collections;
 using Grpc.Core;
 
 namespace DnsTools.Worker.Tools
 {
-	public class DnsLookup : ITool<DnsLookupRequest, DnsLookupResponse>
+	public class DnsLookup : BaseDnsLookup, ITool<DnsLookupRequest, DnsLookupResponse>
 	{
-		private static readonly TimeSpan _timeout = TimeSpan.FromSeconds(3);
-		private static readonly IReadOnlyList<string> _rootServers = new List<string>
-		{
-			"a.root-servers.net",
-			"b.root-servers.net",
-			"c.root-servers.net",
-			"d.root-servers.net",
-			"e.root-servers.net",
-			"f.root-servers.net",
-			"g.root-servers.net",
-			"h.root-servers.net",
-			"i.root-servers.net",
-			"j.root-servers.net",
-			"k.root-servers.net",
-			"l.root-servers.net",
-			"m.root-servers.net",
-		}.ToImmutableList();
-
 		/// <summary>
 		/// Runs the tool
 		/// </summary>
@@ -45,16 +25,9 @@ namespace DnsTools.Worker.Tools
 			CancellationToken cancellationToken
 		)
 		{
-			// When doing reverse DNS lookups, convert IP to the relevant .arpa domain
-			if (request.Type == DnsLookupType.Ptr)
-			{
-				var isIp = IPAddress.TryParse(request.Host, out var ip);
-				if (isIp)
-				{
-					request.Host = ip.GetArpaName();
-				}
-			}
+			request.Host = ConvertToArpaNameIfRequired(request);
 
+			// Start at a random root server
 			var serverName = _rootServers.Random();
 			var serverIps = await Dns.GetHostAddressesAsync(serverName);
 			await responseStream.WriteAsync(new DnsLookupResponse
@@ -131,24 +104,7 @@ namespace DnsTools.Worker.Tools
 				// Let's check who's in charge.
 				// Randomly pick one of the authoritive servers
 				var newServer = response.Authorities.NsRecords().Random();
-
-				// See if glue was provided with an IP
-				var newServerIps = response.Additionals.ARecords()
-					.Where(x => x.DomainName.Value == newServer.NSDName.Value)
-					.Select(x => x.Address)
-					.Concat(
-						response.Additionals.AaaaRecords()
-							.Where(x => x.DomainName.Value == newServer.NSDName.Value)
-							.Select(x => x.Address)
-					)
-					.ToArray();
-
-				if (newServerIps.Length == 0)
-				{
-					// No glue, so we need to look up the server IP
-					newServerIps = await Dns.GetHostAddressesAsync(newServer.NSDName.Value);
-				}
-
+				var newServerIps = await GetDnsServerIPs(newServer.NSDName.Value, response);
 				await responseStream.WriteAsync(new DnsLookupResponse
 				{
 					Duration = (uint)stopwatch.ElapsedMilliseconds,
