@@ -1,5 +1,4 @@
 ﻿using DnsTools.Worker.Services;
-using DnsTools.Worker.Tools;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -15,10 +14,6 @@ namespace DnsTools.Worker
 		public void ConfigureServices(IServiceCollection services)
 		{
 			services.AddGrpc();
-
-			services.AddTransient<Ping>();
-			services.AddTransient<Traceroute>();
-			services.AddTransient<DnsLookup>();
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

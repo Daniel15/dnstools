@@ -55,7 +55,7 @@ namespace DnsTools.Worker.Services
 		{
 			try
 			{
-				await context.GetHttpContext().RequestServices.GetRequiredService<TTool>()
+				await ActivatorUtilities.CreateInstance<TTool>(context.GetHttpContext().RequestServices)
 					.RunAsync(request, responseStream, context.CancellationToken);
 			}
 			catch (Exception ex)
