@@ -153,7 +153,7 @@ namespace DnsTools.Worker.Tools
 						request,
 						responseQueue,
 						cancellationToken,
-						record.NSDName.Value,
+						record.NSDName.Value.TrimEnd('.'),
 						response,
 						level + 1
 					))
