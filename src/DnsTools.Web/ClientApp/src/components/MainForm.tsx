@@ -260,19 +260,17 @@ function DnsLookupInput(props: {
           </select>
         </FormRow>
       )}
-      {(props.tool === Tool.DnsLookup || props.tool === Tool.ReverseDns) && (
-        <FormRowDropdownList
-          label="From"
-          options={props.workerOptions}
-          selectedItem={props.input.worker}
-          onSelect={newWorker =>
-            props.onChangeInput({
-              ...props.input,
-              worker: newWorker || props.config.defaultWorker,
-            })
-          }
-        />
-      )}
+      <FormRowDropdownList
+        label="From"
+        options={props.workerOptions}
+        selectedItem={props.input.worker}
+        onSelect={newWorker =>
+          props.onChangeInput({
+            ...props.input,
+            worker: newWorker || props.config.defaultWorker,
+          })
+        }
+      />
     </>
   );
 }
@@ -360,7 +358,11 @@ function buildToolURI({
     }
   }
 
-  if (tool === Tool.DnsLookup || tool === Tool.ReverseDns) {
+  if (
+    tool === Tool.DnsLookup ||
+    tool === Tool.ReverseDns ||
+    tool === Tool.DnsTraversal
+  ) {
     if (input.worker !== config.defaultWorker) {
       params.append('workers', input.worker);
     }

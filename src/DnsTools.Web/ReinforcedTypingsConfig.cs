@@ -41,6 +41,7 @@ namespace DnsTools.Web
 			builder.ExportAsEnum<PingResponse.ResponseOneofCase>().OverrideName("PingResponseType");
 			builder.ExportAsEnum<TracerouteResponse.ResponseOneofCase>().OverrideName("TracerouteResponseType");
 			builder.ExportAsEnum<DnsLookupResponse.ResponseOneofCase>().OverrideName("DnsLookupResponseType");
+			builder.ExportAsEnum<DnsTraversalResponse.ResponseOneofCase>().OverrideName("DnsTraversalResponseType");
 			builder.ExportAsEnum<DnsRecord.RecordOneofCase>().OverrideName("DnsRecordType");
 
 			builder.ExportAsInterface<Error>().WithPublicInstanceProperties();

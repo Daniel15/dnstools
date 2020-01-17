@@ -145,6 +145,11 @@ export enum DnsLookupResponseType {
 	Error = 3, 
 	Referral = 4
 }
+export enum DnsTraversalResponseType { 
+	None = 0, 
+	Reply = 4, 
+	Error = 5
+}
 export enum DnsRecordType { 
 	None = 0, 
 	A = 3, 

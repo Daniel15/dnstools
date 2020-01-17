@@ -69,5 +69,20 @@ namespace DnsTools.Web.Hubs
 					Type = request.Type,
 				}, cancellationToken: cancellationToken)).Run(request, Clients.Caller, workers, cancellationToken);
 		}
+
+		public ChannelReader<WorkerResponse<DnsTraversalResponse>> DnsTraversal(
+			DnsLookupRequest request,
+			CancellationToken cancellationToken
+		)
+		{
+			var workers = request.Workers ?? new[] { _defaultWorker }.ToImmutableHashSet();
+			return new GenericRunner<DnsLookupRequest, DnsTraversalResponse>(
+				_workerProvider,
+				client => client.DnsTraversal(new Worker.DnsLookupRequest
+				{
+					Host = request.Host,
+					Type = request.Type,
+				}, cancellationToken: cancellationToken)).Run(request, Clients.Caller, workers, cancellationToken);
+		}
 	}
 }

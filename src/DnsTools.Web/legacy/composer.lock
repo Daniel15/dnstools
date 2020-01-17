@@ -1,68 +1,23 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e5ec07b991e027f7e4e842ae8a481fc8",
+    "content-hash": "76c179dfb0f3eef228f6dd83e8c02ea9",
     "packages": [
         {
-            "name": "google/recaptcha",
-            "version": "1.1.3",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/google/recaptcha.git",
-                "reference": "5a56d15ca10a7b75158178752b2ad8f755eb4f78"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/google/recaptcha/zipball/5a56d15ca10a7b75158178752b2ad8f755eb4f78",
-                "reference": "5a56d15ca10a7b75158178752b2ad8f755eb4f78",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.5"
-            },
-            "require-dev": {
-                "phpunit/phpunit": "^4.8"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "1.1.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "ReCaptcha\\": "src/ReCaptcha"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "BSD-3-Clause"
-            ],
-            "description": "Client library for reCAPTCHA, a free service that protect websites from spam and abuse.",
-            "homepage": "http://www.google.com/recaptcha/",
-            "keywords": [
-                "Abuse",
-                "captcha",
-                "recaptcha",
-                "spam"
-            ],
-            "time": "2017-03-09T18:44:34+00:00"
-        },
-        {
             "name": "novutec/domainparser",
-            "version": "2.0.8",
+            "version": "2.0.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/3name/DomainParser.git",
-                "reference": "8de466e0f3d85e90a363f61efd1eea03559ece04"
+                "reference": "b8b1e97b04749d3595408802d8cf7b77cbe2c7f9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/3name/DomainParser/zipball/8de466e0f3d85e90a363f61efd1eea03559ece04",
-                "reference": "8de466e0f3d85e90a363f61efd1eea03559ece04",
+                "url": "https://api.github.com/repos/3name/DomainParser/zipball/b8b1e97b04749d3595408802d8cf7b77cbe2c7f9",
+                "reference": "b8b1e97b04749d3595408802d8cf7b77cbe2c7f9",
                 "shasum": ""
             },
             "require": {
@@ -86,20 +41,20 @@
                 "domainparser",
                 "php"
             ],
-            "time": "2016-06-16T19:33:43+00:00"
+            "time": "2018-06-11T18:45:11+00:00"
         },
         {
             "name": "novutec/whoisparser",
-            "version": "3.2.6",
+            "version": "3.2.10",
             "source": {
                 "type": "git",
                 "url": "https://github.com/3name/WhoisParser.git",
-                "reference": "9b01dbe835f990d259244d12a677a56d451c37d1"
+                "reference": "eb88e932e8878ceea71bc00fcbf0104dcaa64788"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/3name/WhoisParser/zipball/9b01dbe835f990d259244d12a677a56d451c37d1",
-                "reference": "9b01dbe835f990d259244d12a677a56d451c37d1",
+                "url": "https://api.github.com/repos/3name/WhoisParser/zipball/eb88e932e8878ceea71bc00fcbf0104dcaa64788",
+                "reference": "eb88e932e8878ceea71bc00fcbf0104dcaa64788",
                 "shasum": ""
             },
             "require": {
@@ -122,51 +77,7 @@
                 "whois",
                 "whoisparser"
             ],
-            "time": "2017-05-27T14:29:47+00:00"
-        },
-        {
-            "name": "pear/net_dns2",
-            "version": "v1.4.3",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/mikepultz/netdns2.git",
-                "reference": "24c84c98c8a85a1f3b6aa9b17df60d32a2d254e9"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/mikepultz/netdns2/zipball/24c84c98c8a85a1f3b6aa9b17df60d32a2d254e9",
-                "reference": "24c84c98c8a85a1f3b6aa9b17df60d32a2d254e9",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.1.2"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-0": {
-                    "Net_DNS2": ""
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "BSD-2-Clause"
-            ],
-            "authors": [
-                {
-                    "name": "Mike Pultz",
-                    "email": "mike@mikepultz.com",
-                    "homepage": "https://mikepultz.com/",
-                    "role": "Developer"
-                }
-            ],
-            "description": "Native PHP5 DNS Resolver and Updater Library",
-            "homepage": "https://netdns2.com/",
-            "keywords": [
-                "PEAR",
-                "dns",
-                "network"
-            ],
-            "time": "2017-02-12T21:14:52+00:00"
+            "time": "2018-03-19T09:33:43+00:00"
         }
     ],
     "packages-dev": [],

@@ -18,6 +18,7 @@ import {
   IDnsSOARecord,
   IDnsTXTRecord,
   DnsLookupResponseType,
+  DnsTraversalResponseType,
 } from './generated';
 
 export type PingHostLookupResponse = {
@@ -138,3 +139,23 @@ export type DnsLookupResponse = {
       referral: DnsLookupReferral;
     }
 );
+
+type DnsTraversalResponseSharedFields = {
+  from: string;
+  level: number;
+  duration: number;
+};
+
+export type DnsTraversalErrorResponse = DnsTraversalResponseSharedFields & {
+  responseCase: DnsTraversalResponseType.Error;
+  error: IError;
+};
+
+export type DnsTraversalResponse = DnsTraversalResponseSharedFields &
+  (
+    | {
+        responseCase: DnsTraversalResponseType.Reply;
+        reply: DnsLookupReply;
+      }
+    | DnsTraversalErrorResponse
+  );
