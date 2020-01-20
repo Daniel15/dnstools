@@ -142,7 +142,10 @@ function getServersByLevel(
   responsesByLevel.forEach((responses, level) => {
     const serversAtThisLevel: Set<string> = new Set();
     responses.forEach(response => {
-      if (response.responseCase === DnsTraversalResponseType.Reply) {
+      if (
+        response.responseCase === DnsTraversalResponseType.Reply &&
+        response.reply.answers.length === 0
+      ) {
         response.reply.authorities.forEach(authority => {
           if (authority.recordCase === DnsRecordType.Ns) {
             serversAtThisLevel.add(authority.ns.nsdname);
