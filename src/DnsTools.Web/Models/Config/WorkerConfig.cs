@@ -16,19 +16,45 @@ namespace DnsTools.Web.Models.Config
 		public string Id { get; set; } = default!;
 
 		/// <summary>
-		/// User-friendly name for the worker.
+		/// City the worker is located in
 		/// </summary>
-		public string Name { get; set; } = default!;
+		public string City { get; set; } = default!;
 
 		/// <summary>
-		/// Two-letter country code where worker is based.
+		/// Region the worker is located in.
+		/// </summary>
+		public string Region { get; set; } = default!;
+
+		/// <summary>
+		/// Two-letter country code where worker is based..
 		/// </summary>
 		public string Country { get; set; } = default!;
 
 		/// <summary>
-		/// Specific location where worker is based.
+		/// Name of the provider the server is hosted with.
 		/// </summary>
-		public string Location { get; set; } = default!;
+		public string ProviderName { get; set; } = default!;
+
+		/// <summary>
+		/// URL of the provider the server is hosted with.
+		/// </summary>
+		[TsProperty(Type = "string")]
+		public Uri ProviderUrl { get; set; } = default!;
+
+		/// <summary>
+		/// Name of the data center the server is located in.
+		/// </summary>
+		public string DataCenterName { get; set; } = default!;
+
+		/// <summary>
+		/// ASN of the network the worker is hosted on.
+		/// </summary>
+		public int NetworkAsn { get; set; } = default!;
+
+		/// <summary>
+		/// How to display the worker's location in the UI
+		/// </summary>
+		public string LocationDisplay { get; set; } = default!;
 
 		/// <summary>
 		/// URI to connect to worker.

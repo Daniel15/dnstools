@@ -2,10 +2,10 @@ import React from 'react';
 
 import {TracerouteResponse} from '../types/protobuf';
 import {WorkerConfig, TracerouteResponseType, IpData} from '../types/generated';
-import CountryFlag from '../components/CountryFlag';
 import ReactTracerouteResponse from '../components/TracerouteResponse';
 import TracerouteResponseLoadingPlaceholder from '../components/TracerouteResponseLoadingPlaceholder';
 import Spinner, {Size as SpinnerSize} from '../components/Spinner';
+import WorkerLocation from './WorkerLocation';
 
 type Props = {
   areAllCompleted: boolean;
@@ -48,8 +48,7 @@ export default function TracerouteWorker(props: Props) {
       <div className="card h-100">
         <div className="card-header d-flex justify-content-between align-items-center">
           <span>
-            <CountryFlag country={worker.country} />
-            {worker.location}
+            <WorkerLocation worker={worker} />
           </span>
           <span>{!isCompleted && <Spinner size={SpinnerSize.Small} />}</span>
         </div>

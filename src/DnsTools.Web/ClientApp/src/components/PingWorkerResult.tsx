@@ -7,7 +7,7 @@ import {
   IPingSummary,
 } from '../types/generated';
 import {PingResponse} from '../types/protobuf';
-import CountryFlag from './CountryFlag';
+import WorkerLocation from './WorkerLocation';
 import ShimmerBar from './ShimmerBar';
 import {average, standardDeviation} from '../utils/math';
 import {milliseconds} from '../utils/format';
@@ -75,8 +75,7 @@ export default function PingWorkerResult(props: Props) {
     <>
       <tr>
         <td className="align-middle">
-          <CountryFlag country={props.worker.country} />
-          {props.worker.location}
+          <WorkerLocation worker={props.worker} />
         </td>
         {rowText && (
           <td className="align-middle" colSpan={4}>
