@@ -21,7 +21,11 @@ export default function Index(props: Props) {
           utilities, from {props.config.workers.length} locations around the
           world.
         </p>
-        <MainForm config={props.config} isStandalone={false} />
+        <MainForm
+          config={props.config}
+          isStandalone={false}
+          showSecondaryFooter={true}
+        />
       </div>
     </>
   );
