@@ -41,10 +41,15 @@ export interface Config
 }
 export interface WorkerConfig
 {
+	city: string;
 	country: string;
+	dataCenterName: string;
 	id: string;
-	location: string;
-	name: string;
+	locationDisplay: string;
+	networkAsn: number;
+	providerName: string;
+	providerUrl: string;
+	region: string;
 }
 export interface IPingReply
 {

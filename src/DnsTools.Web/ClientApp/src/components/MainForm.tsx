@@ -119,7 +119,7 @@ export default function MainForm(props: Props) {
     label: (
       <>
         <CountryFlag country={worker.country} />
-        {worker.location}
+        {worker.locationDisplay}
       </>
     ),
   }));
@@ -295,7 +295,7 @@ function Locations(props: {
     const selectedWorkers = props.config.workers.filter(worker =>
       props.input.workers.has(worker.id),
     );
-    label = selectedWorkers.map(worker => worker.location).join('; ');
+    label = selectedWorkers.map(worker => worker.locationDisplay).join('; ');
   }
 
   return (

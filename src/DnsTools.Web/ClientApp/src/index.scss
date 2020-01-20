@@ -95,12 +95,27 @@ body {
 }
 
 /* Custom colours for popovers */
+.popover a {
+	color: #fff;
+	text-decoration: underline;
+}
+
 $popover-colors: 'primary' $primary, 'success' $success;
 @each $name, $color in $popover-colors {
 	.popover.bg-#{$name} {
-		border-bottom-color: $color;
-		> .arrow:after {
+		&.bs-popover-top > .arrow:after {
 			border-top-color: $color;
 		}
+		&.bs-popover-right > .arrow:after {
+			border-right-color: $color;
+		}
 	}
+}
+
+/* Fix arrow position in popovers */
+.bs-popover-right > .arrow {
+	left: -0.5rem;
+}
+.bs-popover-top > .arrow {
+	bottom: -0.5rem;
 }
