@@ -11,12 +11,14 @@ import RadioList from '../components/form/RadioList';
 import {navigateWithReload} from '../utils/routing';
 import CountryFlag from './CountryFlag';
 import ToolSelector from './ToolSelector';
+import FooterHostingProviders from './FooterHostingProviders';
 
 type Props = {
   config: Config;
   initialSelectedTool?: Tool;
   initialInput?: ToolInput;
   isStandalone: boolean;
+  showSecondaryFooter?: boolean;
 };
 
 export enum Tool {
@@ -180,6 +182,13 @@ export default function MainForm(props: Props) {
           <a href="https://github.com/Daniel15/dnstools">I'm open-source!</a>
         </small>
       </p>
+      {props.showSecondaryFooter && (
+        <div className="mt-3">
+          <small>
+            <FooterHostingProviders />
+          </small>
+        </div>
+      )}
     </>
   );
 }

@@ -93,3 +93,14 @@ body {
 	background-color: $scrollbar-thumb-bg;
 	border-radius: 6px;
 }
+
+/* Custom colours for popovers */
+$popover-colors: 'primary' $primary, 'success' $success;
+@each $name, $color in $popover-colors {
+	.popover.bg-#{$name} {
+		border-bottom-color: $color;
+		> .arrow:after {
+			border-top-color: $color;
+		}
+	}
+}

@@ -8,6 +8,7 @@ import React from 'react';
  */
 export function commaSeparate(
   components: ReadonlyArray<React.ReactElement>,
+  conjunction: string | null = null,
 ): React.ReactElement {
   if (components.length === 0) {
     return <></>;
@@ -21,5 +22,10 @@ export function commaSeparate(
     output.push(', ');
     output.push(components[i]);
   }
+
+  if (conjunction != null) {
+    output.splice(output.length - 1, 0, conjunction + ' ');
+  }
+
   return <>{output}</>;
 }
