@@ -9,6 +9,10 @@ type Props = Readonly<{
 }>;
 
 export default function WorkerLocation({worker}: Props) {
+  const url =
+    worker.providerUrl +
+    (worker.providerUrl.includes('?') ? '&' : '?') +
+    'utm_source=dnstools&utm_medium=worker-location-link&utm_campaign=dnstools-worker-location-link';
   return (
     <WithHovercard
       location={HovercardLocation.Right}
@@ -19,10 +23,19 @@ export default function WorkerLocation({worker}: Props) {
           Provider:{' '}
           <a
             className="alert-link"
-            href={worker.providerUrl}
+            href={url}
             /* eslint-disable-next-line react/jsx-no-target-blank */
             target="_blank"
-            rel="nofollow noopener">
+            rel="nofollow noopener"
+            onClick={() => {
+              ga(
+                'send',
+                'event',
+                'Hosting Provider Link (Location)',
+                'click',
+                worker.providerName,
+              );
+            }}>
             {worker.providerName}
           </a>{' '}
           (AS{worker.networkAsn})<br />
