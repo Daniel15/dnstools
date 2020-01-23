@@ -16,7 +16,9 @@ import useSignalrStream from '../hooks/useSignalrStream';
 import Helmet from 'react-helmet';
 import Spinner from '../components/Spinner';
 import DnsLookupResults from '../components/DnsLookupResults';
+import DnsLookupWorkerResult from '../components/DnsLookupWorkerResult';
 import {Link} from 'react-router-dom';
+import {groupResponsesByWorker} from '../utils/workers';
 
 type Props = RouteComponentProps<{
   host: string;
@@ -42,6 +44,11 @@ export default function DnsLookup(props: Props) {
     'dnslookup',
     request,
   );
+  const workerResponses = groupResponsesByWorker(
+    props.config.workers,
+    workers,
+    data.results,
+  );
 
   return (
     <>
@@ -51,12 +58,40 @@ export default function DnsLookup(props: Props) {
       <h1 className="main-header">
         DNS Lookup for {host} ({rawType}) {!data.isComplete && <Spinner />}
       </h1>
-      <DnsLookupResults
-        host={host}
-        lookupType={type}
-        responses={data.results.map(result => result.response)}
-      />
-      {data.isComplete && (
+      {workerResponses.length === 1 && (
+        <DnsLookupResults
+          host={host}
+          lookupType={type}
+          responses={workerResponses[0].responses}
+        />
+      )}
+      {workerResponses.length > 1 && (
+        <table className="table table-striped">
+          <thead>
+            <tr>
+              <th scope="col">Location</th>
+              <th scope="col" style={{width: '40%'}}>
+                Result
+              </th>
+              <th scope="col" style={{width: '40%'}}>
+                Server
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {workerResponses.map(worker => (
+              <DnsLookupWorkerResult
+                key={worker.worker.id}
+                lookupType={type}
+                responses={worker.responses}
+                worker={worker.worker}
+              />
+            ))}
+          </tbody>
+        </table>
+      )}
+      {/* Show footer if we have multiple workers in a table, or if it's one worker that's completed */}
+      {(data.isComplete || workerResponses.length > 1) && (
         <>
           <p>
             These results are returned in real-time, and are not cached. This
