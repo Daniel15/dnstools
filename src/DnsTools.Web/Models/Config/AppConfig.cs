@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Security.Cryptography.X509Certificates;
+﻿using System;
+using System.Collections.Generic;
 
 namespace DnsTools.Web.Models.Config
 {
@@ -9,6 +9,8 @@ namespace DnsTools.Web.Models.Config
 	public class AppConfig
 	{
 		public IList<WorkerConfig> Workers { get; set; } = new List<WorkerConfig>();
+
+		public TimeSpan WorkerConnectTimeout { get; set; } = default!;
 
 		public string DefaultWorker { get; set; } = default!;
 
