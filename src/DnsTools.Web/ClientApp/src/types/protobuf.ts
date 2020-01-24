@@ -123,22 +123,29 @@ export type DnsLookupReferral = {
   reply: DnsLookupReply | undefined;
 };
 
-export type DnsLookupResponse = {
+export type DnsLookupResponseSharedFields = {
   duration: number;
-} & (
-  | {
-      responseCase: DnsLookupResponseType.Reply;
-      reply: DnsLookupReply;
-    }
-  | {
-      responseCase: DnsLookupResponseType.Error;
-      error: IError;
-    }
-  | {
-      responseCase: DnsLookupResponseType.Referral;
-      referral: DnsLookupReferral;
-    }
-);
+};
+
+export type DnsLookupReplyResponse = DnsLookupResponseSharedFields & {
+  responseCase: DnsLookupResponseType.Reply;
+  reply: DnsLookupReply;
+};
+
+export type DnsLookupErrorResponse = DnsLookupResponseSharedFields & {
+  responseCase: DnsLookupResponseType.Error;
+  error: IError;
+};
+
+export type DnsLookupReferralResponse = DnsLookupResponseSharedFields & {
+  responseCase: DnsLookupResponseType.Referral;
+  referral: DnsLookupReferral;
+};
+
+export type DnsLookupResponse =
+  | DnsLookupReplyResponse
+  | DnsLookupErrorResponse
+  | DnsLookupReferralResponse;
 
 type DnsTraversalResponseSharedFields = {
   from: string;
