@@ -92,13 +92,19 @@ namespace DnsTools.Web.Tools
 			}
 			catch (Exception ex)
 			{
+				var message = ex.Message;
+				if (ex is RpcException rpcEx && rpcEx.StatusCode == StatusCode.Cancelled)
+				{
+					message = "Could not connect to this worker :(";
+				}
+
 				await writer.WriteAsync(new WorkerResponse<TResponse>
 				{
 					Response = new TResponse
 					{
 						Error = new Error
 						{
-							Message = ex.Message,
+							Message = message,
 						},
 					},
 					WorkerId = workerId,

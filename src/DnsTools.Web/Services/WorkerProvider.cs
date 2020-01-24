@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Net.Http;
 using DnsTools.Web.Models.Config;
 using DnsTools.Worker;
 using Grpc.Net.Client;
@@ -14,6 +15,8 @@ namespace DnsTools.Web.Services
 	/// </summary>
 	public class WorkerProvider : IWorkerProvider
 	{
+		private TimeSpan CONNECT_TIMEOUT = TimeSpan.FromSeconds(3);
+
 		private readonly IList<WorkerConfig> _configs;
 		private readonly IReadOnlyDictionary<string, GrpcChannel> _channels;
 
@@ -22,7 +25,14 @@ namespace DnsTools.Web.Services
 			_configs = config.Value.Workers;
 			_channels = _configs.ToImmutableDictionary(
 				x => x.Id,
-				x => GrpcChannel.ForAddress(x.Endpoint)
+				x => GrpcChannel.ForAddress(x.Endpoint, new GrpcChannelOptions
+				{
+					DisposeHttpClient = true,
+					HttpClient = new HttpClient(new SocketsHttpHandler
+					{
+						ConnectTimeout = CONNECT_TIMEOUT
+					})
+				})
 			);
 		}
 
