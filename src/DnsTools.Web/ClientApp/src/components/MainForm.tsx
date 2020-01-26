@@ -50,7 +50,8 @@ const toolOptions: ReadonlyArray<ToolMetadata> = [
   {
     tool: Tool.DnsLookup,
     label: 'DNS Lookup',
-    description: 'Look up a DNS record.',
+    description:
+      'Look up a DNS record from {workerCount} locations around the world.',
   },
   {
     tool: Tool.DnsTraversal,
@@ -269,17 +270,27 @@ function DnsLookupInput(props: {
           </select>
         </FormRow>
       )}
-      <FormRowDropdownList
-        label="From"
-        options={props.workerOptions}
-        selectedItem={props.input.worker}
-        onSelect={newWorker =>
-          props.onChangeInput({
-            ...props.input,
-            worker: newWorker || props.config.defaultWorker,
-          })
-        }
-      />
+      {props.tool !== Tool.DnsTraversal && (
+        <Locations
+          config={props.config}
+          input={props.input}
+          onChangeInput={props.onChangeInput}
+          workerOptions={props.workerOptions}
+        />
+      )}
+      {props.tool === Tool.DnsTraversal && (
+        <FormRowDropdownList
+          label="From"
+          options={props.workerOptions}
+          selectedItem={props.input.worker}
+          onSelect={newWorker =>
+            props.onChangeInput({
+              ...props.input,
+              worker: newWorker || props.config.defaultWorker,
+            })
+          }
+        />
+      )}
     </>
   );
 }
@@ -362,16 +373,20 @@ function buildToolURI({
     if (input.protocol !== Protocol.Any) {
       params.append('proto', Protocol[input.protocol]);
     }
+  }
+
+  if (
+    tool === Tool.Ping ||
+    tool === Tool.Traceroute ||
+    tool === Tool.DnsLookup ||
+    tool === Tool.ReverseDns
+  ) {
     if (input.workers.size < config.workers.length) {
       params.append('workers', Array.from(input.workers).join(','));
     }
   }
 
-  if (
-    tool === Tool.DnsLookup ||
-    tool === Tool.ReverseDns ||
-    tool === Tool.DnsTraversal
-  ) {
+  if (tool === Tool.DnsTraversal) {
     if (input.worker !== config.defaultWorker) {
       params.append('workers', input.worker);
     }

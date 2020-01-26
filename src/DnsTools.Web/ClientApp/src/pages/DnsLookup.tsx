@@ -31,10 +31,10 @@ export default function DnsLookup(props: Props) {
   const {host, type: rawType} = props.match.params;
   const type = getLookupType(rawType);
   const queryString = useQueryString();
-  const workers = useMemo(
-    () => getWorkers(props.config, queryString, [props.config.defaultWorker]),
-    [props.config, queryString],
-  );
+  const workers = useMemo(() => getWorkers(props.config, queryString), [
+    props.config,
+    queryString,
+  ]);
 
   const request: DnsLookupRequest = useMemo(
     () => ({host, type, workers: Array.from(workers)}),

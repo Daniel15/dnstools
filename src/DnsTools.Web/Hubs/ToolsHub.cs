@@ -60,14 +60,13 @@ namespace DnsTools.Web.Hubs
 			CancellationToken cancellationToken
 		)
 		{
-			var workers = request.Workers ?? new[] { _defaultWorker }.ToImmutableHashSet();
 			return new GenericRunner<DnsLookupRequest, DnsLookupResponse>(
 				_workerProvider,
 				client => client.DnsLookup(new Worker.DnsLookupRequest
 				{
 					Host = request.Host,
 					Type = request.Type,
-				}, cancellationToken: cancellationToken)).Run(request, Clients.Caller, workers, cancellationToken);
+				}, cancellationToken: cancellationToken)).Run(request, Clients.Caller, request.Workers, cancellationToken);
 		}
 
 		public ChannelReader<WorkerResponse<DnsTraversalResponse>> DnsTraversal(
