@@ -66,9 +66,12 @@ export default function DnsLookup(props: Props) {
         />
       )}
       {workerResponses.length > 1 && (
-        <table className="table table-striped">
+        <table className="table">
           <thead>
             <tr>
+              <th scope="col" style={{width: 10}}>
+                &nbsp;
+              </th>
               <th scope="col">Location</th>
               <th scope="col" style={{width: '40%'}}>
                 Result
@@ -79,8 +82,10 @@ export default function DnsLookup(props: Props) {
             </tr>
           </thead>
           <tbody>
-            {workerResponses.map(worker => (
+            {workerResponses.map((worker, index) => (
               <DnsLookupWorkerResult
+                host={host}
+                index={index}
                 key={worker.worker.id}
                 lookupType={type}
                 responses={worker.responses}

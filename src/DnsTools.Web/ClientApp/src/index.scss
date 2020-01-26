@@ -62,6 +62,27 @@ tr.additional > td {
 	background-color: #333;
 }
 
+.table-row-odd {
+	background-color: $table-accent-bg;
+}
+
+.table tr.dns-detail-expanded > td {
+	border-top: none;
+	padding: 0 0.75rem;
+}
+
+.table td.expand-cell {
+	cursor: pointer;
+	padding-right: 0;
+}
+
+.expand-icon {
+	transition: transform 200ms;
+	&-expanded {
+		transform: rotate(90deg);
+	}
+}
+
 .dropdown-list {
 	max-height: 300px;
 	overflow-y: auto;
