@@ -1,5 +1,4 @@
 import React, {useState} from 'react';
-import {useSpring, animated} from 'react-spring';
 import Octicon, {ChevronRight} from '@primer/octicons-react';
 
 import {
@@ -19,7 +18,7 @@ import {findLast} from '../utils/arrays';
 import {commaSeparate} from '../utils/react';
 import DnsRecordValue from './DnsRecordValue';
 import DnsLookupResults from './DnsLookupResults';
-import useDimensions from '../hooks/useDimensions';
+import ExpandTransition from './ExpandTransition';
 
 type Props = Readonly<{
   host: string;
@@ -28,8 +27,6 @@ type Props = Readonly<{
   responses: ReadonlyArray<DnsLookupResponse>;
   worker: Readonly<WorkerConfig>;
 }>;
-
-const DETAILS_PADDING = 20;
 
 export default function DnsLookupWorkerResult(props: Props) {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -67,15 +64,6 @@ export default function DnsLookupWorkerResult(props: Props) {
     value = <ShimmerBar />;
   }
 
-  const [detailsRef, detailsDimensions] = useDimensions<HTMLDivElement>();
-  const animatedStyle = useSpring({
-    from: {height: 0, opacity: 0},
-    to: {
-      height: isExpanded ? detailsDimensions.height + DETAILS_PADDING : 0,
-      opacity: isExpanded ? 1 : 0,
-    },
-  });
-
   const rowClass = props.index % 2 === 0 ? 'table-row-odd' : '';
   return (
     <>
@@ -106,15 +94,15 @@ export default function DnsLookupWorkerResult(props: Props) {
         className={`dns-detail-expanded ${rowClass}`}>
         <td></td>
         <td colSpan={3}>
-          <animated.div style={{overflow: 'hidden', ...animatedStyle}}>
-            <div ref={detailsRef}>
-              <DnsLookupResults
-                host={props.host}
-                lookupType={props.lookupType}
-                responses={props.responses}
-              />
-            </div>
-          </animated.div>
+          <ExpandTransition
+            isExpanded={isExpanded}
+            style={{paddingBottom: '0.75rem'}}>
+            <DnsLookupResults
+              host={props.host}
+              lookupType={props.lookupType}
+              responses={props.responses}
+            />
+          </ExpandTransition>
         </td>
       </tr>
     </>

@@ -1,8 +1,9 @@
-import React, {useState} from 'react';
+import React from 'react';
 
 import {DnsLookupResponse} from '../types/protobuf';
 import {DnsLookupResponseType, DnsLookupType} from '../types/generated';
-import DnsRecordsTable from '../components/DnsRecordsTable';
+import DnsRecordsTable from './DnsRecordsTable';
+import DnsLookupReferralDetails from './DnsLookupReferralDetails';
 
 type Props = Readonly<{
   host: string;
@@ -11,50 +12,22 @@ type Props = Readonly<{
 }>;
 
 export default function DnsLookupResults(props: Props) {
-  const [showDetailsForReferral, setShowDetailsForReferral] = useState<
-    ReadonlySet<string>
-  >(() => new Set());
-
   return (
     <>
       {props.responses.map((response, index) => {
         switch (response.responseCase) {
           case DnsLookupResponseType.Referral:
             const prevServerName = response.referral.prevServerName;
-            const shouldShowDetails =
-              prevServerName != null &&
-              showDetailsForReferral.has(prevServerName);
             return (
               <React.Fragment key={index}>
                 {prevServerName && (
                   <>
                     Got referral to {response.referral.nextServerName} [took{' '}
                     {response.duration} ms].{' '}
-                    {response.referral.reply && (
-                      <button
-                        className="btn btn-link border-0 m-0 p-0"
-                        type="button"
-                        onClick={() => {
-                          const newShowDetails = new Set(
-                            showDetailsForReferral,
-                          );
-                          if (showDetailsForReferral.has(prevServerName)) {
-                            newShowDetails.delete(prevServerName);
-                          } else {
-                            newShowDetails.add(prevServerName);
-                          }
-                          setShowDetailsForReferral(newShowDetails);
-                        }}>
-                        {shouldShowDetails ? 'Hide' : 'Show'} details
-                      </button>
-                    )}
-                    {shouldShowDetails && response.referral.reply && (
-                      <DnsRecordsTable
-                        lookupType={props.lookupType}
-                        reply={response.referral.reply}
-                      />
-                    )}
-                    <br />
+                    <DnsLookupReferralDetails
+                      lookupType={props.lookupType}
+                      referral={response.referral}
+                    />
                   </>
                 )}
                 Searching for {props.host} at {response.referral.nextServerName}

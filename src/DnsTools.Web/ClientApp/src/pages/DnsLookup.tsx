@@ -6,7 +6,6 @@ import {
   DnsLookupType,
   DnsLookupRequest,
   WorkerResponse,
-  Protocol,
 } from '../types/generated';
 import {DnsLookupResponse} from '../types/protobuf';
 import MainForm, {Tool, getDefaultInput} from '../components/MainForm';
