@@ -105,27 +105,9 @@ export default function DnsLookup(props: Props) {
             <br />
             <Link to={`/traversal/${host}/${rawType}/`}>
               See a DNS traversal
-            </Link>
-            .<br />
+            </Link>{' '}
+            or try again from another location:
             <br />
-            The ability to perform a DNS lookup from multiple locations is
-            coming in the future.
-            {(type === DnsLookupType.A || type === DnsLookupType.Aaaa) && (
-              <>
-                {' '}
-                For now, to perform this DNS lookup from all available
-                locations,{' '}
-                <Link
-                  to={`/ping/${host}/?proto=${
-                    type === DnsLookupType.A
-                      ? Protocol[Protocol.Ipv4]
-                      : Protocol[Protocol.Ipv6]
-                  }`}>
-                  use the ping tool
-                </Link>
-                .
-              </>
-            )}
           </p>
 
           <MainForm
