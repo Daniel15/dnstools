@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {memo, useState} from 'react';
 import Octicon, {ChevronRight} from '@primer/octicons-react';
 
 import {
@@ -28,7 +28,7 @@ type Props = Readonly<{
   worker: Readonly<WorkerConfig>;
 }>;
 
-export default function DnsLookupWorkerResult(props: Props) {
+export default memo(function DnsLookupWorkerResult(props: Props) {
   const [isExpanded, setIsExpanded] = useState(false);
 
   const lastReply = findLast(
@@ -85,7 +85,7 @@ export default function DnsLookupWorkerResult(props: Props) {
           </div>
         </td>
         <td className="align-middle">{value}</td>
-        <td className="align-middle">
+        <td className="align-middle d-none d-lg-table-cell">
           {lastReferral && lastReferral.referral.nextServerName}
         </td>
       </tr>
@@ -107,4 +107,4 @@ export default function DnsLookupWorkerResult(props: Props) {
       </tr>
     </>
   );
-}
+});

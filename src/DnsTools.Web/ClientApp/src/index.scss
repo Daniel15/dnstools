@@ -140,3 +140,8 @@ $popover-colors: 'primary' $primary, 'success' $success;
 .bs-popover-top > .arrow {
 	bottom: -0.5rem;
 }
+
+.expand-container {
+	overflow: hidden;
+	will-change: height, opacity, transform;
+}

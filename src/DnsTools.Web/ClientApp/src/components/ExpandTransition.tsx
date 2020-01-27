@@ -1,7 +1,8 @@
-import React, {DetailedHTMLProps, HTMLAttributes} from 'react';
+import React, {memo, DetailedHTMLProps, HTMLAttributes} from 'react';
 import {useSpring, animated} from 'react-spring';
 
 import useDimensions from '../hooks/useDimensions';
+import usePrevious from '../hooks/usePrevious';
 
 type Props = Readonly<{
   children: React.ReactNode;
@@ -13,10 +14,12 @@ type Props = Readonly<{
 /**
  * Animates expanded/collapsed state of a div.
  */
-export default function ExpandTransition(props: Props) {
+export default memo(function ExpandTransition(props: Props) {
   const {children, isExpanded, ...otherProps} = props;
+  const previouslyExpanded = usePrevious(props.isExpanded);
   const [ref, dimensions] = useDimensions<HTMLDivElement>();
-  const style = useSpring({
+  // @ts-ignore https://github.com/react-spring/react-spring/issues/912
+  const {height, opacity} = useSpring({
     from: {height: 0, opacity: 0},
     to: {
       height: isExpanded ? dimensions.height : 0,
@@ -25,10 +28,16 @@ export default function ExpandTransition(props: Props) {
   });
 
   return (
-    <animated.div style={{overflow: 'hidden', ...style}}>
+    <animated.div
+      className="expand-container"
+      style={{
+        opacity,
+        // If we're re-rendering while expanded, don't mess with the height
+        height: isExpanded && previouslyExpanded ? 'auto' : height,
+      }}>
       <div {...otherProps} ref={ref}>
         {props.children}
       </div>
     </animated.div>
   );
-}
+});

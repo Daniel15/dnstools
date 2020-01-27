@@ -75,7 +75,10 @@ export default function DnsLookup(props: Props) {
               <th scope="col" style={{width: '40%'}}>
                 Result
               </th>
-              <th scope="col" style={{width: '40%'}}>
+              <th
+                className="d-none d-lg-table-cell"
+                scope="col"
+                style={{width: '40%'}}>
                 Server
               </th>
             </tr>
