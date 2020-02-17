@@ -48,33 +48,48 @@ namespace DnsTools.Worker.Utils
 
 			var ips = await Dns.GetHostAddressesAsync(host);
 			// Find first IP that matches requested protocol
-			var ip = ips.FirstOrDefault(x =>
-				protocol == Protocol.Any ||
-				(protocol == Protocol.Ipv4 && x.AddressFamily == AddressFamily.InterNetwork) ||
-				(protocol == Protocol.Ipv6 && x.AddressFamily == AddressFamily.InterNetworkV6)
-			);
-
-			if (ip == null)
+			var ipv4 = ips.FirstOrDefault(x => x.AddressFamily == AddressFamily.InterNetwork);
+			var ipv6 = ips.FirstOrDefault(x => x.AddressFamily == AddressFamily.InterNetworkV6);
+			IPAddress? ip;
+			switch (protocol)
 			{
-				string protocolLabel;
-				switch (protocol)
-				{
-					case Protocol.Ipv4:
-						protocolLabel = "IPv4";
-						break;
-					case Protocol.Ipv6:
-						protocolLabel = "IPv6";
-						break;
-					case Protocol.Any:
-						protocolLabel = "IPv4 or IPv6";
-						break;
-					default:
-						throw new ArgumentOutOfRangeException();
-				}
-				throw new ArgumentException($"No {protocolLabel} address for {host}");
+				case Protocol.Ipv4:
+					ip = ipv4;
+					break;
+
+				case Protocol.Ipv6:
+					ip = ipv6;
+					break;
+
+				case Protocol.Any:
+					ip = ipv6 ?? ipv4;
+					break;
+
+				default:
+					throw new ArgumentOutOfRangeException(nameof(protocol), protocol, null);
 			}
 
-			return ip;
+			if (ip != null)
+			{
+				return ip;
+			}
+
+			string protocolLabel;
+			switch (protocol)
+			{
+				case Protocol.Ipv4:
+					protocolLabel = "IPv4";
+					break;
+				case Protocol.Ipv6:
+					protocolLabel = "IPv6";
+					break;
+				case Protocol.Any:
+					protocolLabel = "IPv4 or IPv6";
+					break;
+				default:
+					throw new ArgumentOutOfRangeException();
+			}
+			throw new ArgumentException($"No {protocolLabel} address for {host}");
 		}
 	}
 }
