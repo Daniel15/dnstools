@@ -1,5 +1,4 @@
 import React, {memo, useState} from 'react';
-import Octicon, {ChevronRight} from '@primer/octicons-react';
 
 import {
   DnsLookupResponse,
@@ -19,6 +18,7 @@ import {commaSeparate} from '../utils/react';
 import DnsRecordValue from './DnsRecordValue';
 import DnsLookupResults from './DnsLookupResults';
 import ExpandTransition from './ExpandTransition';
+import {ExpandChevron} from './icons/Icons';
 
 type Props = Readonly<{
   host: string;
@@ -71,13 +71,7 @@ export default memo(function DnsLookupWorkerResult(props: Props) {
         <td
           className="align-middle expand-cell"
           onClick={() => setIsExpanded(value => !value)}>
-          <Octicon
-            ariaLabel={isExpanded ? 'Collapse' : 'Expand'}
-            className={
-              'expand-icon ' + (isExpanded ? 'expand-icon-expanded' : '')
-            }
-            icon={ChevronRight}
-          />
+          <ExpandChevron isExpanded={isExpanded} />
         </td>
         <td className="align-middle">
           <div onClick={() => setIsExpanded(value => !value)}>
