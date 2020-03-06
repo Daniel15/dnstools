@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Reactive;
-using System.Reactive.Disposables;
-using System.Reactive.Linq;
-using System.Reactive.Threading.Tasks;
 using System.Threading;
 using System.Threading.Tasks;
 using CliWrap;
+using CliWrap.EventStream;
 using DnsTools.Worker.Models;
 using Grpc.Core;
 
@@ -32,90 +29,61 @@ namespace DnsTools.Worker.Tools
 			CancellationToken cancellationToken
 		)
 		{
+			var args = await GetArguments(request, responseStream);
 			var wrap = Cli.Wrap(GetCommand(request))
-				.SetArguments(await GetArguments(request, responseStream))
-				.EnableExitCodeValidation(false)
-				.EnableStandardErrorValidation(false);
+				.WithArguments(args)
+				.WithValidation(CommandResultValidation.None)
+				.ListenAsync(cancellationToken);
 
-			// We need to subscribe BEFORE starting the process, as CliWrap doesn't let us add
-			// subscribers once started. See https://github.com/Tyrrrz/CliWrap/pull/46
-
-			var outputObserver = Observable.Create<string>(observer =>
+			await foreach (var evt in wrap.WithCancellation(cancellationToken))
 			{
-				wrap.SetStandardOutputCallback(observer.OnNext);
-				wrap.SetStandardOutputClosedCallback(observer.OnCompleted);
-				return Disposable.Empty;
-			});
-
-			var errorObserver = Observable.Create<string>(observer =>
-			{
-				wrap.SetStandardErrorCallback(observer.OnNext);
-				wrap.SetStandardErrorClosedCallback(observer.OnCompleted);
-				return Disposable.Empty;
-			});
-
-			var outputTask = HandleStream(
-				outputObserver,
-				async data =>
+				switch (evt)
 				{
-					if (string.IsNullOrWhiteSpace(data))
+					case StandardOutputCommandEvent stdOutEvent:
 					{
-						return;
-					}
-
-					TResponse response;
-					try
-					{
-						response = ParseResponse(data);
-					}
-					catch (Exception ex)
-					{
-						response = new TResponse
+						if (string.IsNullOrWhiteSpace(stdOutEvent.Text))
 						{
-							Error = new Error
+							return;
+						}
+
+						TResponse response;
+						try
+						{
+							response = ParseResponse(stdOutEvent.Text);
+						}
+						catch (Exception ex)
+						{
+							response = new TResponse
 							{
-								Message = $"Could not parse reply: {ex.Message}",
-							},
-						};
-					}
+								Error = new Error
+								{
+									Message = $"Could not parse reply: {ex.Message}",
+								},
+							};
+						}
 
-					if (response != null)
-					{
-						await responseStream.WriteAsync(response);
-					}
-				},
-				cancellationToken
-			);
-			var errorTask = HandleStream(
-				errorObserver,
-				async data =>
-				{
-					if (!string.IsNullOrWhiteSpace(data))
-					{
-						await responseStream.WriteAsync(new TResponse
+						if (response != null)
 						{
-							Error = ParseError(data),
-						});
+							await responseStream.WriteAsync(response);
+						}
+
+						break;
 					}
-				},
-				cancellationToken
-			);
 
-			var process = wrap.ExecuteAsync();
-			await Task.WhenAll(process, outputTask, errorTask);
-		}
+					case StandardErrorCommandEvent stdErrEvent:
+					{
+						if (!string.IsNullOrWhiteSpace(stdErrEvent.Text))
+						{
+							await responseStream.WriteAsync(new TResponse
+							{
+								Error = ParseError(stdErrEvent.Text),
+							});
+						}
 
-		private async Task HandleStream(
-			IObservable<string> stream,
-			Func<string, Task> handler,
-			CancellationToken cancellationToken
-		)
-		{
-			await stream.SelectMany(async data =>
-			{
-				await handler(data);
-				return Unit.Default;
-			}).LastOrDefaultAsync().ToTask(cancellationToken);
+						break;
+					}
+				}
+			}
 		}
 
 		/// <summary>
