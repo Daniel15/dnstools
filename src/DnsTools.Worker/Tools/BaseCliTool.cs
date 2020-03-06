@@ -31,7 +31,7 @@ namespace DnsTools.Worker.Tools
 		{
 			var args = await GetArguments(request, responseStream);
 			var wrap = Cli.Wrap(GetCommand(request))
-				.WithArguments(x => x.Add(args))
+				.WithArguments(args)
 				.WithValidation(CommandResultValidation.None)
 				.ListenAsync(cancellationToken);
 
