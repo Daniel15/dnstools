@@ -40,9 +40,9 @@
 - name: Install packages
   apt:
     name:
-      - aspnetcore-runtime-3.0
+      - aspnetcore-runtime-3.1
       - certbot
-      - dotnet-runtime-3.0
+      - dotnet-runtime-3.1
       - htop
       - iputils-ping
       - python-requests
@@ -58,16 +58,6 @@
   lineinfile:
     path: /etc/resolv.conf
     line: search .
-
-#################################################
-# .NET Core
-
-- name: Temporary hack for https://github.com/dotnet/coreclr/issues/27955
-  get_url:
-    url: https://d.ls/dotnet/bugs/libcoreclr-27955-workaround.so
-    dest: /usr/local/lib/libcoreclr-27955-workaround.so
-    mode: "0755"
-    checksum: sha256:be021161c98f69367745cd7d821b8175b6466eb5fa5921ecee3dcb6f9ff8f150
 
 #################################################
 # Certbot
