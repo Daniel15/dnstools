@@ -29,5 +29,15 @@ namespace DnsTools.Web.Services
 		/// Creates a client for the given worker.
 		/// </summary>
 		DnsToolsWorker.DnsToolsWorkerClient CreateClient(string workerId);
+
+		/// <summary>
+		/// Sets the status of the specified worker.
+		/// </summary>
+		void SetStatus(string workerId, WorkerStatus status);
+
+		/// <summary>
+		/// Gets the status of the specified worker.
+		/// </summary>
+		WorkerStatus GetStatus(string workerId);
 	}
 }

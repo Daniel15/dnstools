@@ -41,10 +41,12 @@ namespace DnsTools.Web.HealthChecks
 
 				// Read the stream until the end
 				await foreach (var _ in response.ResponseStream.ReadAllAsync(cancellationToken)) { }
+				_workerProvider.SetStatus(_id, WorkerStatus.Available);
 				return HealthCheckResult.Healthy();
 			}
 			catch (Exception ex)
 			{
+				_workerProvider.SetStatus(_id, WorkerStatus.Down);
 				return HealthCheckResult.Unhealthy("DNS lookups failing", ex);
 			}
 		}

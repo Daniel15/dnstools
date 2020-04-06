@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -17,6 +18,9 @@ namespace DnsTools.Web.Services
 	{
 		private readonly IList<WorkerConfig> _configs;
 		private readonly IReadOnlyDictionary<string, GrpcChannel> _channels;
+
+		private ImmutableDictionary<string, WorkerStatus> _status = 
+			ImmutableDictionary<string, WorkerStatus>.Empty;
 
 		public WorkerProvider(IOptions<AppConfig> config)
 		{
@@ -72,6 +76,22 @@ namespace DnsTools.Web.Services
 				config => config.Id,
 				config => CreateClient(config.Id)
 			);
+		}
+
+		/// <summary>
+		/// Sets the status of the specified worker.
+		/// </summary>
+		public void SetStatus(string workerId, WorkerStatus status)
+		{
+			_status = _status.SetItem(workerId, status);
+		}
+
+		/// <summary>
+		/// Gets the status of the specified worker.
+		/// </summary>
+		public WorkerStatus GetStatus(string workerId)
+		{
+			return _status.GetValueOrDefault(workerId, WorkerStatus.Available);
 		}
 	}
 }

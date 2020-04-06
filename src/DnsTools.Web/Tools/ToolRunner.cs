@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
+using DnsTools.Web.Exceptions;
 using DnsTools.Web.Hubs;
 using DnsTools.Web.Models;
 using DnsTools.Web.Services;
@@ -76,11 +77,14 @@ namespace DnsTools.Web.Tools
 			CancellationToken cancellationToken
 		)
 		{
-			var call = CreateRequest(client, request, cancellationToken);
-			var responseStream = call.ResponseStream.ReadAllAsync(cancellationToken);
-
 			try
 			{
+				if (_workerProvider.GetStatus(workerId) != WorkerStatus.Available)
+				{
+					throw new WorkerUnavailableException();
+				}
+				var call = CreateRequest(client, request, cancellationToken);
+				var responseStream = call.ResponseStream.ReadAllAsync(cancellationToken);
 				var responseTasks = new List<Task>();
 				await foreach (var response in responseStream.WithCancellation(cancellationToken))
 				{
