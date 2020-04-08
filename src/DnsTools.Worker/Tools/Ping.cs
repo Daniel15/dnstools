@@ -41,7 +41,7 @@ namespace DnsTools.Worker.Tools
 			return new List<string> { "-i 0.5", "-c 5", "-O", ipString };
 		}
 
-		protected override PingResponse ParseResponse(string reply)
+		protected override PingResponse? ParseResponse(string reply)
 		{
 			var seqMatch = _seqRegex.Match(reply);
 			

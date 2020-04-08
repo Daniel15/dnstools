@@ -15,7 +15,7 @@ namespace DnsTools.Worker.Tools
 	/// <typeparam name="TRequest">Protobuf type for incoming request</typeparam>
 	/// <typeparam name="TResponse">Protobuf type for response</typeparam>
 	public abstract class BaseCliTool<TRequest, TResponse> : ITool<TRequest, TResponse> 
-		where TResponse : IHasError, new()
+		where TResponse : class, IHasError, new()
 	{
 		/// <summary>
 		/// Runs the tool
@@ -43,10 +43,10 @@ namespace DnsTools.Worker.Tools
 					{
 						if (string.IsNullOrWhiteSpace(stdOutEvent.Text))
 						{
-							return;
+							continue;
 						}
 
-						TResponse response;
+						TResponse? response;
 						try
 						{
 							response = ParseResponse(stdOutEvent.Text);
@@ -111,7 +111,7 @@ namespace DnsTools.Worker.Tools
 		/// </summary>
 		/// <param name="data">Raw stdout line</param>
 		/// <returns>Response</returns>
-		protected abstract TResponse ParseResponse(string data);
+		protected abstract TResponse? ParseResponse(string data);
 
 		/// <summary>
 		/// Parses a raw stderr line into a structured response
