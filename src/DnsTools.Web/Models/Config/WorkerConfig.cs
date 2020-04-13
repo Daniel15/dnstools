@@ -36,6 +36,16 @@ namespace DnsTools.Web.Models.Config
 		public string ProviderName { get; set; } = default!;
 
 		/// <summary>
+		/// Latitude of the data center.
+		/// </summary>
+		public double Latitude { get; set; } = default!;
+
+		/// <summary>
+		/// Longitude of the data center
+		/// </summary>
+		public double Longitude { get; set; } = default!;
+
+		/// <summary>
 		/// URL of the provider the server is hosted with.
 		/// </summary>
 		[TsProperty(Type = "string")]

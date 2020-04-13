@@ -45,7 +45,9 @@ export interface WorkerConfig
 	country: string;
 	dataCenterName: string;
 	id: string;
+	latitude: number;
 	locationDisplay: string;
+	longitude: number;
 	networkAsn: number;
 	providerName: string;
 	providerUrl: string;
