@@ -23,6 +23,8 @@ sg01.d.sb   vpn_ip=10.123.1.19
 syd02.d.sb  vpn_ip=10.123.1.11
 vps03.d.sb  vpn_ip=10.123.1.1
 po01.d.sb   vpn_ip=10.123.1.31
+vn01.d.sb   vpn_ip=10.123.1.33
+za01.d.sb   vpn_ip=10.123.1.34
 
 [workers:vars]
 ansible_user=daniel-ansible

@@ -90,7 +90,7 @@
   apt:
     name: wireguard
     state: present
-  when: ansible_virtualization_type != "openvz"
+  when: ansible_virtualization_type != "openvz" and ansible_virtualization_type != "lxc"
 
 - name: Download wireguard-go for OpenVZ
   get_url:
@@ -98,14 +98,14 @@
     dest: /usr/local/bin/wireguard-go
     mode: "0755"
     checksum: sha256:4f69dc0c26f01d8b5ede65cbc0434312b908471ec393d6e211739bfbb0201c61
-  when: ansible_virtualization_type == "openvz"
+  when: ansible_virtualization_type == "openvz" or ansible_virtualization_type == "lxc"
 
 - name: Enable wireguard-go in systemd unit
   lineinfile:
     path: /lib/systemd/system/wg-quick@.service
     insertafter: Environment=WG_ENDPOINT_RESOLUTION_RETRIES=infinity
     line: Environment=WG_I_PREFER_BUGGY_USERSPACE_TO_POLISHED_KMOD=1
-  when: ansible_virtualization_type == "openvz"
+  when: ansible_virtualization_type == "openvz" or ansible_virtualization_type == "lxc"
 
 - name: Enable WireGuard
   systemd:
