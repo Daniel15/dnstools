@@ -3,7 +3,6 @@ import {BrowserRouter as Router, Switch, Route} from 'react-router-dom';
 import {HubConnectionBuilder} from '@microsoft/signalr';
 
 import useIpData from './hooks/useIpData';
-import {Config} from './types/generated';
 import DismissableNotice from './components/DismissableNotice';
 import SignalrContext from './SignalrContext';
 import NavigationSideEffects from './components/NavigationSideEffects';
@@ -15,16 +14,12 @@ import Ping from './pages/Ping';
 import Traceroute from './pages/Traceroute';
 import Whois from './pages/Whois';
 
-type Props = {
-  config: Readonly<Config>;
-};
-
 const connection = new HubConnectionBuilder()
   .withUrl('/hub')
   .withAutomaticReconnect()
   .build();
 
-export default function App(props: Props) {
+export default function App() {
   const [isConnected, setIsConnected] = useState(false);
 
   useEffect(() => {
@@ -52,47 +47,19 @@ export default function App(props: Props) {
         <NavigationSideEffects />
         <div className="container">
           <Switch>
-            <Route
-              path="/"
-              exact
-              render={routeProps => (
-                <Index {...routeProps} config={props.config} />
-              )}
-            />
-            <Route
-              path="/lookup/:host/:type/"
-              render={routeProps => (
-                <DnsLookup {...routeProps} config={props.config} />
-              )}
-            />
-            <Route
-              path="/traversal/:host/:type/"
-              render={routeProps => (
-                <DnsTraversal {...routeProps} config={props.config} />
-              )}
-            />
-            <Route
-              path="/ping/:host/"
-              render={routeProps => (
-                <Ping {...routeProps} config={props.config} />
-              )}
-            />
+            <Route path="/" exact>
+              <Index />
+            </Route>
+            <Route path="/lookup/:host/:type/" component={DnsLookup} />
+            <Route path="/traversal/:host/:type/" component={DnsTraversal} />
+            <Route path="/ping/:host/" component={Ping} />
             <Route
               path="/traceroute/:host/"
               render={routeProps => (
-                <Traceroute
-                  {...routeProps}
-                  config={props.config}
-                  ipData={ipData}
-                />
+                <Traceroute {...routeProps} ipData={ipData} />
               )}
             />
-            <Route
-              path="/whois/:host/"
-              render={routeProps => (
-                <Whois {...routeProps} config={props.config} />
-              )}
-            />
+            <Route path="/whois/:host/" component={Whois} />
 
             {/* Dummy route for navigateWithReload() */}
             <Route path="/blank" render={() => null} />

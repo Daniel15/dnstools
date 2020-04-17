@@ -6,11 +6,8 @@ import {
   DnsLookupErrorResponse,
   DnsLookupReferralResponse,
 } from '../types/protobuf';
-import {
-  WorkerConfig,
-  DnsLookupResponseType,
-  DnsLookupType,
-} from '../types/generated';
+import {DnsLookupResponseType, DnsLookupType} from '../types/generated';
+import {WorkerConfig} from '../utils/workers';
 import WorkerLocation from './WorkerLocation';
 import ShimmerBar from './ShimmerBar';
 import {findLast} from '../utils/arrays';

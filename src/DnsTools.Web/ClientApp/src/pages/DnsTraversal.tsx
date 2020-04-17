@@ -2,12 +2,12 @@ import React, {useMemo} from 'react';
 import {RouteComponentProps} from 'react-router';
 
 import {
-  Config,
   DnsLookupRequest,
   WorkerResponse,
   DnsTraversalResponseType,
   DnsRecordType,
 } from '../types/generated';
+import Config from '../config.json';
 import MainForm, {getDefaultInput, Tool} from '../components/MainForm';
 import {getWorkers, getLookupType} from '../utils/queryString';
 import useQueryString from '../hooks/useQueryString';
@@ -26,9 +26,7 @@ import DnsTraversalLevel from '../components/DnsTraversalLevel';
 type Props = RouteComponentProps<{
   host: string;
   type: string;
-}> & {
-  config: Config;
-};
+}>;
 
 export default function DnsTraversal(props: Props) {
   const {host, type: rawType} = props.match.params;
@@ -36,8 +34,8 @@ export default function DnsTraversal(props: Props) {
   // TODO: Remove duplication with DnsLookup
   const queryString = useQueryString();
   const workers = useMemo(
-    () => getWorkers(props.config, queryString, [props.config.defaultWorker]),
-    [props.config, queryString],
+    () => getWorkers(queryString, [Config.defaultWorker]),
+    [queryString],
   );
 
   const request: DnsLookupRequest = useMemo(
@@ -101,9 +99,8 @@ export default function DnsTraversal(props: Props) {
           )).values(),
         )}
       <MainForm
-        config={props.config}
         initialInput={{
-          ...getDefaultInput(props.config),
+          ...getDefaultInput(),
           host,
           dnsLookupType: type,
           worker: workers.values().next().value,

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 
 namespace DnsTools.Web
 {
@@ -32,6 +33,11 @@ namespace DnsTools.Web
 
 		public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
 			WebHost.CreateDefaultBuilder(args)
+				.ConfigureAppConfiguration(config =>
+				{
+					// Config shared between client-side and server-side
+					config.AddJsonFile("ClientApp/src/config.json");
+				})
 				.UseStartup<Startup>();
 	}
 }

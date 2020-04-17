@@ -33,26 +33,6 @@ export interface WorkerResponse<T>
 	response: T;
 	workerId: string;
 }
-export interface Config
-{
-	defaultWorker: string;
-	reCaptchaKey: string;
-	workers: WorkerConfig[];
-}
-export interface WorkerConfig
-{
-	city: string;
-	country: string;
-	dataCenterName: string;
-	id: string;
-	latitude: number;
-	locationDisplay: string;
-	longitude: number;
-	networkAsn: number;
-	providerName: string;
-	providerUrl: string;
-	region: string;
-}
 export interface IPingReply
 {
 	bytes: number;

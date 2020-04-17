@@ -1,16 +1,12 @@
 import React from 'react';
 
-import {
-  WorkerConfig,
-  PingResponseType,
-  IPingReply,
-  IPingSummary,
-} from '../types/generated';
+import {PingResponseType, IPingReply, IPingSummary} from '../types/generated';
 import {PingResponse} from '../types/protobuf';
 import WorkerLocation from './WorkerLocation';
 import ShimmerBar from './ShimmerBar';
 import {average, standardDeviation} from '../utils/math';
 import {milliseconds} from '../utils/format';
+import {WorkerConfig} from '../utils/workers';
 
 type Props = {
   results: ReadonlyArray<PingResponse>;

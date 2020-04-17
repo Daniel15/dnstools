@@ -1,11 +1,10 @@
 import React from 'react';
 
+import Config from '../config.json';
 import {ToolMetadata} from './MainForm';
 import RadioList from './form/RadioList';
-import {Config} from '../types/generated';
 
 type Props = Readonly<{
-  config: Config;
   selectedTool: ToolMetadata;
   toolOptions: ReadonlyArray<ToolMetadata>;
   onSelectTool: (tool: ToolMetadata) => void;
@@ -49,7 +48,7 @@ function LargeToolSelector(props: Props) {
                   <p className="card-text">
                     {tool.description.replace(
                       '{workerCount}',
-                      '' + props.config.workers.length,
+                      '' + Config.workers.length,
                     )}
                   </p>
                 </div>
@@ -71,7 +70,7 @@ function LargeToolSelector(props: Props) {
 function SmallToolSelector(props: Props) {
   const description = props.selectedTool.description.replace(
     '{workerCount}',
-    '' + props.config.workers.length,
+    '' + Config.workers.length,
   );
   return (
     <div className="d-lg-none">

@@ -1,5 +1,6 @@
 import React, {useEffect, useRef, useState, useCallback} from 'react';
 
+import Config from '../config.json';
 import {CaptchaResponse} from '../types/generated';
 import Spinner from './Spinner';
 
@@ -18,7 +19,6 @@ window.onCaptchaLoaded = () => {
 };
 
 type Props = Readonly<{
-  reCaptchaKey: string;
   onVerifyStarted: () => void;
   onComplete: () => void;
 }>;
@@ -78,11 +78,11 @@ export default function CAPTCHA(props: Props) {
     }
 
     grecaptcha.render(ref.current, {
-      sitekey: props.reCaptchaKey,
+      sitekey: Config.ReCaptcha.siteKey,
       theme: 'dark',
       callback: onCompleteWrapper,
     });
-  }, [onCompleteWrapper, props.reCaptchaKey, scriptLoaded]);
+  }, [onCompleteWrapper, scriptLoaded]);
 
   return (
     <>

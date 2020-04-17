@@ -1,11 +1,12 @@
 import React from 'react';
 
 import {TracerouteResponse} from '../types/protobuf';
-import {WorkerConfig, TracerouteResponseType, IpData} from '../types/generated';
+import {TracerouteResponseType, IpData} from '../types/generated';
 import ReactTracerouteResponse from '../components/TracerouteResponse';
 import TracerouteResponseLoadingPlaceholder from '../components/TracerouteResponseLoadingPlaceholder';
 import Spinner, {Size as SpinnerSize} from '../components/Spinner';
 import WorkerLocation from './WorkerLocation';
+import {WorkerConfig} from '../utils/workers';
 
 type Props = {
   areAllCompleted: boolean;

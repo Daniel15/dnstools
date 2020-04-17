@@ -1,14 +1,10 @@
 import React from 'react';
 import {Helmet} from 'react-helmet';
 
-import {Config} from '../types/generated';
 import MainForm from '../components/MainForm';
+import Config from '../config.json';
 
-type Props = {
-  config: Config;
-};
-
-export default function Index(props: Props) {
+export default function Index() {
   return (
     <>
       <Helmet>
@@ -18,14 +14,9 @@ export default function Index(props: Props) {
         <h1 className="display-4">Welcome to DNSTools!</h1>
         <p className="lead">
           DNSTools lets you perform DNS lookups, pings, traceroutes, and other
-          utilities, from {props.config.workers.length} locations around the
-          world.
+          utilities, from {Config.workers.length} locations around the world.
         </p>
-        <MainForm
-          config={props.config}
-          isStandalone={false}
-          showSecondaryFooter={true}
-        />
+        <MainForm isStandalone={false} showSecondaryFooter={true} />
       </div>
     </>
   );

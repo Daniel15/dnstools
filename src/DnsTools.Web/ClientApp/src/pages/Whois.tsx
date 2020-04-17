@@ -2,7 +2,6 @@ import React, {useState, useEffect, useCallback} from 'react';
 import Helmet from 'react-helmet';
 import {RouteComponentProps} from 'react-router-dom';
 
-import {Config} from '../types/generated';
 import InlineWhoisForm from '../components/InlineWhoisForm';
 import Spinner from '../components/Spinner';
 import CAPTCHA from '../components/CAPTCHA';
@@ -12,9 +11,7 @@ import ShimmerBar from '../components/ShimmerBar';
 type Props = RouteComponentProps<{
   host: string;
   type: string;
-}> & {
-  config: Config;
-};
+}>;
 
 export default function Whois(props: Props) {
   const {host} = props.match.params;
@@ -84,7 +81,6 @@ export default function Whois(props: Props) {
       )}
       {showCaptcha && (
         <CAPTCHA
-          reCaptchaKey={props.config.reCaptchaKey}
           onComplete={forceReload}
           onVerifyStarted={captchaVerifyStarted}
         />
@@ -93,9 +89,8 @@ export default function Whois(props: Props) {
       {isLoading && <ShimmerBar />}
       {results && (
         <MainForm
-          config={props.config}
           initialInput={{
-            ...getDefaultInput(props.config),
+            ...getDefaultInput(),
             host,
           }}
           initialSelectedTool={Tool.Whois}

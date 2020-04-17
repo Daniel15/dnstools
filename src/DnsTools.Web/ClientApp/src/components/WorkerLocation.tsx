@@ -1,6 +1,6 @@
 import React from 'react';
 
-import {WorkerConfig} from '../types/generated';
+import {WorkerConfig} from '../utils/workers';
 import CountryFlag from './CountryFlag';
 import WithHovercard, {HovercardLocation} from './WithHovercard';
 

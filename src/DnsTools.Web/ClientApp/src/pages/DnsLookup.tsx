@@ -2,7 +2,6 @@ import React, {useMemo} from 'react';
 import {RouteComponentProps} from 'react-router';
 
 import {
-  Config,
   DnsLookupType,
   DnsLookupRequest,
   WorkerResponse,
@@ -22,18 +21,13 @@ import {groupResponsesByWorker} from '../utils/workers';
 type Props = RouteComponentProps<{
   host: string;
   type: string;
-}> & {
-  config: Config;
-};
+}>;
 
 export default function DnsLookup(props: Props) {
   const {host, type: rawType} = props.match.params;
   const type = getLookupType(rawType);
   const queryString = useQueryString();
-  const workers = useMemo(() => getWorkers(props.config, queryString), [
-    props.config,
-    queryString,
-  ]);
+  const workers = useMemo(() => getWorkers(queryString), [queryString]);
 
   const request: DnsLookupRequest = useMemo(
     () => ({host, type, workers: Array.from(workers)}),
@@ -43,11 +37,7 @@ export default function DnsLookup(props: Props) {
     'dnslookup',
     request,
   );
-  const workerResponses = groupResponsesByWorker(
-    props.config.workers,
-    workers,
-    data.results,
-  );
+  const workerResponses = groupResponsesByWorker(workers, data.results);
 
   return (
     <>
@@ -113,9 +103,8 @@ export default function DnsLookup(props: Props) {
           </p>
 
           <MainForm
-            config={props.config}
             initialInput={{
-              ...getDefaultInput(props.config),
+              ...getDefaultInput(),
               host,
               dnsLookupType: type,
               worker: workers.values().next().value,

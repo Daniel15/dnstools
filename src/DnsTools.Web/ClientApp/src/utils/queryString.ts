@@ -1,4 +1,5 @@
-import {Protocol, Config, DnsLookupType} from '../types/generated';
+import {Protocol, DnsLookupType} from '../types/generated';
+import Config from '../config.json';
 
 export function getProtocol(queryString: URLSearchParams): Protocol {
   const rawProtocol = queryString.get('proto') || Protocol[Protocol.Any];
@@ -7,7 +8,6 @@ export function getProtocol(queryString: URLSearchParams): Protocol {
 }
 
 export function getWorkers(
-  config: Config,
   queryString: URLSearchParams,
   def?: ReadonlyArray<string>,
 ): ReadonlySet<string> {
@@ -15,7 +15,7 @@ export function getWorkers(
   return new Set(
     rawWorkers
       ? rawWorkers.split(',')
-      : def || config.workers.map(worker => worker.id),
+      : def || Config.workers.map(worker => worker.id),
   );
 }
 

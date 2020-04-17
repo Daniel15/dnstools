@@ -1,21 +1,22 @@
-import {Config, WorkerResponse, WorkerConfig} from '../types/generated';
+import {WorkerResponse} from '../types/generated';
+import Config from '../config.json';
+
+export type WorkerConfig = typeof Config['workers'][0];
 
 /**
  * Returns `null` if the specified set of workers contains all the workers, otherwise
  * serializes the selected workers as an array.
  */
 export function serializeWorkers(
-  config: Config,
   workers: ReadonlySet<string>,
 ): ReadonlyArray<string> | undefined {
-  return workers.size === config.workers.length &&
-    config.workers.every(worker => workers.has(worker.id))
+  return workers.size === Config.workers.length &&
+    Config.workers.every(worker => workers.has(worker.id))
     ? undefined
     : Array.from(workers);
 }
 
 export function groupResponsesByWorker<T>(
-  workers: ReadonlyArray<WorkerConfig>,
   selectedWorkers: ReadonlySet<string>,
   results: ReadonlyArray<WorkerResponse<T>>,
 ): ReadonlyArray<
@@ -33,7 +34,7 @@ export function groupResponsesByWorker<T>(
 
   // Add empty arrays for any workers that haven't returned yet, and keep
   // everything in the same order as the `workers` array.
-  return workers
+  return Config.workers
     .filter(worker => selectedWorkers.has(worker.id))
     .map(worker => ({
       worker,

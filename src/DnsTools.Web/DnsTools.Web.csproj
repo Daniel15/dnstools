@@ -55,6 +55,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="ClientApp\src\config.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="dnstools-web.service">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

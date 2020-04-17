@@ -1,4 +1,5 @@
-﻿using DnsTools.Web.Models.Config;
+﻿using System.Linq;
+using DnsTools.Web.Models.Config;
 using DnsTools.Web.Services;
 using DnsTools.Web.ViewModels;
 using Microsoft.AspNetCore.Mvc;
@@ -57,15 +58,9 @@ namespace DnsTools.Web.Controllers
 
 		private IActionResult RenderIndex(string? title = null)
 		{
-			var workers = _workerProvider.GetWorkerConfigs();
 			var model = new IndexViewModel
 			{
-				Config = new FrontEndConfig
-				{
-					DefaultWorker = _config.DefaultWorker,
-					Workers = workers,
-					ReCaptchaKey = _config.ReCaptcha.SiteKey,
-				},
+				WorkerCount = _workerProvider.GetWorkerConfigs().Count(),
 			};
 			if (title != null)
 			{

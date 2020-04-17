@@ -2,7 +2,8 @@ import {LocationDescriptorObject} from 'history';
 import React, {useState, FormEvent} from 'react';
 import {useHistory} from 'react-router';
 
-import {Protocol, DnsLookupType, Config} from '../types/generated';
+import {Protocol, DnsLookupType} from '../types/generated';
+import Config from '../config.json';
 import CheckboxList, {Option} from './form/CheckboxList';
 import DropdownButton from './DropdownButton';
 import FormRow from '../components/form/FormRow';
@@ -14,7 +15,6 @@ import ToolSelector from './ToolSelector';
 import FooterHostingProviders from './FooterHostingProviders';
 
 type Props = {
-  config: Config;
   initialSelectedTool?: Tool;
   initialInput?: ToolInput;
   isStandalone: boolean;
@@ -83,13 +83,13 @@ const toolOptions: ReadonlyArray<ToolMetadata> = [
   },
 ];
 
-export function getDefaultInput(config: Config): ToolInput {
+export function getDefaultInput(): ToolInput {
   return {
     dnsLookupType: DnsLookupType.A,
     host: '',
     protocol: Protocol.Any,
-    workers: new Set(config.workers.map(worker => worker.id)),
-    worker: config.defaultWorker,
+    workers: new Set(Config.workers.map(worker => worker.id)),
+    worker: Config.defaultWorker,
   };
 }
 
@@ -104,18 +104,15 @@ export default function MainForm(props: Props) {
     return initialTool;
   });
   const [input, setInput] = useState<ToolInput>(
-    () => props.initialInput || getDefaultInput(props.config),
+    () => props.initialInput || getDefaultInput(),
   );
   const history = useHistory();
   function onSubmit(evt: FormEvent<HTMLFormElement>) {
     evt.preventDefault();
-    navigateWithReload(
-      history,
-      buildToolURI({config: props.config, tool: selectedTool.tool, input}),
-    );
+    navigateWithReload(history, buildToolURI({tool: selectedTool.tool, input}));
   }
 
-  const workerOptions = props.config.workers.map(worker => ({
+  const workerOptions = Config.workers.map(worker => ({
     id: worker.id,
     label: (
       <>
@@ -132,7 +129,6 @@ export default function MainForm(props: Props) {
         onSubmit={onSubmit}>
         <FormRow id="tool" isInput={false} label="Tool">
           <ToolSelector
-            config={props.config}
             selectedTool={selectedTool}
             toolOptions={toolOptions}
             onSelectTool={setSelectedTool}
@@ -152,7 +148,6 @@ export default function MainForm(props: Props) {
         {(selectedTool.tool === Tool.Ping ||
           selectedTool.tool === Tool.Traceroute) && (
           <PingInput
-            config={props.config}
             input={input}
             onChangeInput={setInput}
             workerOptions={workerOptions}
@@ -162,7 +157,6 @@ export default function MainForm(props: Props) {
           selectedTool.tool === Tool.DnsTraversal ||
           selectedTool.tool === Tool.ReverseDns) && (
           <DnsLookupInput
-            config={props.config}
             input={input}
             onChangeInput={setInput}
             tool={selectedTool.tool}
@@ -195,7 +189,6 @@ export default function MainForm(props: Props) {
 }
 
 function PingInput(props: {
-  config: Config;
   input: ToolInput;
   onChangeInput: (input: ToolInput) => void;
   workerOptions: ReadonlyArray<Option>;
@@ -229,7 +222,6 @@ function PingInput(props: {
         />
       </FormRow>
       <Locations
-        config={props.config}
         input={props.input}
         onChangeInput={props.onChangeInput}
         workerOptions={props.workerOptions}
@@ -239,7 +231,6 @@ function PingInput(props: {
 }
 
 function DnsLookupInput(props: {
-  config: Config;
   input: ToolInput;
   onChangeInput: (input: ToolInput) => void;
   tool: Tool;
@@ -272,7 +263,6 @@ function DnsLookupInput(props: {
       )}
       {props.tool !== Tool.DnsTraversal && (
         <Locations
-          config={props.config}
           input={props.input}
           onChangeInput={props.onChangeInput}
           workerOptions={props.workerOptions}
@@ -286,7 +276,7 @@ function DnsLookupInput(props: {
           onSelect={newWorker =>
             props.onChangeInput({
               ...props.input,
-              worker: newWorker || props.config.defaultWorker,
+              worker: newWorker || Config.defaultWorker,
             })
           }
         />
@@ -296,14 +286,13 @@ function DnsLookupInput(props: {
 }
 
 function Locations(props: {
-  config: Config;
   input: ToolInput;
   onChangeInput: (input: ToolInput) => void;
   workerOptions: ReadonlyArray<Option>;
 }) {
   let label = 'All';
-  if (props.input.workers.size < props.config.workers.length) {
-    const selectedWorkers = props.config.workers.filter(worker =>
+  if (props.input.workers.size < Config.workers.length) {
+    const selectedWorkers = Config.workers.filter(worker =>
       props.input.workers.has(worker.id),
     );
     label = selectedWorkers.map(worker => worker.locationDisplay).join('; ');
@@ -328,11 +317,9 @@ function Locations(props: {
 }
 
 function buildToolURI({
-  config,
   tool,
   input,
 }: {
-  config: Config;
   tool: Tool;
   input: ToolInput;
 }): LocationDescriptorObject {
@@ -381,13 +368,13 @@ function buildToolURI({
     tool === Tool.DnsLookup ||
     tool === Tool.ReverseDns
   ) {
-    if (input.workers.size < config.workers.length) {
+    if (input.workers.size < Config.workers.length) {
       params.append('workers', Array.from(input.workers).join(','));
     }
   }
 
   if (tool === Tool.DnsTraversal) {
-    if (input.worker !== config.defaultWorker) {
+    if (input.worker !== Config.defaultWorker) {
       params.append('workers', input.worker);
     }
   }

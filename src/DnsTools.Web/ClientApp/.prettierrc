@@ -3,3 +3,4 @@ singleQuote: true
 trailingComma: all
 bracketSpacing: false
 jsxBracketSameLine: true
+arrowParens: avoid

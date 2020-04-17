@@ -5,9 +5,9 @@ import {RouteComponentProps} from 'react-router';
 import {
   PingRequest,
   WorkerResponse,
-  Config,
   PingResponseType,
 } from '../types/generated';
+import Config from '../config.json';
 import {PingResponse, PingHostLookupResponse} from '../types/protobuf';
 import useSignalrStream from '../hooks/useSignalrStream';
 import PingWorkerResult from '../components/PingWorkerResult';
@@ -19,31 +19,22 @@ import MainForm, {getDefaultInput, Tool} from '../components/MainForm';
 
 type Props = RouteComponentProps<{
   host: string;
-}> & {
-  config: Config;
-};
+}>;
 
 export default function Ping(props: Props) {
   const host = props.match.params.host;
   const queryString = useQueryString();
   const protocol = getProtocol(queryString);
-  const workers = useMemo(() => getWorkers(props.config, queryString), [
-    props.config,
-    queryString,
-  ]);
+  const workers = useMemo(() => getWorkers(queryString), [queryString]);
 
   const request: PingRequest = useMemo(
-    () => ({host, protocol, workers: serializeWorkers(props.config, workers)}),
-    [host, protocol, workers, props.config],
+    () => ({host, protocol, workers: serializeWorkers(workers)}),
+    [host, protocol, workers],
   );
   const data = useSignalrStream<WorkerResponse<PingResponse>>('ping', request);
-  const workerResponses = groupResponsesByWorker(
-    props.config.workers,
-    workers,
-    data.results,
-  );
+  const workerResponses = groupResponsesByWorker(workers, data.results);
 
-  const {showIPs, onlyIP} = summarizeIPs(props.config, data.results);
+  const {showIPs, onlyIP} = summarizeIPs(data.results);
 
   return (
     <>
@@ -76,9 +67,8 @@ export default function Ping(props: Props) {
       </table>
 
       <MainForm
-        config={props.config}
         initialInput={{
-          ...getDefaultInput(props.config),
+          ...getDefaultInput(),
           host,
           protocol,
           workers,
@@ -96,7 +86,6 @@ export default function Ping(props: Props) {
  * workers.
  */
 function summarizeIPs(
-  config: Config,
   results: ReadonlyArray<WorkerResponse<PingResponse>>,
 ): {
   showIPs: boolean;
@@ -115,7 +104,7 @@ function summarizeIPs(
   }
 
   const firstIP = hostLookups[0].response.lookup.ip;
-  const firstWorker = config.workers.find(
+  const firstWorker = Config.workers.find(
     worker => worker.id === hostLookups[0].workerId,
   );
   const areAllSameIP = hostLookups.every(
@@ -132,7 +121,7 @@ function summarizeIPs(
   const areAllSameCountry = hostLookups.every(lookup => {
     // This does a linear search, but almost all workers are in a different country, so generally
     // it'll do at most a single search, which is fine.
-    const worker = config.workers.find(worker => worker.id === lookup.workerId);
+    const worker = Config.workers.find(worker => worker.id === lookup.workerId);
     return (
       firstWorker == null ||
       worker == null ||
