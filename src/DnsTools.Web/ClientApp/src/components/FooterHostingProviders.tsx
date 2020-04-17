@@ -21,6 +21,11 @@ const providers = [
     tooltip: 'VPS hosting starting from $4 per year',
     url: 'https://mrvm.net/natvps/',
   },
+  {
+    name: 'Zappie Host',
+    tooltip: 'VPS hosting in New Zealand and South Africa',
+    url: 'https://zappiehost.com/',
+  },
 ];
 
 export default function FooterHostingProviders() {
