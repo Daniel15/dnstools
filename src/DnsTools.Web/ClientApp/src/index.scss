@@ -145,3 +145,7 @@ $popover-colors: 'primary' $primary, 'success' $success;
 	overflow: hidden;
 	will-change: height, opacity, transform;
 }
+
+.sortable-header {
+	cursor: pointer;
+}

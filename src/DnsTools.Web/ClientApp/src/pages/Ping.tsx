@@ -10,7 +10,8 @@ import {
 import Config from '../config.json';
 import {PingResponse, PingHostLookupResponse} from '../types/protobuf';
 import useSignalrStream from '../hooks/useSignalrStream';
-import PingWorkerResult from '../components/PingWorkerResult';
+import {createRow} from '../components/PingWorkerResult';
+import Table, {Header} from '../components/Table';
 import Spinner from '../components/Spinner';
 import useQueryString from '../hooks/useQueryString';
 import {getProtocol, getWorkers} from '../utils/queryString';
@@ -20,6 +21,13 @@ import MainForm, {getDefaultInput, Tool} from '../components/MainForm';
 type Props = RouteComponentProps<{
   host: string;
 }>;
+
+const headers: ReadonlyArray<Header> = [
+  {label: 'Location', width: '25%'},
+  {label: 'Response Time', width: '20%'},
+  {label: 'Deviation', width: '20%'},
+  {label: 'Info'},
+];
 
 export default function Ping(props: Props) {
   const host = props.match.params.host;
@@ -35,6 +43,14 @@ export default function Ping(props: Props) {
   const workerResponses = groupResponsesByWorker(workers, data.results);
 
   const {showIPs, onlyIP} = summarizeIPs(data.results);
+  const rows = workerResponses.map((worker, index) =>
+    createRow({
+      results: worker.responses,
+      showIP: showIPs,
+      worker: worker.worker,
+      workerIndex: index,
+    }),
+  );
 
   return (
     <>
@@ -45,26 +61,12 @@ export default function Ping(props: Props) {
         Ping {host} {onlyIP && onlyIP !== host && <>({onlyIP})</>}{' '}
         {!data.isComplete && <Spinner />}
       </h1>
-      <table className="table table-striped">
-        <thead>
-          <tr>
-            <th scope="col">Location</th>
-            <th scope="col">Response Time</th>
-            <th scope="col">Deviation</th>
-            <th scope="col">Info</th>
-          </tr>
-        </thead>
-        <tbody>
-          {workerResponses.map(worker => (
-            <PingWorkerResult
-              key={worker.worker.id}
-              results={worker.responses}
-              showIP={showIPs}
-              worker={worker.worker}
-            />
-          ))}
-        </tbody>
-      </table>
+      <Table
+        defaultSortColumn="Location"
+        headers={headers}
+        isStriped={true}
+        rows={rows}
+      />
 
       <MainForm
         initialInput={{

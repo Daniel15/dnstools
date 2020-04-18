@@ -7,14 +7,16 @@ import ShimmerBar from './ShimmerBar';
 import {average, standardDeviation} from '../utils/math';
 import {milliseconds} from '../utils/format';
 import {WorkerConfig} from '../utils/workers';
+import {Row, Column} from './Table';
 
 type Props = {
   results: ReadonlyArray<PingResponse>;
   showIP: boolean;
   worker: Readonly<WorkerConfig>;
+  workerIndex: number;
 };
 
-export default function PingWorkerResult(props: Props) {
+export function createRow(props: Props): Row {
   const replies: Array<IPingReply> = [];
   const errors: Array<string> = [];
   let summary: IPingSummary | undefined;
@@ -54,7 +56,7 @@ export default function PingWorkerResult(props: Props) {
   const avgReply = replyTimes.length > 0 ? average(replyTimes) : null;
   const dev = standardDeviation(replyTimes);
 
-  let rowText = null;
+  let rowText: React.ReactNode | null = null;
   if (errors.length > 0) {
     rowText = 'ERROR: ' + errors.join(', ');
   } else if (summary != null && summary.received === 0) {
@@ -67,33 +69,45 @@ export default function PingWorkerResult(props: Props) {
     rowText = <ShimmerBar />;
   }
 
-  return (
-    <>
-      <tr>
-        <td className="align-middle">
-          <WorkerLocation worker={props.worker} />
-        </td>
-        {rowText && (
-          <td className="align-middle" colSpan={4}>
-            {rowText}
-          </td>
-        )}
-        {!rowText && (
-          <>
-            <td className="align-middle">
-              {avgReply && milliseconds(avgReply)}
-            </td>
-            <td className="align-middle">
-              {replyTimes.length > 1 && milliseconds(dev)}
-            </td>
-            <td className="align-middle">
-              <PingProgress results={props.results} ip={ip} summary={summary} />
-            </td>
-          </>
-        )}
-      </tr>
-    </>
-  );
+  const columns: Array<Column> = [
+    {
+      // Maintain original order as per config
+      sortValue: props.workerIndex,
+      value: <WorkerLocation worker={props.worker} />,
+    },
+  ];
+
+  if (rowText) {
+    columns.push({
+      colSpan: 3,
+      sortValue: null,
+      value: rowText,
+    });
+  } else {
+    columns.push(
+      {
+        sortValue: avgReply,
+        value: avgReply && milliseconds(avgReply),
+      },
+      {
+        sortValue: dev,
+        value: replyTimes.length > 1 && milliseconds(dev),
+      },
+      {
+        // If still loading, sort by the number of results received
+        // If finished loading, sort by IP (if one is specified). If `ip` is undefined,
+        // nothing is showing in this cell (that is, every row has the same IP)
+        sortValue: summary == null ? props.results.length : ip,
+        value: (
+          <PingProgress results={props.results} ip={ip} summary={summary} />
+        ),
+      },
+    );
+  }
+
+  return {
+    columns,
+  };
 }
 
 const REPLY_COUNT = 5;
