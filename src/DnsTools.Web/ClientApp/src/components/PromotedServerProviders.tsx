@@ -31,7 +31,6 @@ const providers = [
 export default function FooterHostingProviders() {
   return (
     <>
-      Server hosting sponsored by{' '}
       {commaSeparate(
         providers.map(provider => (
           <WithHovercard
@@ -56,7 +55,6 @@ export default function FooterHostingProviders() {
         )),
         'and',
       )}
-      .
     </>
   );
 }

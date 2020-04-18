@@ -1,5 +1,6 @@
 {
   "defaultWorker": "us-lv",
+  "googleMapsKey": "CHANGEME",
   "ReCaptcha": {
     "siteKey": "CHANGEME"
   },

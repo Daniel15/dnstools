@@ -10,6 +10,7 @@ import NavigationSideEffects from './components/NavigationSideEffects';
 import DnsLookup from './pages/DnsLookup';
 import DnsTraversal from './pages/DnsTraversal';
 import Index from './pages/Index';
+import Locations from './pages/Locations';
 import Ping from './pages/Ping';
 import Traceroute from './pages/Traceroute';
 import Whois from './pages/Whois';
@@ -60,6 +61,9 @@ export default function App() {
               )}
             />
             <Route path="/whois/:host/" component={Whois} />
+            <Route path="/locations/">
+              <Locations />
+            </Route>
 
             {/* Dummy route for navigateWithReload() */}
             <Route path="/blank" render={() => null} />

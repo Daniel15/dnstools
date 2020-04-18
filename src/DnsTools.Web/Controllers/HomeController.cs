@@ -56,6 +56,12 @@ namespace DnsTools.Web.Controllers
 			return RenderIndex($"WHOIS for {host}");
 		}
 
+		[Route("/locations/")]
+		public IActionResult Locations()
+		{
+			return RenderIndex("DNSTools Server Locations");
+		}
+
 		private IActionResult RenderIndex(string? title = null)
 		{
 			var model = new IndexViewModel

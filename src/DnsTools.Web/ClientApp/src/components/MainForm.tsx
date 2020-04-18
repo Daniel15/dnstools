@@ -12,7 +12,7 @@ import RadioList from '../components/form/RadioList';
 import {navigateWithReload} from '../utils/routing';
 import CountryFlag from './CountryFlag';
 import ToolSelector from './ToolSelector';
-import FooterHostingProviders from './FooterHostingProviders';
+import PromotedServerProviders from './PromotedServerProviders';
 
 type Props = {
   initialSelectedTool?: Tool;
@@ -180,7 +180,7 @@ export default function MainForm(props: Props) {
       {props.showSecondaryFooter && (
         <div className="mt-3">
           <small>
-            <FooterHostingProviders />
+            Server hosting sponsored by <PromotedServerProviders />.
           </small>
         </div>
       )}
