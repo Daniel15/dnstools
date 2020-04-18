@@ -19,6 +19,8 @@ export default function Locations() {
       <LazyChart
         options={{
           backgroundColor: '#222',
+          datalessRegionColor: '#666',
+          defaultColor: '#3498DB',
           tooltip: {
             isHtml: true,
           },
