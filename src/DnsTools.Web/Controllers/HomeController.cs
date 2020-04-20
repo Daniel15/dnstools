@@ -1,23 +1,10 @@
-﻿using System.Linq;
-using DnsTools.Web.Models.Config;
-using DnsTools.Web.Services;
-using DnsTools.Web.ViewModels;
+﻿using DnsTools.Web.ViewModels;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
 
 namespace DnsTools.Web.Controllers
 {
 	public class HomeController : Controller
 	{
-		private readonly IWorkerProvider _workerProvider;
-		private readonly AppConfig _config;
-
-		public HomeController(IWorkerProvider workerProvider, IOptions<AppConfig> config)
-		{
-			_workerProvider = workerProvider;
-			_config = config.Value;
-		}
-
 		[Route("")]
 		public IActionResult Index()
 		{
@@ -56,23 +43,14 @@ namespace DnsTools.Web.Controllers
 			return RenderIndex($"WHOIS for {host}");
 		}
 
-		[Route("/locations/")]
-		public IActionResult Locations()
-		{
-			return RenderIndex("DNSTools Server Locations");
-		}
-
 		private IActionResult RenderIndex(string? title = null)
 		{
-			var model = new IndexViewModel
-			{
-				WorkerCount = _workerProvider.GetWorkerConfigs().Count(),
-			};
+			var model = new IndexViewModel();
 			if (title != null)
 			{
 				model.Title = title;
 			}
-			return View("Index", model);
+			return View("~/Views/React/200.cshtml", model);
 		}
 	}
 }

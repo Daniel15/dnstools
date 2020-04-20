@@ -15,9 +15,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
-using WebpackTag;
 
 namespace DnsTools.Web
 {
@@ -47,20 +45,10 @@ namespace DnsTools.Web
 
 			services.AddSingleton<TracerouteRunner>();
 
-			services.AddWebpackTag(config =>
-			{
-				config.DevServerPort = 31429;
-			});
 			services.AddControllersWithViews();
 			services.AddSignalR().AddJsonProtocol(options =>
 			{
 				options.PayloadSerializerOptions.IgnoreNullValues = true;
-			});
-
-			// In production, the React files will be served from this directory
-			services.AddSpaStaticFiles(configuration =>
-			{
-				configuration.RootPath = "ClientApp/build";
 			});
 
 			services.AddDistributedMemoryCache();
@@ -93,6 +81,15 @@ namespace DnsTools.Web
 				app.UseDeveloperExceptionPage();
 				// Allow unencrypted gRPC calls in development
 				AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
+				app.UseCors(config =>
+				{
+					config.WithOrigins(
+						// create-react-app server
+						"http://localhost:31429",
+					)
+					.AllowAnyHeader()
+					.AllowCredentials();
+				});
 			}
 			else
 			{
@@ -107,7 +104,6 @@ namespace DnsTools.Web
 				ForwardedHeaders = ForwardedHeaders.XForwardedFor
 			});
 			app.UseStaticFiles();
-			app.UseSpaStaticFiles();
 			app.UseSession();
 
 			app.UseRouting();
@@ -129,15 +125,6 @@ namespace DnsTools.Web
 					name: "default",
 					pattern: "{controller}/{action=Index}/{id?}");
 			});
-
-			if (env.IsDevelopment())
-			{
-				app.UseSpa(spa =>
-				{
-					spa.Options.SourcePath = "ClientApp";
-					spa.UseProxyToSpaDevelopmentServer("http://localhost:31429");
-				});
-			}
 		}
 	}
 }

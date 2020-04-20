@@ -4,6 +4,7 @@
 # Site-specific
 .idea
 PublishTmp/
+src/DnsTools.Web/Views/React/
 
 # dependencies
 vendor/

@@ -16,7 +16,11 @@ import Traceroute from './pages/Traceroute';
 import Whois from './pages/Whois';
 
 const connection = new HubConnectionBuilder()
-  .withUrl('/hub')
+  .withUrl(
+    /^(localhost|dnstools.test)/.test(window.location.hostname)
+      ? 'https://localhost:5001/hub'
+      : '/hub',
+  )
   .withAutomaticReconnect()
   .build();
 
