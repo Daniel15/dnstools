@@ -10,6 +10,10 @@ export default function Index() {
     <>
       <Helmet>
         <title>Welcome to DNSTools!</title>
+        <meta
+          name="description"
+          content={`DNSTools lets you perform DNS lookups, pings, traceroutes, and other utilities, from ${Config.workers.length} locations around the world.`}
+        />
       </Helmet>
       <div className="jumbotron mt-5">
         <h1 className="display-4">Welcome to DNSTools!</h1>

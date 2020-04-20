@@ -29,7 +29,6 @@
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.9.10" />
     <PackageReference Include="Reinforced.Typings" Version="1.5.7" />
-    <PackageReference Include="WebpackTag" Version="1.0.0" />
   </ItemGroup>
 
   <ItemGroup>

@@ -22,8 +22,6 @@ namespace DnsTools.Web.Models.Config
 
 		public class ReCaptchaConfig
 		{
-			public string SiteKey { get; set; } = default!;
-
 			public string SecretKey { get; set; } = default!;
 		}
 
