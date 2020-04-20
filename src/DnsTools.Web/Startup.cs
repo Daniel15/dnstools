@@ -38,6 +38,7 @@ namespace DnsTools.Web
 			});
 
 			services.Configure<AppConfig>(Configuration);
+			services.AddSingleton<IHttp2PushManifestHandler, Http2PushManifestHandler>();
 			services.AddSingleton<IWorkerProvider, WorkerProvider>();
 			services.AddSingleton<IMaxMind, Services.MaxMind>();
 			services.AddSingleton<IIpDataProvider, IpDataProvider>();
@@ -81,6 +82,8 @@ namespace DnsTools.Web
 				app.UseDeveloperExceptionPage();
 				// Allow unencrypted gRPC calls in development
 				AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
+
+				// Enable CORS from create-react-app server
 				app.UseCors(config =>
 				{
 					config.WithOrigins(
