@@ -86,6 +86,8 @@ namespace DnsTools.Web
 					config.WithOrigins(
 						// create-react-app server
 						"http://localhost:31429",
+						// react-snap server
+						"http://localhost:45678"
 					)
 					.AllowAnyHeader()
 					.AllowCredentials();

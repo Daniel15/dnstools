@@ -17,6 +17,7 @@ import PromotedServerProviders from './PromotedServerProviders';
 type Props = {
   initialSelectedTool?: Tool;
   initialInput?: ToolInput;
+  isLoading?: boolean;
   isStandalone: boolean;
   showSecondaryFooter?: boolean;
 };
@@ -165,9 +166,9 @@ export default function MainForm(props: Props) {
         )}
         <button
           className="btn btn-primary btn-lg"
-          disabled={input.host === ''}
+          disabled={props.isLoading || input.host === ''}
           type="submit">
-          Do it!
+          {props.isLoading ? 'Loading...' : 'Do it!'}
         </button>
       </form>
       <p className="mt-3">

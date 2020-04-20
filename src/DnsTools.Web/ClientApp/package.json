@@ -38,6 +38,7 @@
     "analyze": "source-map-explorer 'build/static/js/*.js'",
     "start": "craco start",
     "build": "craco build",
+    "postbuild": "react-snap",
     "test": "craco test",
     "generate-cshtml": "node ./generate-cshtml.js",
     "eject": "react-scripts eject"
@@ -57,6 +58,12 @@
       "last 1 safari version"
     ]
   },
+  "devDependencies": {
+    "react-snap": "1.23.0"
+  },
   "proxy": "https://localhost:5001",
+  "reactSnap": {
+    "skipThirdPartyRequests": false,
+    "http2PushManifest": true
   }
 }
