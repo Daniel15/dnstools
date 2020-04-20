@@ -71,7 +71,7 @@ export function Sort({
             l 100,0
             z"
           fill={state === SortOrder.ASC ? 'white' : SORT_DISABLED_COLOR}
-          fill-rule="evenodd"
+          fillRule="evenodd"
         />
       )}
       {showDownArrow && (
@@ -83,7 +83,7 @@ export function Sort({
             l -100,0
             z`}
           fill={state === SortOrder.DESC ? 'white' : SORT_DISABLED_COLOR}
-          fill-rule="evenodd"
+          fillRule="evenodd"
         />
       )}
     </svg>
