@@ -22,7 +22,12 @@ The `DnsTools.sln` VS2019 solution contains both the website and the worker.
 
 ## Website
 
-To run the website, run `DnsTools.Web` from Visual Studio (or via `dotnet run` at the command-line), and also run `yarn start` in the `ClientApp` directory (which will start the Webpack development server).
+The website consists of two parts: A frontend app built using Create React App, and a backend app built using C#. To run the development version of the website, you need to start both:
+
+- Frontend: Run `yarn start` in the `src/DnsTools.Web/ClientApp` directory
+- Backend: Run `DnsTools.Web` from Visual Studio, or via `dotnet run` at the command-line
+
+You can then hit the site at `http://localhost:31429/`. The C# backend is running on `https://localhost:5001/` but this is only used for API requests - All webpages are loaded via the Webpack dev server.
 
 ## Worker
 
@@ -32,16 +37,17 @@ The worker requires a few Linux utilities (like `ping` and `traceroute`) to be a
 
 ## Website
 
-Build the site using `dotnet publish`:
+Build the site using the `publish` script:
 
 ```sh
-dotnet publish --no-self-contained -r linux-x64 -c Release
+cd src/DnsTools.web
+./publish
 ```
 
 `rsync` it to prod:
 
 ```sh
-rsync -avz --progress src/DnsTools.Web/bin/release/netcoreapp3.0/linux-x64/publish/ dnstools-deploy@dnstools.ws:/var/www/dnstools/
+rsync -avz --progress src/DnsTools.Web/bin/release/netcoreapp3.1/linux-x64/publish/ dnstools-deploy@dnstools.ws:/var/www/dnstools/
 ```
 
 ## Workers
