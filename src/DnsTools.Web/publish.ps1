@@ -5,7 +5,7 @@ function Assert-LastExitCode {
 	if ($LASTEXITCODE -ne 0) {
 	  throw 'Non-zero exit code encountered'
 	}
-  }
+}
 
 cd ClientApp
 yarn install --frozen-lockfile; Assert-LastExitCode
