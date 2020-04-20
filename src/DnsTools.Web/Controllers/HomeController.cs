@@ -1,14 +1,23 @@
-﻿using DnsTools.Web.ViewModels;
+﻿using DnsTools.Web.Services;
+using DnsTools.Web.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DnsTools.Web.Controllers
 {
 	public class HomeController : Controller
 	{
+		private readonly IHttp2PushManifestHandler _pushManifest;
+
+		public HomeController(IHttp2PushManifestHandler pushManifest)
+		{
+			_pushManifest = pushManifest;
+		}
+
 		[Route("")]
 		public IActionResult Index()
 		{
-			return RenderIndex();
+			_pushManifest.SendHeaders("/", Response);
+			return View("~/Views/React/Index.cshtml");
 		}
 
 		// ALL client-side routes must be covered below:
@@ -16,41 +25,47 @@ namespace DnsTools.Web.Controllers
 		[Route("/ping/{host}/")]
 		public IActionResult Ping(string host)
 		{
-			return RenderIndex($"Ping {host}");
+			return RenderNonPreRenderedPage($"Ping {host}");
 		}
 
 		[Route("/traceroute/{host}/")]
 		public IActionResult Traceroute(string host)
 		{
-			return RenderIndex($"Traceroute to {host}");
+			return RenderNonPreRenderedPage($"Traceroute to {host}");
 		}
 
 		[Route("/lookup/{host}/{type}/")]
 		public IActionResult Lookup(string host)
 		{
-			return RenderIndex($"DNS Lookup for {host}");
+			return RenderNonPreRenderedPage($"DNS Lookup for {host}");
 		}
 
 		[Route("/traversal/{host}/{type}/")]
 		public IActionResult Traversal(string host)
 		{
-			return RenderIndex($"DNS Traversal for {host}");
+			return RenderNonPreRenderedPage($"DNS Traversal for {host}");
 		}
 
 		[Route("/whois/{host}/")]
 		public IActionResult Whois(string host)
 		{
-			return RenderIndex($"WHOIS for {host}");
+			return RenderNonPreRenderedPage($"WHOIS for {host}");
 		}
 
-		private IActionResult RenderIndex(string? title = null)
+		[Route("/locations/")]
+		public IActionResult Locations()
 		{
-			var model = new IndexViewModel();
-			if (title != null)
+			_pushManifest.SendHeaders("/locations/", Response);
+			return View("~/Views/React/Locations.cshtml");
+		}
+
+		private IActionResult RenderNonPreRenderedPage(string title)
+		{
+			_pushManifest.SendHeaders("/", Response);
+			return View("~/Views/React/200.cshtml", new IndexViewModel
 			{
-				model.Title = title;
-			}
-			return View("~/Views/React/200.cshtml", model);
+				Title = title,
+			});
 		}
 	}
 }
