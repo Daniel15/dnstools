@@ -1,11 +1,12 @@
 import * as React from 'react';
 import {ReactGoogleChartProps} from 'react-google-charts/dist/types';
-import {isPrerendering} from '../utils/prerendering';
+import {useIsPrerendering} from '../utils/prerendering';
 
 const Chart = React.lazy(() => import('react-google-charts'));
 
 export default function LazyChart(props: ReactGoogleChartProps) {
   const placeholder = <LoadingPlaceholder height={props.height || 0} />;
+  const isPrerendering = useIsPrerendering();
   if (isPrerendering) {
     return placeholder;
   }
