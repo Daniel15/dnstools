@@ -3,9 +3,9 @@ import {BrowserRouter as Router, Switch, Route} from 'react-router-dom';
 import {HubConnectionBuilder} from '@microsoft/signalr';
 
 import useIpData from './hooks/useIpData';
-import DismissableNotice from './components/DismissableNotice';
 import SignalrContext from './SignalrContext';
 import NavigationSideEffects from './components/NavigationSideEffects';
+import {isPrerendering} from './utils/prerendering';
 
 import DnsLookup from './pages/DnsLookup';
 import DnsTraversal from './pages/DnsTraversal';
@@ -28,26 +28,20 @@ export default function App() {
   const [isConnected, setIsConnected] = useState(false);
 
   useEffect(() => {
-    connection
-      .start()
-      .then(() => setIsConnected(true))
-      .catch(err => alert('Could not connect: ' + err.message));
-    return () => {};
+    // Only connect to SignalR if not prerendering... when prerendering, we
+    // just want to render the initial state.
+    if (!isPrerendering) {
+      connection
+        .start()
+        .then(() => setIsConnected(true))
+        .catch(err => alert('Could not connect: ' + err.message));
+      return () => {};
+    }
   }, []);
 
   const ipData = useIpData(connection);
   return (
     <SignalrContext.Provider value={{connection, isConnected}}>
-      <DismissableNotice id="new-site">
-        <strong>2020-01-13</strong>: Welcome to the new DNSTools site! More
-        features will be coming in the future. Please feel free to provide any
-        feedback via{' '}
-        <a href="https://twitter.com/Daniel15/status/1216465241506115584">
-          Twitter
-        </a>
-        , <a href="https://www.facebook.com/daaniel">Facebook</a>, or email to{' '}
-        <a href="mailto:feedback@dns.tg">feedback@dns.tg</a>.
-      </DismissableNotice>
       <Router>
         <NavigationSideEffects />
         <div className="container">

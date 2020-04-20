@@ -1,11 +1,13 @@
 import React from 'react';
 import {Helmet} from 'react-helmet';
+import {Link} from 'react-router-dom';
 
 import MainForm from '../components/MainForm';
 import Config from '../config.json';
-import {Link} from 'react-router-dom';
+import {useIsPrerendering} from '../utils/prerendering';
 
 export default function Index() {
+  const isPrerender = useIsPrerendering();
   return (
     <>
       <Helmet>
@@ -23,7 +25,11 @@ export default function Index() {
           <Link to="/locations/">{Config.workers.length} locations</Link> around
           the world.
         </p>
-        <MainForm isStandalone={false} showSecondaryFooter={true} />
+        <MainForm
+          isLoading={isPrerender}
+          isStandalone={false}
+          showSecondaryFooter={true}
+        />
       </div>
     </>
   );
