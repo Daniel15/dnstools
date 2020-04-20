@@ -1,5 +1,7 @@
-import React, {useMemo} from 'react';
+import React, {useMemo, useState} from 'react';
+import Helmet from 'react-helmet';
 import {RouteComponentProps} from 'react-router';
+import {Link} from 'react-router-dom';
 
 import {
   DnsLookupType,
@@ -11,17 +13,24 @@ import MainForm, {Tool, getDefaultInput} from '../components/MainForm';
 import {getWorkers, getLookupType} from '../utils/queryString';
 import useQueryString from '../hooks/useQueryString';
 import useSignalrStream from '../hooks/useSignalrStream';
-import Helmet from 'react-helmet';
 import Spinner from '../components/Spinner';
 import DnsLookupResults from '../components/DnsLookupResults';
-import DnsLookupWorkerResult from '../components/DnsLookupWorkerResult';
-import {Link} from 'react-router-dom';
+import {createRow} from '../components/DnsLookupWorkerResult';
 import {groupResponsesByWorker} from '../utils/workers';
+import Table, {Header} from '../components/Table';
+import {remove as removeFromSet, add as addToSet} from '../utils/sets';
 
 type Props = RouteComponentProps<{
   host: string;
   type: string;
 }>;
+
+const headers: ReadonlyArray<Header> = [
+  {isSortable: false, label: ' ', width: 10},
+  {label: 'Location'},
+  {label: 'Result', width: '40%'},
+  {label: 'Server', onlyShowForLarge: true, width: '40%'},
+];
 
 export default function DnsLookup(props: Props) {
   const {host, type: rawType} = props.match.params;
@@ -39,6 +48,10 @@ export default function DnsLookup(props: Props) {
   );
   const workerResponses = groupResponsesByWorker(workers, data.results);
 
+  const [expandedWorkers, setExpandedWorkers] = useState<ReadonlySet<string>>(
+    () => new Set(),
+  );
+
   return (
     <>
       <Helmet>
@@ -55,37 +68,32 @@ export default function DnsLookup(props: Props) {
         />
       )}
       {workerResponses.length > 1 && (
-        <table className="table">
-          <thead>
-            <tr>
-              <th scope="col" style={{width: 10}}>
-                &nbsp;
-              </th>
-              <th scope="col">Location</th>
-              <th scope="col" style={{width: '40%'}}>
-                Result
-              </th>
-              <th
-                className="d-none d-lg-table-cell"
-                scope="col"
-                style={{width: '40%'}}>
-                Server
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {workerResponses.map((worker, index) => (
-              <DnsLookupWorkerResult
-                host={host}
-                index={index}
-                key={worker.worker.id}
-                lookupType={type}
-                responses={worker.responses}
-                worker={worker.worker}
-              />
-            ))}
-          </tbody>
-        </table>
+        <Table
+          headers={headers}
+          defaultSortColumn="Location"
+          sections={[
+            {
+              rows: workerResponses.map((worker, index) =>
+                createRow({
+                  host,
+                  index,
+                  isExpanded: expandedWorkers.has(worker.worker.id),
+                  lookupType: type,
+                  responses: worker.responses,
+                  worker: worker.worker,
+                  onClose: () =>
+                    setExpandedWorkers(
+                      removeFromSet(expandedWorkers, worker.worker.id),
+                    ),
+                  onExpand: () =>
+                    setExpandedWorkers(
+                      addToSet(expandedWorkers, worker.worker.id),
+                    ),
+                }),
+              ),
+            },
+          ]}
+        />
       )}
       {/* Show footer if we have multiple workers in a table, or if it's one worker that's completed */}
       {(data.isComplete || workerResponses.length > 1) && (

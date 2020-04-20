@@ -5,14 +5,19 @@ import {Sort} from './icons/Icons';
 type SortValue = string | number | null | undefined;
 
 export type Column = Readonly<{
+  className?: string;
   colSpan?: number;
+  onlyShowForLarge?: boolean;
+  onClick?: () => void;
   sortValue: SortValue;
   value: React.ReactNode;
 }>;
 
 export type Row = Readonly<{
   className?: string | undefined;
+  classNameGetter?: (rowIndex: number) => string;
   columns: ReadonlyArray<Column>;
+  getExtraContentAfterRow?: (rowIndex: number) => React.ReactNode;
   id: string;
 }>;
 
@@ -22,7 +27,9 @@ export type Section = Readonly<{
 }>;
 
 export type Header = Readonly<{
+  isSortable?: boolean;
   label: string;
+  onlyShowForLarge?: boolean;
   width?: string | number;
 }>;
 
@@ -83,18 +90,33 @@ export default function Table(props: Props) {
     <table className={`table${props.isStriped ? ' table-striped' : ''}`}>
       <thead>
         <tr>
-          {props.headers.map((header, index) => (
-            <th
-              className="sortable-header"
-              key={header.label}
-              scope="col"
-              style={{width: header.width}}
-              title={`Sort by ${header.label}`}
-              onClick={() => changeSortOrder(index)}>
-              {header.label}&nbsp;&nbsp;
-              <Sort state={sortColumn === index ? sortOrder : SortOrder.NONE} />
-            </th>
-          ))}
+          {props.headers.map((header, index) => {
+            const isSortable =
+              header.isSortable == null ? true : header.isSortable;
+            let className = isSortable ? 'sortable-header' : '';
+            if (header.onlyShowForLarge) {
+              className += ' d-none d-lg-table-cell';
+            }
+            return (
+              <th
+                className={className}
+                key={header.label}
+                scope="col"
+                style={{width: header.width}}
+                title={isSortable ? `Sort by ${header.label}` : ''}
+                onClick={isSortable ? () => changeSortOrder(index) : undefined}>
+                {header.label}
+                {isSortable && (
+                  <>
+                    &nbsp;&nbsp;
+                    <Sort
+                      state={sortColumn === index ? sortOrder : SortOrder.NONE}
+                    />
+                  </>
+                )}
+              </th>
+            );
+          })}
         </tr>
       </thead>
       {sortedData.map(section => (
@@ -107,18 +129,38 @@ export default function Table(props: Props) {
             </thead>
           )}
           <tbody key={section.title || ''}>
-            {section.rows.map(row => (
-              <tr className={row.className} key={row.id}>
-                {row.columns.map((column, colIndex) => (
-                  <td
-                    className="align-middle"
-                    colSpan={column.colSpan}
-                    key={colIndex}>
-                    {column.value}
-                  </td>
-                ))}
-              </tr>
-            ))}
+            {section.rows.map((row, rowIndex) => {
+              let className = row.className || '';
+              if (row.classNameGetter) {
+                className += ' ' + row.classNameGetter(rowIndex);
+              }
+              return (
+                <>
+                  <tr className={className} key={row.id}>
+                    {row.columns.map((column, colIndex) => {
+                      let className = 'align-middle';
+                      if (column.className) {
+                        className += ' ' + column.className;
+                      }
+                      if (column.onlyShowForLarge) {
+                        className += ' d-none d-lg-table-cell';
+                      }
+                      return (
+                        <td
+                          className={className}
+                          colSpan={column.colSpan}
+                          onClick={column.onClick}
+                          key={colIndex}>
+                          {column.value}
+                        </td>
+                      );
+                    })}
+                  </tr>
+                  {row.getExtraContentAfterRow &&
+                    row.getExtraContentAfterRow(rowIndex)}
+                </>
+              );
+            })}
           </tbody>
         </>
       ))}
