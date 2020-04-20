@@ -65,7 +65,7 @@ export default function Ping(props: Props) {
         defaultSortColumn="Location"
         headers={headers}
         isStriped={true}
-        rows={rows}
+        sections={[{rows}]}
       />
 
       <MainForm

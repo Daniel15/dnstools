@@ -34,14 +34,18 @@ export default function DnsRecordsSummaryTable(props: Props) {
         defaultSortColumn="Server"
         headers={headers}
         isStriped={true}
-        rows={Array.from(props.serversToShow).map((server, index) =>
-          createRow(
-            index,
-            props.lookupType,
-            responsesByServer.get(server),
-            server,
-          ),
-        )}
+        sections={[
+          {
+            rows: Array.from(props.serversToShow).map((server, index) =>
+              createRow(
+                index,
+                props.lookupType,
+                responsesByServer.get(server),
+                server,
+              ),
+            ),
+          },
+        ]}
       />
     </div>
   );

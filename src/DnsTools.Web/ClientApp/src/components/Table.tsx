@@ -11,8 +11,14 @@ export type Column = Readonly<{
 }>;
 
 export type Row = Readonly<{
+  className?: string | undefined;
   columns: ReadonlyArray<Column>;
   id: string;
+}>;
+
+export type Section = Readonly<{
+  title?: string;
+  rows: ReadonlyArray<Row>;
 }>;
 
 export type Header = Readonly<{
@@ -24,7 +30,7 @@ export type Props = Readonly<{
   defaultSortColumn?: string;
   headers: ReadonlyArray<Header>;
   isStriped?: boolean;
-  rows: ReadonlyArray<Row>;
+  sections: ReadonlyArray<Section>;
 }>;
 
 export enum SortOrder {
@@ -61,14 +67,17 @@ export default function Table(props: Props) {
 
   const sortedData = useMemo(() => {
     if (sortColumn == null) {
-      return props.rows;
+      return props.sections;
     }
-    return [...props.rows].sort((a, b) => {
-      const aValue = getSortValue(a, sortColumn);
-      const bValue = getSortValue(b, sortColumn);
-      return compare(aValue, bValue, sortOrder);
-    });
-  }, [props.rows, sortColumn, sortOrder]);
+    return props.sections.map(section => ({
+      ...section,
+      rows: [...section.rows].sort((a, b) => {
+        const aValue = getSortValue(a, sortColumn);
+        const bValue = getSortValue(b, sortColumn);
+        return compare(aValue, bValue, sortOrder);
+      }),
+    }));
+  }, [props.sections, sortColumn, sortOrder]);
 
   return (
     <table className={`table${props.isStriped ? ' table-striped' : ''}`}>
@@ -88,20 +97,31 @@ export default function Table(props: Props) {
           ))}
         </tr>
       </thead>
-      <tbody>
-        {sortedData.map(row => (
-          <tr key={row.id}>
-            {row.columns.map((column, colIndex) => (
-              <td
-                className="align-middle"
-                colSpan={column.colSpan}
-                key={colIndex}>
-                {column.value}
-              </td>
+      {sortedData.map(section => (
+        <>
+          {section.title && (
+            <thead>
+              <tr>
+                <th colSpan={4}>{section.title}</th>
+              </tr>
+            </thead>
+          )}
+          <tbody key={section.title || ''}>
+            {section.rows.map(row => (
+              <tr className={row.className} key={row.id}>
+                {row.columns.map((column, colIndex) => (
+                  <td
+                    className="align-middle"
+                    colSpan={column.colSpan}
+                    key={colIndex}>
+                    {column.value}
+                  </td>
+                ))}
+              </tr>
             ))}
-          </tr>
-        ))}
-      </tbody>
+          </tbody>
+        </>
+      ))}
     </table>
   );
 }
