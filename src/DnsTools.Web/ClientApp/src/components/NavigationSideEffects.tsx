@@ -13,7 +13,7 @@ export default function NavigationSideEffects() {
 
     // Tell Google Analytics that the page has changed, but not for initial
     // load (as it does that for us automatically).
-    if (hasInitialized.current) {
+    if (hasInitialized.current && pathname !== '/blank') {
       ga('set', 'page', pathname);
       ga('send', 'pageview');
     }
