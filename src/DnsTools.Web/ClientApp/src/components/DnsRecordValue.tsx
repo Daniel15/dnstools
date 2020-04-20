@@ -69,3 +69,37 @@ export default function DnsRecordValue(props: Props) {
       return <strong className="text-danger">Unknown record type!</strong>;
   }
 }
+
+export function getSortValue(record: DnsRecord): string | null {
+  switch (record.recordCase) {
+    case DnsRecordType.A:
+      return record.a.address;
+
+    case DnsRecordType.Aaaa:
+      return record.aaaa.address;
+
+    case DnsRecordType.Caa:
+      return record.caa.value;
+
+    case DnsRecordType.Cname:
+      return record.cname.cname;
+
+    case DnsRecordType.Mx:
+      return `${record.mx.exchange}-${record.mx.preference}`;
+
+    case DnsRecordType.Ns:
+      return record.ns.nsdname;
+
+    case DnsRecordType.Ptr:
+      return record.ptr.ptrdname;
+
+    case DnsRecordType.Soa:
+      return `${record.soa.mname}-${record.soa.rname}-${record.soa.serial}-${record.soa.refresh}-${record.soa.retry}-${record.soa.expire}-${record.soa.minimum}`;
+
+    case DnsRecordType.Txt:
+      return record.txt.text;
+
+    default:
+      return null;
+  }
+}

@@ -3,14 +3,22 @@ import React from 'react';
 import {DnsTraversalResponse} from '../types/protobuf';
 import ShimmerBar from './ShimmerBar';
 import {milliseconds} from '../utils/format';
-import {DnsLookupType} from '../types/generated';
-import DnsRecordsSummaryValues from './DnsRecordsSummaryValues';
+import {DnsLookupType, DnsTraversalResponseType} from '../types/generated';
+import Table, {Header, Row, Column} from './Table';
+import {commaSeparate} from '../utils/react';
+import DnsRecordValue, {getSortValue} from './DnsRecordValue';
 
 type Props = Readonly<{
   lookupType: DnsLookupType;
   responses: ReadonlyArray<DnsTraversalResponse>;
   serversToShow: ReadonlySet<string>;
 }>;
+
+const headers: ReadonlyArray<Header> = [
+  {label: 'Server', width: 200},
+  {label: 'Response'},
+  {label: 'Time', width: 90},
+];
 
 /**
  * Shows a summarised list of DNS records obtained from multiple DNS servers (for traversals)
@@ -21,55 +29,89 @@ export default function DnsRecordsSummaryTable(props: Props) {
   );
 
   return (
-    <table className="table table-striped mt-2 mb-4">
-      <thead className="thead-default">
-        <tr>
-          <th style={{width: 200}}>Server</th>
-          <th>Response</th>
-          <th style={{width: 90}}>Time</th>
-        </tr>
-      </thead>
-      <tbody>
-        {Array.from(props.serversToShow).map(server => (
-          <DnsRecordsSummaryTableRow
-            key={server}
-            lookupType={props.lookupType}
-            server={server}
-            response={responsesByServer.get(server)}
-          />
-        ))}
-      </tbody>
-    </table>
+    <div className="mt-2 mb-4">
+      <Table
+        defaultSortColumn="Server"
+        headers={headers}
+        isStriped={true}
+        rows={Array.from(props.serversToShow).map((server, index) =>
+          createRow(
+            index,
+            props.lookupType,
+            responsesByServer.get(server),
+            server,
+          ),
+        )}
+      />
+    </div>
   );
 }
 
-function DnsRecordsSummaryTableRow(
-  props: Readonly<{
-    lookupType: DnsLookupType;
-    response: DnsTraversalResponse | undefined;
-    server: string;
-  }>,
-) {
-  const {server, response} = props;
-  return (
-    <tr key={server}>
-      <td>{server}</td>
-      {response == null && (
-        <td colSpan={2}>
-          <ShimmerBar />
-        </td>
-      )}
-      {response != null && (
-        <>
-          <td>
-            <DnsRecordsSummaryValues
-              lookupType={props.lookupType}
-              response={response}
+function createRow(
+  rowIndex: number,
+  lookupType: DnsLookupType,
+  response: DnsTraversalResponse | undefined,
+  server: string,
+): Row {
+  const columns: Array<Column> = [
+    {
+      value: server,
+      // Assume results are already sorted by server, and preserve their
+      // original sort order.
+      sortValue: rowIndex,
+    },
+  ];
+  if (response == null) {
+    columns.push({
+      colSpan: 2,
+      value: <ShimmerBar />,
+      sortValue: null,
+    });
+  } else {
+    let value = null;
+    let sortValue = null;
+    switch (response.responseCase) {
+      case DnsTraversalResponseType.Error:
+        value = (
+          <span className="text-danger">
+            {response.error.title}: {response.error.message}
+          </span>
+        );
+        // "zzzzzzz" is a hack to always sort errors to the bottom
+        sortValue = `zzzzzzz ${response.error.title}: ${response.error.message}`;
+        break;
+
+      case DnsTraversalResponseType.Reply:
+        const records =
+          response.reply.answers.length === 0
+            ? response.reply.authorities
+            : response.reply.answers;
+        value = commaSeparate(
+          records.map((record, index) => (
+            <DnsRecordValue
+              key={index}
+              lookupType={lookupType}
+              record={record}
             />
-          </td>
-          <td>{milliseconds(response.duration)}</td>
-        </>
-      )}
-    </tr>
-  );
+          )),
+        );
+        sortValue = records.map(record => getSortValue(record)).join(',');
+        break;
+    }
+
+    columns.push(
+      {
+        value,
+        sortValue,
+      },
+      {
+        value: milliseconds(response.duration),
+        sortValue: response.duration,
+      },
+    );
+  }
+  return {
+    columns,
+    id: server,
+  };
 }

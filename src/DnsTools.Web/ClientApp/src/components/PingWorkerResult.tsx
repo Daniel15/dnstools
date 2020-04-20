@@ -107,6 +107,7 @@ export function createRow(props: Props): Row {
 
   return {
     columns,
+    id: props.worker.id,
   };
 }
 

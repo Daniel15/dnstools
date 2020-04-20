@@ -12,11 +12,12 @@ export type Column = Readonly<{
 
 export type Row = Readonly<{
   columns: ReadonlyArray<Column>;
+  id: string;
 }>;
 
 export type Header = Readonly<{
   label: string;
-  width?: string;
+  width?: string | number;
 }>;
 
 export type Props = Readonly<{
@@ -88,8 +89,8 @@ export default function Table(props: Props) {
         </tr>
       </thead>
       <tbody>
-        {sortedData.map((row, rowIndex) => (
-          <tr key={rowIndex}>
+        {sortedData.map(row => (
+          <tr key={row.id}>
             {row.columns.map((column, colIndex) => (
               <td
                 className="align-middle"
