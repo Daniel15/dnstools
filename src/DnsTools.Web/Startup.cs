@@ -46,6 +46,8 @@ namespace DnsTools.Web
 
 			services.AddSingleton<TracerouteRunner>();
 
+			services.AddHttpClient();
+			services.AddHttpContextAccessor();
 			services.AddControllersWithViews();
 			services.AddSignalR().AddJsonProtocol(options =>
 			{
