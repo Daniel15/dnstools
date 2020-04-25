@@ -51,8 +51,8 @@ export function createRow(props: Props): Row {
   let sortValue = null;
   if (lastError) {
     value = 'ERROR: ' + lastError.error.message;
-    // "zzzzzzz" is a hack to always sort errors to the bottom
-    sortValue = `zzzzzzz ${lastError.error.message}`;
+    // Always sort errors to the bottom
+    sortValue = null;
   } else if (lastReply) {
     value = commaSeparate(
       lastReply.reply.answers.map((record, index) => (
