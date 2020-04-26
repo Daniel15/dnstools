@@ -14,20 +14,14 @@ import {findLast} from '../utils/arrays';
 import {commaSeparate} from '../utils/react';
 import DnsRecordValue, {getSortValue} from './DnsRecordValue';
 import DnsLookupResults from './DnsLookupResults';
-import ExpandTransition from './ExpandTransition';
-import {ExpandChevron} from './icons/Icons';
 import {Row} from './Table';
 
 type Props = Readonly<{
   host: string;
   index: number;
-  isExpanded: boolean;
   lookupType: DnsLookupType;
   responses: ReadonlyArray<DnsLookupResponse>;
   worker: Readonly<WorkerConfig>;
-
-  onClose: () => void;
-  onExpand: () => void;
 }>;
 
 export function createRow(props: Props): Row {
@@ -70,26 +64,15 @@ export function createRow(props: Props): Row {
     value = <ShimmerBar />;
   }
 
-  const onToggle = props.isExpanded ? props.onClose : props.onExpand;
-
   return {
     id: props.worker.id,
     columns: [
       {
-        className: 'expand-cell',
-        onClick: onToggle,
-        sortValue: null,
-        value: <ExpandChevron isExpanded={props.isExpanded} />,
-      },
-      {
+        expandOnClick: true,
         // Assume results are already sorted by server, and preserve their
         // original sort order.
         sortValue: props.index,
-        value: (
-          <div onClick={onToggle}>
-            <WorkerLocation worker={props.worker} />
-          </div>
-        ),
+        value: <WorkerLocation worker={props.worker} />,
       },
       {
         sortValue,
@@ -101,25 +84,14 @@ export function createRow(props: Props): Row {
         value: lastReferral && lastReferral.referral.nextServerName,
       },
     ],
-    getExtraContentAfterRow: index => (
-      <tr
-        aria-hidden={!props.isExpanded}
-        className={`dns-detail-expanded ${
-          index % 2 === 0 ? 'table-row-odd' : ''
-        }`}>
-        <td></td>
-        <td colSpan={3}>
-          <ExpandTransition
-            isExpanded={props.isExpanded}
-            style={{paddingBottom: '0.75rem'}}>
-            <DnsLookupResults
-              host={props.host}
-              lookupType={props.lookupType}
-              responses={props.responses}
-            />
-          </ExpandTransition>
-        </td>
-      </tr>
+    getExpandedContent: () => (
+      <div style={{paddingBottom: '0.75rem'}}>
+        <DnsLookupResults
+          host={props.host}
+          lookupType={props.lookupType}
+          responses={props.responses}
+        />
+      </div>
     ),
   };
 }

@@ -1,4 +1,4 @@
-import React, {useMemo, useState} from 'react';
+import React, {useMemo} from 'react';
 import Helmet from 'react-helmet';
 import {RouteComponentProps} from 'react-router';
 import {Link} from 'react-router-dom';
@@ -18,7 +18,6 @@ import DnsLookupResults from '../components/DnsLookupResults';
 import {createRow} from '../components/DnsLookupWorkerResult';
 import {groupResponsesByWorker} from '../utils/workers';
 import Table, {Header} from '../components/Table';
-import {remove as removeFromSet, add as addToSet} from '../utils/sets';
 
 type Props = RouteComponentProps<{
   host: string;
@@ -26,7 +25,6 @@ type Props = RouteComponentProps<{
 }>;
 
 const headers: ReadonlyArray<Header> = [
-  {isSortable: false, label: ' ', width: 10},
   {label: 'Location'},
   {label: 'Result', width: '40%'},
   {label: 'Server', onlyShowForLarge: true, width: '40%'},
@@ -48,10 +46,6 @@ export default function DnsLookup(props: Props) {
   );
   const workerResponses = groupResponsesByWorker(workers, data.results);
 
-  const [expandedWorkers, setExpandedWorkers] = useState<ReadonlySet<string>>(
-    () => new Set(),
-  );
-
   return (
     <>
       <Helmet>
@@ -69,6 +63,7 @@ export default function DnsLookup(props: Props) {
       )}
       {workerResponses.length > 1 && (
         <Table
+          areRowsExpandable={true}
           headers={headers}
           defaultSortColumn="Location"
           isStriped={true}
@@ -78,18 +73,9 @@ export default function DnsLookup(props: Props) {
                 createRow({
                   host,
                   index,
-                  isExpanded: expandedWorkers.has(worker.worker.id),
                   lookupType: type,
                   responses: worker.responses,
                   worker: worker.worker,
-                  onClose: () =>
-                    setExpandedWorkers(
-                      removeFromSet(expandedWorkers, worker.worker.id),
-                    ),
-                  onExpand: () =>
-                    setExpandedWorkers(
-                      addToSet(expandedWorkers, worker.worker.id),
-                    ),
                 }),
               ),
             },

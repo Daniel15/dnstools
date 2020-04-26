@@ -1,12 +1,14 @@
 import * as React from 'react';
 import {useMemo, useState} from 'react';
-import {Sort} from './icons/Icons';
+import {Sort, ExpandChevron} from './icons/Icons';
+import ExpandTransition from './ExpandTransition';
 
 type SortValue = string | number | null | undefined;
 
 export type Column = Readonly<{
   className?: string;
   colSpan?: number;
+  expandOnClick?: boolean;
   onlyShowForLarge?: boolean;
   onClick?: () => void;
   sortValue: SortValue;
@@ -16,7 +18,7 @@ export type Column = Readonly<{
 export type Row = Readonly<{
   className?: string | undefined;
   columns: ReadonlyArray<Column>;
-  getExtraContentAfterRow?: (rowIndex: number) => React.ReactNode;
+  getExpandedContent?: () => React.ReactNode;
   id: string;
 }>;
 
@@ -33,6 +35,7 @@ export type Header = Readonly<{
 }>;
 
 export type Props = Readonly<{
+  areRowsExpandable?: boolean;
   defaultSortColumn?: string;
   headers: ReadonlyArray<Header>;
   isStriped?: boolean;
@@ -88,6 +91,7 @@ export default function Table(props: Props) {
   return (
     <table className="table">
       <TableHeaderRow
+        areRowsExpandable={!!props.areRowsExpandable}
         headers={props.headers}
         sortColumn={sortColumn}
         sortOrder={sortOrder}
@@ -95,6 +99,7 @@ export default function Table(props: Props) {
       />
       {sortedData.map(section => (
         <TableSection
+          areRowsExpandable={!!props.areRowsExpandable}
           isStriped={!!props.isStriped}
           key={section.title || ''}
           section={section}
@@ -105,6 +110,7 @@ export default function Table(props: Props) {
 }
 
 type TableHeaderRowProps = Readonly<{
+  areRowsExpandable: boolean;
   headers: ReadonlyArray<Header>;
   sortColumn: number | null;
   sortOrder: SortOrder;
@@ -115,6 +121,7 @@ function TableHeaderRow(props: TableHeaderRowProps) {
   return (
     <thead>
       <tr>
+        {props.areRowsExpandable && <th style={{width: 10}}> </th>}
         {props.headers.map((header, index) => {
           const isSortable =
             header.isSortable == null ? true : header.isSortable;
@@ -154,6 +161,7 @@ function TableHeaderRow(props: TableHeaderRowProps) {
 }
 
 type TableSectionProps = Readonly<{
+  areRowsExpandable: boolean;
   isStriped: boolean;
   section: Section;
 }>;
@@ -171,6 +179,7 @@ function TableSection(props: TableSectionProps) {
       <tbody key={section.title || ''}>
         {section.rows.map((row, rowIndex) => (
           <TableRow
+            isExpandable={props.areRowsExpandable}
             isStriped={props.isStriped}
             key={row.id}
             row={row}
@@ -183,6 +192,7 @@ function TableSection(props: TableSectionProps) {
 }
 
 type TableRowProps = Readonly<{
+  isExpandable: boolean;
   isStriped: boolean;
   row: Row;
   rowIndex: number;
@@ -193,9 +203,18 @@ function TableRow(props: TableRowProps) {
   if (props.isStriped) {
     className += rowIndex % 2 === 0 ? ' table-row-odd' : '';
   }
+
+  const [isExpanded, setIsExpanded] = useState<boolean>(false);
+  const onToggle = () => setIsExpanded(value => !value);
+
   return (
     <>
       <tr className={className} key={row.id}>
+        {props.isExpandable && (
+          <td className="align-middle expand-cell" onClick={onToggle}>
+            <ExpandChevron isExpanded={isExpanded} />
+          </td>
+        )}
         {row.columns.map((column, colIndex) => {
           let className = 'align-middle';
           if (column.className) {
@@ -204,18 +223,33 @@ function TableRow(props: TableRowProps) {
           if (column.onlyShowForLarge) {
             className += ' d-none d-lg-table-cell';
           }
+          let value = column.value;
+          if (column.expandOnClick) {
+            value = <div onClick={onToggle}>{value}</div>;
+          }
           return (
             <td
               className={className}
               colSpan={column.colSpan}
               onClick={column.onClick}
               key={colIndex}>
-              {column.value}
+              {value}
             </td>
           );
         })}
       </tr>
-      {row.getExtraContentAfterRow && row.getExtraContentAfterRow(rowIndex)}
+      {props.isExpandable && (
+        <tr
+          aria-hidden={!isExpanded}
+          className={`dns-detail-expanded ${className}`}>
+          <td></td>
+          <td colSpan={getColSpanForExpandedRow(row)}>
+            <ExpandTransition isExpanded={isExpanded}>
+              {row.getExpandedContent && row.getExpandedContent()}
+            </ExpandTransition>
+          </td>
+        </tr>
+      )}
     </>
   );
 }
@@ -246,4 +280,12 @@ function compare(a: SortValue, b: SortValue, order: SortOrder): number {
     result = 1;
   }
   return order === SortOrder.DESC ? -result : result;
+}
+
+function getColSpanForExpandedRow(row: Row): number {
+  let colSpan = 0;
+  row.columns.forEach(column => {
+    colSpan += column.colSpan || 1;
+  });
+  return colSpan;
 }
