@@ -73,7 +73,6 @@ export function createRow(props: Props): Row {
   const onToggle = props.isExpanded ? props.onClose : props.onExpand;
 
   return {
-    classNameGetter: index => (index % 2 === 0 ? 'table-row-odd' : ''),
     id: props.worker.id,
     columns: [
       {

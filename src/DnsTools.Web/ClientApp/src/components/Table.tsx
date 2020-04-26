@@ -15,7 +15,6 @@ export type Column = Readonly<{
 
 export type Row = Readonly<{
   className?: string | undefined;
-  classNameGetter?: (rowIndex: number) => string;
   columns: ReadonlyArray<Column>;
   getExtraContentAfterRow?: (rowIndex: number) => React.ReactNode;
   id: string;
@@ -87,7 +86,7 @@ export default function Table(props: Props) {
   }, [props.sections, sortColumn, sortOrder]);
 
   return (
-    <table className={`table${props.isStriped ? ' table-striped' : ''}`}>
+    <table className="table">
       <TableHeaderRow
         headers={props.headers}
         sortColumn={sortColumn}
@@ -95,7 +94,11 @@ export default function Table(props: Props) {
         onChangeSortColumn={changeSortColumn}
       />
       {sortedData.map(section => (
-        <TableSection key={section.title || ''} section={section} />
+        <TableSection
+          isStriped={!!props.isStriped}
+          key={section.title || ''}
+          section={section}
+        />
       ))}
     </table>
   );
@@ -151,9 +154,11 @@ function TableHeaderRow(props: TableHeaderRowProps) {
 }
 
 type TableSectionProps = Readonly<{
+  isStriped: boolean;
   section: Section;
 }>;
-function TableSection({section}: TableSectionProps) {
+function TableSection(props: TableSectionProps) {
+  const {section} = props;
   return (
     <>
       {section.title && (
@@ -165,7 +170,12 @@ function TableSection({section}: TableSectionProps) {
       )}
       <tbody key={section.title || ''}>
         {section.rows.map((row, rowIndex) => (
-          <TableRow key={row.id} row={row} rowIndex={rowIndex} />
+          <TableRow
+            isStriped={props.isStriped}
+            key={row.id}
+            row={row}
+            rowIndex={rowIndex}
+          />
         ))}
       </tbody>
     </>
@@ -173,13 +183,15 @@ function TableSection({section}: TableSectionProps) {
 }
 
 type TableRowProps = Readonly<{
+  isStriped: boolean;
   row: Row;
   rowIndex: number;
 }>;
-function TableRow({row, rowIndex}: TableRowProps) {
+function TableRow(props: TableRowProps) {
+  const {row, rowIndex} = props;
   let className = row.className || '';
-  if (row.classNameGetter) {
-    className += ' ' + row.classNameGetter(rowIndex);
+  if (props.isStriped) {
+    className += rowIndex % 2 === 0 ? ' table-row-odd' : '';
   }
   return (
     <>

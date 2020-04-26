@@ -71,6 +71,7 @@ export default function DnsLookup(props: Props) {
         <Table
           headers={headers}
           defaultSortColumn="Location"
+          isStriped={true}
           sections={[
             {
               rows: workerResponses.map((worker, index) =>
