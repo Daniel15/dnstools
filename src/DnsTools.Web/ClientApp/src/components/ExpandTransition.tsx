@@ -1,8 +1,12 @@
-import React, {memo, DetailedHTMLProps, HTMLAttributes} from 'react';
-import {useSpring, animated} from 'react-spring';
+import React, {
+  useState,
+  memo,
+  DetailedHTMLProps,
+  HTMLAttributes,
+  useLayoutEffect,
+} from 'react';
 
 import useDimensions from '../hooks/useDimensions';
-import usePrevious from '../hooks/usePrevious';
 
 type Props = Readonly<{
   children: React.ReactNode;
@@ -16,28 +20,44 @@ type Props = Readonly<{
  */
 export default memo(function ExpandTransition(props: Props) {
   const {children, isExpanded, ...otherProps} = props;
-  const previouslyExpanded = usePrevious(props.isExpanded);
+  const [hasCompletedAnimation, setHasCompletedAnimation] = useState<boolean>(
+    true,
+  );
+  const [renderAsExpanded, setRenderAsExpanded] = useState<boolean>(
+    props.isExpanded,
+  );
   const [ref, dimensions] = useDimensions<HTMLDivElement>();
-  // @ts-ignore https://github.com/react-spring/react-spring/issues/912
-  const {height, opacity} = useSpring({
-    from: {height: 0, opacity: 0},
-    to: {
-      height: isExpanded ? dimensions.height : 0,
-      opacity: isExpanded ? 1 : 0,
-    },
-  });
+
+  useLayoutEffect(() => {
+    setHasCompletedAnimation(false);
+    // Allow it to render in the old state for one frame (to get rid of the `auto`),
+    // then re-render with the new expanded state, to start the animation.
+    setTimeout(() => setRenderAsExpanded(props.isExpanded), 0);
+  }, [props.isExpanded]);
+
+  let renderHeight: number | string = renderAsExpanded ? dimensions.height : 0;
+  if (props.isExpanded && hasCompletedAnimation) {
+    // If we're re-rendering while expanded, don't mess with the height
+    // (prevents animating this expand area if there's a nested expand area
+    // within it that's expanding)
+    renderHeight = 'auto';
+  }
 
   return (
-    <animated.div
+    <div
       className="expand-container"
       style={{
-        opacity,
-        // If we're re-rendering while expanded, don't mess with the height
-        height: isExpanded && previouslyExpanded ? 'auto' : height,
+        height: renderHeight,
+        opacity: renderAsExpanded ? 1 : 0,
+      }}
+      onTransitionEnd={() => {
+        setHasCompletedAnimation(true);
       }}>
-      <div {...otherProps} ref={ref}>
-        {props.children}
-      </div>
-    </animated.div>
+      {(props.isExpanded || !hasCompletedAnimation) && (
+        <div ref={ref}>
+          <div {...otherProps}>{props.children}</div>
+        </div>
+      )}
+    </div>
   );
 });
