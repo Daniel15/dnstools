@@ -1,12 +1,7 @@
-import React, {
-  useState,
-  memo,
-  DetailedHTMLProps,
-  HTMLAttributes,
-  useLayoutEffect,
-} from 'react';
+import React, {useState, memo, DetailedHTMLProps, HTMLAttributes} from 'react';
 
 import useDimensions from '../hooks/useDimensions';
+import useLayoutEffectExceptInitialRender from '../hooks/useLayoutEffectExceptInitialRender';
 
 type Props = Readonly<{
   children: React.ReactNode;
@@ -28,7 +23,7 @@ export default memo(function ExpandTransition(props: Props) {
   );
   const [ref, dimensions] = useDimensions<HTMLDivElement>();
 
-  useLayoutEffect(() => {
+  useLayoutEffectExceptInitialRender(() => {
     setHasCompletedAnimation(false);
     // Allow it to render in the old state for one frame (to get rid of the `auto`),
     // then re-render with the new expanded state, to start the animation.
