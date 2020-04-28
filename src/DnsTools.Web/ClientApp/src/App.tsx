@@ -51,7 +51,10 @@ export default function App() {
             </Route>
             <Route path="/lookup/:host/:type/" component={DnsLookup} />
             <Route path="/traversal/:host/:type/" component={DnsTraversal} />
-            <Route path="/ping/:host/" component={Ping} />
+            <Route
+              path="/ping/:host/"
+              render={routeProps => <Ping {...routeProps} ipData={ipData} />}
+            />
             <Route
               path="/traceroute/:host/"
               render={routeProps => (

@@ -11,6 +11,7 @@ import {WorkerConfig} from '../utils/workers';
 type Props = {
   areAllCompleted: boolean;
   ipData: ReadonlyMap<string, IpData>;
+  isCard: boolean;
   responses: ReadonlyArray<TracerouteResponse>;
   worker: WorkerConfig;
 };
@@ -44,40 +45,48 @@ export default function TracerouteWorker(props: Props) {
     ? 0
     : LOADING_PLACEHOLDER_COUNT - responses.length;
 
-  return (
-    <div className="col mb-4">
-      <div className="card h-100">
-        <div className="card-header d-flex justify-content-between align-items-center">
-          <span>
-            <WorkerLocation worker={worker} />
-          </span>
-          <span>{!isCompleted && <Spinner size={SpinnerSize.Small} />}</span>
-        </div>
-        <ul className="list-group list-group-flush">
-          {responses.map((response, index) => {
-            const ipData =
-              response.responseCase === TracerouteResponseType.Reply
-                ? props.ipData.get(response.reply.ip)
-                : undefined;
+  let content = (
+    <ul className={`list-group ${props.isCard ? 'list-group-flush' : ''}`}>
+      {responses.map((response, index) => {
+        const ipData =
+          response.responseCase === TracerouteResponseType.Reply
+            ? props.ipData.get(response.reply.ip)
+            : undefined;
 
-            return (
-              <ReactTracerouteResponse
-                index={index}
-                ipData={ipData}
-                isFinalReply={response === finalReply}
-                key={index}
-                response={response}
-              />
-            );
-          })}
-          {loadingPlaceholdersToShow > 0 && (
-            <TracerouteResponseLoadingPlaceholder
-              seq={responses.length + 1}
-              count={loadingPlaceholdersToShow}
-            />
-          )}
-        </ul>
-      </div>
-    </div>
+        return (
+          <ReactTracerouteResponse
+            index={index}
+            ipData={ipData}
+            isFinalReply={response === finalReply}
+            key={index}
+            response={response}
+          />
+        );
+      })}
+      {loadingPlaceholdersToShow > 0 && (
+        <TracerouteResponseLoadingPlaceholder
+          seq={responses.length + 1}
+          count={loadingPlaceholdersToShow}
+        />
+      )}
+    </ul>
   );
+
+  if (props.isCard) {
+    return (
+      <div className="col mb-4">
+        <div className="card h-100">
+          <div className="card-header d-flex justify-content-between align-items-center">
+            <span>
+              <WorkerLocation worker={worker} />
+            </span>
+            <span>{!isCompleted && <Spinner size={SpinnerSize.Small} />}</span>
+          </div>
+          {content}
+        </div>
+      </div>
+    );
+  }
+
+  return content;
 }

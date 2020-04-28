@@ -3,10 +3,16 @@ import useDeepCompareEffect from 'use-deep-compare-effect';
 
 import useSignalrConnection from './useSignalrConnection';
 
+export type Return<T> = Readonly<{
+  error: Error | null;
+  results: ReadonlyArray<T>;
+  isComplete: boolean;
+}>;
+
 export default function useSignalrStream<T>(
   methodName: string,
   ...args: any[]
-) {
+): Return<T> {
   const {connection, isConnected} = useSignalrConnection();
   const [results, setResults] = useState<ReadonlyArray<T>>([]);
   const [error, setError] = useState<Error | null>(null);
@@ -22,7 +28,7 @@ export default function useSignalrStream<T>(
       return () => {};
     }
 
-    const subscription = connection.stream(methodName, ...args).subscribe({
+    const subscription = connection.stream<T>(methodName, ...args).subscribe({
       next: item => setResults(results => [...results, item]),
       error: error => setError(error),
       complete: () => setIsComplete(true),

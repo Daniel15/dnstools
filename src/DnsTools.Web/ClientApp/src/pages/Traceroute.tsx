@@ -44,6 +44,7 @@ export default function Traceroute(props: Props) {
           <TracerouteWorker
             areAllCompleted={data.isComplete}
             ipData={props.ipData}
+            isCard={true}
             key={worker.worker.id}
             responses={worker.responses}
             worker={worker.worker}

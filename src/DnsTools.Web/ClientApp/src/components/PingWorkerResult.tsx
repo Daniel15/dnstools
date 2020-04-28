@@ -1,18 +1,28 @@
 import React from 'react';
 
-import {PingResponseType, IPingReply, IPingSummary} from '../types/generated';
-import {PingResponse} from '../types/protobuf';
+import {
+  PingResponseType,
+  IPingReply,
+  IPingSummary,
+  WorkerResponse,
+  IpData,
+} from '../types/generated';
+import {PingResponse, TracerouteResponse} from '../types/protobuf';
 import WorkerLocation from './WorkerLocation';
 import ShimmerBar from './ShimmerBar';
 import {average, standardDeviation} from '../utils/math';
 import {milliseconds} from '../utils/format';
 import {WorkerConfig} from '../utils/workers';
 import {Row, Column} from './Table';
+import PingDetails from './PingDetails';
+import {SignalrCache} from '../hooks/CachedSignalrStream';
 
 type Props = {
+  ipData: ReadonlyMap<string, IpData>;
   results: ReadonlyArray<PingResponse>;
   showIP: boolean;
-  worker: Readonly<WorkerConfig>;
+  tracerouteCache: SignalrCache<WorkerResponse<TracerouteResponse>>;
+  worker: WorkerConfig;
   workerIndex: number;
 };
 
@@ -26,9 +36,7 @@ export function createRow(props: Props): Row {
   props.results.forEach(result => {
     switch (result.responseCase) {
       case PingResponseType.Lookup:
-        if (props.showIP) {
-          ip = result.lookup.ip;
-        }
+        ip = result.lookup.ip;
         break;
 
       case PingResponseType.Reply:
@@ -62,7 +70,7 @@ export function createRow(props: Props): Row {
   } else if (summary != null && summary.received === 0) {
     // All requests timed out
     rowText = 'Timed out';
-    if (ip != null) {
+    if (props.showIP && ip != null) {
       rowText += ` (${ip})`;
     }
   } else if (isLoading) {
@@ -71,6 +79,7 @@ export function createRow(props: Props): Row {
 
   const columns: Array<Column> = [
     {
+      expandOnClick: true,
       // Maintain original order as per config
       sortValue: props.workerIndex,
       value: <WorkerLocation worker={props.worker} />,
@@ -99,7 +108,11 @@ export function createRow(props: Props): Row {
         // nothing is showing in this cell (that is, every row has the same IP)
         sortValue: summary == null ? props.results.length : ip,
         value: (
-          <PingProgress results={props.results} ip={ip} summary={summary} />
+          <PingProgress
+            results={props.results}
+            ip={props.showIP ? ip : undefined}
+            summary={summary}
+          />
         ),
       },
     );
@@ -108,6 +121,14 @@ export function createRow(props: Props): Row {
   return {
     columns,
     id: props.worker.id,
+    getExpandedContent: () => (
+      <PingDetails
+        ip={ip}
+        ipData={props.ipData}
+        tracerouteCache={props.tracerouteCache}
+        worker={props.worker}
+      />
+    ),
   };
 }
 

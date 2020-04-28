@@ -6,9 +6,14 @@ import {
   PingRequest,
   WorkerResponse,
   PingResponseType,
+  IpData,
 } from '../types/generated';
 import Config from '../config.json';
-import {PingResponse, PingHostLookupResponse} from '../types/protobuf';
+import {
+  PingResponse,
+  PingHostLookupResponse,
+  TracerouteResponse,
+} from '../types/protobuf';
 import useSignalrStream from '../hooks/useSignalrStream';
 import {createRow} from '../components/PingWorkerResult';
 import Table, {Header} from '../components/Table';
@@ -17,10 +22,13 @@ import useQueryString from '../hooks/useQueryString';
 import {getProtocol, getWorkers} from '../utils/queryString';
 import {serializeWorkers, groupResponsesByWorker} from '../utils/workers';
 import MainForm, {getDefaultInput, Tool} from '../components/MainForm';
+import {useSignalrStreamCache} from '../hooks/CachedSignalrStream';
 
 type Props = RouteComponentProps<{
   host: string;
-}>;
+}> & {
+  ipData: ReadonlyMap<string, IpData>;
+};
 
 const headers: ReadonlyArray<Header> = [
   {label: 'Location', width: '25%'},
@@ -34,6 +42,9 @@ export default function Ping(props: Props) {
   const queryString = useQueryString();
   const protocol = getProtocol(queryString);
   const workers = useMemo(() => getWorkers(queryString), [queryString]);
+  const tracerouteCache = useSignalrStreamCache<
+    WorkerResponse<TracerouteResponse>
+  >();
 
   const request: PingRequest = useMemo(
     () => ({host, protocol, workers: serializeWorkers(workers)}),
@@ -45,8 +56,10 @@ export default function Ping(props: Props) {
   const {showIPs, onlyIP} = summarizeIPs(data.results);
   const rows = workerResponses.map((worker, index) =>
     createRow({
+      ipData: props.ipData,
       results: worker.responses,
       showIP: showIPs,
+      tracerouteCache,
       worker: worker.worker,
       workerIndex: index,
     }),
@@ -62,6 +75,7 @@ export default function Ping(props: Props) {
         {!data.isComplete && <Spinner />}
       </h1>
       <Table
+        areRowsExpandable={true}
         defaultSortColumn="Location"
         headers={headers}
         isStriped={true}

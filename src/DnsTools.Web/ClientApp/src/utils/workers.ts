@@ -1,7 +1,7 @@
 import {WorkerResponse} from '../types/generated';
 import Config from '../config.json';
 
-export type WorkerConfig = typeof Config['workers'][0];
+export type WorkerConfig = Readonly<typeof Config['workers'][0]>;
 
 /**
  * Returns `null` if the specified set of workers contains all the workers, otherwise
@@ -40,4 +40,17 @@ export function groupResponsesByWorker<T>(
       worker,
       responses: responsesByWorker.get(worker.id) || [],
     }));
+}
+
+/**
+ * Gets a string representing the location of the worker. This can be longer than the
+ * regularly displayed location as it always shows the city name.
+ */
+export function getLongLocationDisplay(worker: WorkerConfig): string {
+  let location = worker.locationDisplay;
+  if (!location.includes(worker.city)) {
+    // If location is not displayed with city name, prepend the city name
+    location = `${worker.city}, ${location}`;
+  }
+  return location;
 }
