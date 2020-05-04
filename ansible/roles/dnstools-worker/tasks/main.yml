@@ -24,18 +24,11 @@
     state: present
   when: ansible_distribution_release == "stretch"
 
-- name: Debian unstable (for Wireguard)
+- name: Buster backports (for WireGuard)
   apt_repository:
-    repo: deb http://deb.debian.org/debian/ unstable main
+    repo: deb http://deb.debian.org/debian buster-backports main
     state: present
-
-- name: Lower priority of Debian unstable
-  copy:
-    dest: "/etc/apt/preferences.d/limit-unstable"
-    content: |
-      Package: *
-      Pin: release a=unstable
-      Pin-Priority: 90
+  when: ansible_distribution_release == "stretch" or ansible_distribution_release == "buster"
 
 - name: Install packages
   apt:
@@ -53,6 +46,23 @@
     state: present
     install_recommends: false
     update_cache: yes
+
+- name: Install WireGuard (buster-backports)
+  apt:
+    name:
+      - wireguard-tools
+    state: present
+    default_release: buster-backports
+    install_recommends: false
+  when: ansible_distribution_release == "stretch" or ansible_distribution_release == "buster"
+
+- name: Install WireGuard (testing)
+  apt:
+    name:
+      - wireguard-tools
+    state: present
+    install_recommends: false
+  when: ansible_distribution_release == "bullseye"
 
 - name: Disable search domain in /etc/resolv.conf
   lineinfile:
@@ -86,11 +96,18 @@
 #################################################
 # WireGuard
 
-- name: Install WireGuard kernel module (for non-OpenVZ)
+- name: Install WireGuard kernel module (for non-OpenVZ, buster-backports)
+  apt:
+    name: wireguard
+    default_release: buster-backports
+    state: present
+  when: ansible_virtualization_type != "openvz" and ansible_virtualization_type != "lxc" and (ansible_distribution_release == "stretch" or ansible_distribution_release == "buster")
+
+- name: Install WireGuard kernel module (for non-OpenVZ, testing)
   apt:
     name: wireguard
     state: present
-  when: ansible_virtualization_type != "openvz" and ansible_virtualization_type != "lxc"
+  when: ansible_virtualization_type != "openvz" and ansible_virtualization_type != "lxc" and ansible_distribution_release == "bullseye"
 
 - name: Download wireguard-go for OpenVZ
   get_url:
