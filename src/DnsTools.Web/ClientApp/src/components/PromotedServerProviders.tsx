@@ -6,6 +6,12 @@ import WithHovercard, {HovercardLocation} from './WithHovercard';
 // Keep these in alphabetical order.
 const providers = [
   {
+    name: 'HostNamaste',
+    tooltip:
+      'VPS hosting in several countries around the world, starting at $10/year',
+    url: 'https://www.hostnamaste.com/',
+  },
+  {
     name: 'Evolution Host',
     tooltip:
       'VPS Hosting, Game Servers, and IRC hosting starting at just €0.99/month',

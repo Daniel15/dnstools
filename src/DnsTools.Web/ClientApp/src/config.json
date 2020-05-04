@@ -110,6 +110,19 @@
       "networkAsn": 133398
     },
     {
+      "id": "in",
+      "city": "Mumbai",
+      "region": "Maharashtra",
+      "country": "IN",
+      "locationDisplay": "India",
+      "latitude": 18.564534,
+      "longitude": 73.784045,
+      "providerName": "HostNamaste",
+      "providerUrl": "https://www.hostnamaste.com/",
+      "dataCenterName": "LeapSwitch Networks",
+      "networkAsn": 132335
+    },
+    {
       "id": "it",
       "city": "Milan",
       "region": "Lombardy",
@@ -277,6 +290,19 @@
       "providerUrl": "https://www.chicagovps.net/",
       "dataCenterName": "ColoCrossing",
       "networkAsn": 36352
+    },
+    {
+      "id": "us-dal",
+      "city": "Dallas",
+      "region": "Texas",
+      "country": "US",
+      "locationDisplay": "Dallas, USA",
+      "latitude": 32.808079,
+      "longitude": -96.857295,
+      "providerName": "HostNamaste",
+      "providerUrl": "https://www.hostnamaste.com/",
+      "dataCenterName": "QuadraNet",
+      "networkAsn": 8100
     },
     {
       "id": "us-phx",
