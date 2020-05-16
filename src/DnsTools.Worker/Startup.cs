@@ -1,9 +1,13 @@
-﻿using DnsTools.Worker.Services;
+﻿using DnsTools.Worker.Middleware;
+using DnsTools.Worker.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Prometheus;
+using Prometheus.SystemMetrics;
 
 namespace DnsTools.Worker
 {
@@ -14,6 +18,15 @@ namespace DnsTools.Worker
 		public void ConfigureServices(IServiceCollection services)
 		{
 			services.AddGrpc();
+			services.AddResponseCompression(config =>
+			{
+				config.EnableForHttps = true;
+				// Enable compression mainly for Prometheus metrics.
+				// Intentionally removing Brotli due to https://github.com/dotnet/runtime/issues/36245
+				config.Providers.Clear();
+				config.Providers.Add<GzipCompressionProvider>();
+			});
+			services.AddSystemMetrics();
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -25,9 +38,13 @@ namespace DnsTools.Worker
 			}
 
 			app.UseRouting();
+			app.UseHttpMetrics();
+			app.UseGrpcMetrics();
+			app.UseResponseCompression();
 
 			app.UseEndpoints(endpoints =>
 			{
+				endpoints.MapMetrics();
 				endpoints.MapGrpcService<DnsToolsService>();
 
 				endpoints.MapGet("/", async context =>
