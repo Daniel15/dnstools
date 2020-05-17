@@ -24,7 +24,7 @@
     state: present
   when: ansible_distribution_release == "stretch"
 
-- name: Buster backports (for WireGuard)
+- name: Buster backports
   apt_repository:
     repo: deb http://deb.debian.org/debian buster-backports main
     state: present
@@ -42,27 +42,9 @@
       - rsync
       - rsyslog
       - traceroute
-      - wireguard-tools
     state: present
     install_recommends: false
     update_cache: yes
-
-- name: Install WireGuard (buster-backports)
-  apt:
-    name:
-      - wireguard-tools
-    state: present
-    default_release: buster-backports
-    install_recommends: false
-  when: ansible_distribution_release == "stretch" or ansible_distribution_release == "buster"
-
-- name: Install WireGuard (testing)
-  apt:
-    name:
-      - wireguard-tools
-    state: present
-    install_recommends: false
-  when: ansible_distribution_release == "bullseye"
 
 - name: Disable search domain in /etc/resolv.conf
   lineinfile:
@@ -94,57 +76,6 @@
     force: yes
 
 #################################################
-# WireGuard
-
-- name: Install WireGuard kernel module (for non-OpenVZ, buster-backports)
-  apt:
-    name: wireguard
-    default_release: buster-backports
-    state: present
-  when: ansible_virtualization_type != "openvz" and ansible_virtualization_type != "lxc" and (ansible_distribution_release == "stretch" or ansible_distribution_release == "buster")
-
-- name: Install WireGuard kernel module (for non-OpenVZ, testing)
-  apt:
-    name: wireguard
-    state: present
-  when: ansible_virtualization_type != "openvz" and ansible_virtualization_type != "lxc" and ansible_distribution_release == "bullseye"
-
-- name: Download wireguard-go for OpenVZ
-  get_url:
-    url: https://d.ls/wireguard/wireguard-go-v0.0.20191012
-    dest: /usr/local/bin/wireguard-go
-    mode: "0755"
-    checksum: sha256:4f69dc0c26f01d8b5ede65cbc0434312b908471ec393d6e211739bfbb0201c61
-  when: ansible_virtualization_type == "openvz" or ansible_virtualization_type == "lxc"
-
-- name: Enable wireguard-go in systemd unit
-  lineinfile:
-    path: /lib/systemd/system/wg-quick@.service
-    insertafter: Environment=WG_ENDPOINT_RESOLUTION_RETRIES=infinity
-    line: Environment=WG_I_PREFER_BUGGY_USERSPACE_TO_POLISHED_KMOD=1
-  when: ansible_virtualization_type == "openvz" or ansible_virtualization_type == "lxc"
-
-- name: Enable WireGuard
-  systemd:
-    name: wg-quick@wg0
-    enabled: yes
-
-- name: Check if WireGuard is configured
-  stat:
-    path: /etc/wireguard/wg0.conf
-  register: wireguard_configured
-
-- debug:
-    msg: "WireGuard is not configured yet! Please create /etc/wireguard/wg0.conf"
-  when: wireguard_configured.stat.exists == False
-
-- name: Start WireGuard if configured
-  systemd:
-    name: wg-quick@wg0
-    state: started
-  when: wireguard_configured.stat.exists == True
-
-#################################################
 # dnstools-worker
 
 - name: Create worker directory
@@ -159,12 +90,6 @@
     src: ../src/DnsTools.Worker/bin/Release/netcoreapp3.1/linux-x64/publish/
     dest: /opt/dnstools-worker/
     rsync_path: "/usr/bin/rsync" # Avoiding sudo for rsync
-
-- name: Edit IP in config
-  replace:
-    path: /opt/dnstools-worker/appsettings.Production.json
-    regexp: '"Url": "https://127.0.0.1:54561"'
-    replace: '"Url": "https://{{vpn_ip}}:54561"'
 
 - name: Enable dnstools-worker systemd
   file:

@@ -2,32 +2,31 @@
 control ansible_connection=local
 
 [workers]
-bg01.d.sb   vpn_ip=10.123.1.26
-ca01.d.sb   vpn_ip=10.123.1.30
-dal01.d.sb  vpn_ip=10.123.1.35
-de01.d.sb   vpn_ip=10.123.1.16
-fi01.d.sb   vpn_ip=10.123.1.24
-fr01.d.sb   vpn_ip=10.123.1.17
-hk01.d.sb   vpn_ip=10.123.1.28
-in01.d.sb   vpn_ip=10.123.1.36
-it01.d.sb   vpn_ip=10.123.1.15
-lon01.d.sb  vpn_ip=10.123.1.21
-lux01.d.sb  vpn_ip=10.123.1.13
-nl01.d.sb   vpn_ip=10.123.1.22
-no01.d.sb   vpn_ip=10.123.1.18
-nyc01.d.sb  vpn_ip=10.123.1.12
-nz01.d.sb   vpn_ip=10.123.1.29
-per01.d.sb  vpn_ip=10.123.1.20
-phx01.d.sb  vpn_ip=10.123.1.23
-ro01.d.sb   vpn_ip=10.123.1.27
-ru01.d.sb   vpn_ip=10.123.1.25
-ru02.d.sb   vpn_ip=10.123.1.37
-sg01.d.sb   vpn_ip=10.123.1.19
-syd02.d.sb  vpn_ip=10.123.1.11
-vps03.d.sb  vpn_ip=10.123.1.1
-po01.d.sb   vpn_ip=10.123.1.31
-vn01.d.sb   vpn_ip=10.123.1.33
-za01.d.sb   vpn_ip=10.123.1.34
+au-syd.worker.dns.tg
+au-per.worker.dns.tg
+bg.worker.dns.tg
+#ca.worker.dns.tg
+de.worker.dns.tg
+fi.worker.dns.tg
+fr.worker.dns.tg
+hk.worker.dns.tg
+in.worker.dns.tg
+it.worker.dns.tg
+lon.worker.dns.tg
+lu.worker.dns.tg
+nl.worker.dns.tg
+no.worker.dns.tg
+nz.worker.dns.tg
+po.worker.dns.tg
+ro.worker.dns.tg
+ru.worker.dns.tg
+sg.worker.dns.tg
+us-dal.worker.dns.tg
+us-lv.worker.dns.tg
+us-ny.worker.dns.tg
+us-phx.worker.dns.tg
+vn.worker.dns.tg
+za.worker.dns.tg
 
 [workers:vars]
 ansible_user=daniel-ansible
