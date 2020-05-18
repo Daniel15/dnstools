@@ -16,6 +16,10 @@
   <ItemGroup>
     <PackageReference Include="CliWrap" Version="3.0.0" />
     <PackageReference Include="DnsClient" Version="1.2.0" />
+    <PackageReference Include="GitInfo" Version="2.0.26">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Grpc.AspNetCore" Version="2.27.0" />
     <PackageReference Include="IPAddressRange" Version="4.0.0" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.9.10" />
