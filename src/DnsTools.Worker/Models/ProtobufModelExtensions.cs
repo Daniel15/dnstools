@@ -8,4 +8,9 @@ namespace DnsTools.Worker
 	public sealed partial class TracerouteResponse : IHasError { }
 	public sealed partial class DnsLookupResponse : IHasError { }
 	public sealed partial class DnsTraversalResponse : IHasError { }
+
+	// Adds `IDnsLookupRequest` interface to DNS lookup and traversal requests
+
+	public sealed partial class DnsLookupRequest : IDnsLookupRequest { }
+	public sealed partial class DnsTraversalRequest : IDnsLookupRequest { }
 }

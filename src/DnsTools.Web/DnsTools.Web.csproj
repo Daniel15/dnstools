@@ -39,6 +39,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Include="..\DnsTools.Worker\Models\IDnsLookupRequest.cs" Link="Models\IDnsLookupRequest.cs" />
     <Compile Include="..\DnsTools.Worker\Models\IHasError.cs" Link="Models\IHasError.cs" />
     <Compile Include="..\DnsTools.Worker\Models\ProtobufModelExtensions.cs" Link="Models\ProtobufModelExtensions.cs" />
   </ItemGroup>

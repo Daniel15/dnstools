@@ -8,7 +8,7 @@ service DnsToolsWorker {
   rpc Ping (PingRequest) returns (stream PingResponse);
   rpc Traceroute (TracerouteRequest) returns (stream TracerouteResponse);
   rpc DnsLookup (DnsLookupRequest) returns (stream DnsLookupResponse);
-  rpc DnsTraversal (DnsLookupRequest) returns (stream DnsTraversalResponse);
+  rpc DnsTraversal (DnsTraversalRequest) returns (stream DnsTraversalResponse);
 }
 
 enum Protocol {
@@ -77,6 +77,13 @@ message HostLookupResult {
 message DnsLookupRequest {
   string host = 1;
   DnsLookupType type = 2;
+  string server = 3;
+}
+
+message DnsTraversalRequest {
+  string host = 1;
+  DnsLookupType type = 2;
+  repeated string servers = 3;
 }
 
 message DnsLookupResponse {

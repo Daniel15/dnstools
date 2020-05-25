@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using DnsClient;
+using DnsTools.Worker.Models;
 
 namespace DnsTools.Worker.Tools
 {
@@ -42,7 +43,7 @@ namespace DnsTools.Worker.Tools
 		/// If the request is for a PTR lookup and the input is an IP address, converts it to the
 		/// relevant <c>.arpa</c> domain.
 		/// </summary>
-		protected static string ConvertToArpaNameIfRequired(DnsLookupRequest request)
+		protected static string ConvertToArpaNameIfRequired(IDnsLookupRequest request)
 		{
 			// When doing reverse DNS lookups, convert IP to the relevant .arpa domain
 			if (request.Type == DnsLookupType.Ptr)

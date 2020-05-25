@@ -28,7 +28,9 @@ namespace DnsTools.Worker.Tools
 			request.Host = ConvertToArpaNameIfRequired(request);
 
 			// Start at a random root server
-			var serverName = _rootServers.Random();
+			var serverName = string.IsNullOrWhiteSpace(request.Server)
+				? _rootServers.Random()
+				: request.Server;
 			var serverIps = await Dns.GetHostAddressesAsync(serverName);
 			await responseStream.WriteAsync(new DnsLookupResponse
 			{

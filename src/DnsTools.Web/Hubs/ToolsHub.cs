@@ -77,7 +77,7 @@ namespace DnsTools.Web.Hubs
 			var workers = request.Workers ?? new[] { _defaultWorker }.ToImmutableHashSet();
 			return new GenericRunner<DnsLookupRequest, DnsTraversalResponse>(
 				_workerProvider,
-				client => client.DnsTraversal(new Worker.DnsLookupRequest
+				client => client.DnsTraversal(new Worker.DnsTraversalRequest
 				{
 					Host = request.Host,
 					Type = request.Type,

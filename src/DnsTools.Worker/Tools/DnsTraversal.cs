@@ -11,7 +11,7 @@ using Grpc.Core;
 
 namespace DnsTools.Worker.Tools
 {
-	public class DnsTraversal : BaseDnsLookup, ITool<DnsLookupRequest, DnsTraversalResponse>
+	public class DnsTraversal : BaseDnsLookup, ITool<DnsTraversalRequest, DnsTraversalResponse>
 	{
 		/// <summary>
 		/// DNS lookups that are currently executing, to ensure we only send one request per DNS server.
@@ -27,7 +27,7 @@ namespace DnsTools.Worker.Tools
 		/// <param name="responseStream">Stream to write responses to</param>
 		/// <param name="cancellationToken">Cancellation token for if user cancels the request</param>
 		public async Task RunAsync(
-			DnsLookupRequest request,
+			DnsTraversalRequest request,
 			IServerStreamWriter<DnsTraversalResponse> responseStream,
 			CancellationToken cancellationToken
 		)
@@ -35,17 +35,27 @@ namespace DnsTools.Worker.Tools
 			var responseQueue = new GrpcStreamResponseQueue<DnsTraversalResponse>(responseStream);
 			request.Host = ConvertToArpaNameIfRequired(request);
 
-			await Task.WhenAll(_rootServers.Select(
-				async serverName => await DoLookup(
-					request,
-					responseQueue,
-					cancellationToken,
-					serverName,
-					null,
-					1
-				)
-			));
-			await responseQueue.CompleteAsync();
+			var servers = request.Servers.Count == 0
+				? _rootServers
+				: request.Servers;
+
+			try
+			{
+				await Task.WhenAll(servers.Select(
+					async serverName => await DoLookup(
+						request,
+						responseQueue,
+						cancellationToken,
+						serverName,
+						null,
+						1
+					)
+				));
+			}
+			finally
+			{
+				await responseQueue.CompleteAsync();
+			}
 		}
 
 		/// <summary>
@@ -53,7 +63,7 @@ namespace DnsTools.Worker.Tools
 		/// if multiple servers return the same referral.
 		/// </summary>
 		private async Task DoLookup(
-			DnsLookupRequest request,
+			DnsTraversalRequest request,
 			GrpcStreamResponseQueue<DnsTraversalResponse> responseQueue,
 			CancellationToken cancellationToken,
 			string serverName,
@@ -75,7 +85,7 @@ namespace DnsTools.Worker.Tools
 		}
 
 		private async Task DoLookupImpl(
-			DnsLookupRequest request,
+			DnsTraversalRequest request,
 			GrpcStreamResponseQueue<DnsTraversalResponse> responseQueue,
 			CancellationToken cancellationToken,
 			string serverName,
