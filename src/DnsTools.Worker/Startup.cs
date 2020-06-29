@@ -48,8 +48,8 @@ namespace DnsTools.Worker
 				app.UseDeveloperExceptionPage();
 			}
 
-			app.UseAccessControlMiddleware();
 			app.UseRouting();
+			app.UseAccessControlMiddleware();
 			app.UseHttpMetrics();
 			app.UseGrpcMetrics();
 			app.UseResponseCompression();
@@ -58,6 +58,11 @@ namespace DnsTools.Worker
 			{
 				endpoints.MapMetrics();
 				endpoints.MapGrpcService<DnsToolsService>();
+
+				endpoints.MapGet("/hello", async context =>
+				{
+					await context.Response.WriteAsync("Hello World");
+				});
 
 				endpoints.MapGet("/", async context =>
 				{

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using DnsTools.Worker.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using NetTools;
@@ -31,6 +32,11 @@ namespace DnsTools.Worker.Middleware
 
 		public Task Invoke(HttpContext httpContext)
 		{
+			if (httpContext.Request.Path == "/hello")
+			{
+				return _next(httpContext);
+			}
+
 			var ip = httpContext.Connection.RemoteIpAddress;
 			if (ip.IsIPv4MappedToIPv6)
 			{
