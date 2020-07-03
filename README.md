@@ -86,23 +86,7 @@ dotnet publish --no-self-contained -r linux-x64 -c Release
 
 For new workers, some manual configuration is required after the first time it's deployed using Ansible:
 
-1. Configure WireGuard in `/etc/wireguard/wg0.conf`. All workers need `vps03` as a peer, as it's currently the server hosting the website. Example config:
-
-```ini
-[Interface]
-Address = 10.123.1.20
-PrivateKey = xxxxxx
-ListenPort = 38917
-
-# vps03
-[Peer]
-PublicKey = xxxxxx
-AllowedIPs = 10.123.1.1/32
-Endpoint = [2605:6400:20:92e::4]:38917
-
-```
-
-2. Create a TLS certificate for the worker:
+Create a TLS certificate for the worker:
 
 ```sh
 sudo certbot certonly --manual --manual-auth-hook /etc/letsencrypt/acme-dns-auth.py --preferred-challenges dns --debug-challenges --server https://acme-v02.api.letsencrypt.org/directory --cert-name dnstools-worker -d xx.worker.dns.tg
