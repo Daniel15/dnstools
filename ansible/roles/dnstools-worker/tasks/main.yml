@@ -38,7 +38,7 @@
       - dotnet-runtime-3.1
       - htop
       - iputils-ping
-      - python-requests
+      - python3-requests
       - rsync
       - rsyslog
       - traceroute
