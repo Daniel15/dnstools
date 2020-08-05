@@ -124,7 +124,7 @@ namespace DnsTools.Web
 				});
 				endpoints.MapHealthChecks("/health/prom", new HealthCheckOptions
 				{
-					ResponseWriter = (context, report) => PrometheusResponseWriter.WritePrometheusResultText(context, report)
+					ResponseWriter = (context, report) => PrometheusResponseWriter.WritePrometheusResultText(context, report, alwaysReturnHttp200Ok: true)
 				});
 
 				endpoints.MapHub<ToolsHub>("/hub");
