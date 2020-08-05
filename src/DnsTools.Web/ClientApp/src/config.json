@@ -182,10 +182,10 @@
       "locationDisplay": "Netherlands",
       "latitude": 51.912772,
       "longitude": 4.539454,
-      "providerName": "Inception Hosting",
-      "providerUrl": "https://inceptionhosting.com/",
-      "dataCenterName": "i3D.net",
-      "networkAsn": 49544
+      "providerName": "WebHorizon",
+      "providerUrl": "https://webhorizon.in/",
+      "dataCenterName": "Hivelocity",
+      "networkAsn": 29802
     },
     {
       "id": "nz",
