@@ -17,7 +17,6 @@ lu.worker.dns.tg
 nl.worker.dns.tg
 no.worker.dns.tg
 nz.worker.dns.tg
-po.worker.dns.tg
 ro.worker.dns.tg
 ru.worker.dns.tg
 sg.worker.dns.tg

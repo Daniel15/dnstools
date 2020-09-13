@@ -201,19 +201,6 @@
       "networkAsn": 61138
     },
     {
-      "id": "po",
-      "city": "Warsaw",
-      "region": "Mazovia",
-      "country": "PL",
-      "locationDisplay": "Poland",
-      "latitude": 51.098605,
-      "longitude": 17.030968,
-      "providerName": "Evolution Host",
-      "providerUrl": "https://evolution-host.com/",
-      "dataCenterName": "OVH",
-      "networkAsn": 16276
-    },
-    {
       "id": "ro",
       "city": "Oradea",
       "region": "Bihor",

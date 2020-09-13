@@ -12,12 +12,6 @@ const providers = [
     url: 'https://www.hostnamaste.com/',
   },
   {
-    name: 'Evolution Host',
-    tooltip:
-      'VPS Hosting, Game Servers, and IRC hosting starting at just €0.99/month',
-    url: 'https://evolution-host.com/',
-  },
-  {
     name: "Gullo's Hosting",
     tooltip: 'VPS hosting starting from $3.50 per year',
     url: 'https://hosting.gullo.me/',
