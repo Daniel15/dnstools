@@ -12,6 +12,7 @@ fr.worker.dns.tg
 hk.worker.dns.tg
 in.worker.dns.tg
 it.worker.dns.tg
+jp.worker.dns.tg
 lon.worker.dns.tg
 lu.worker.dns.tg
 nl.worker.dns.tg

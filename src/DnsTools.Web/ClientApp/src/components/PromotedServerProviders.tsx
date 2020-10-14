@@ -23,7 +23,7 @@ const providers = [
   },
   {
     name: 'WebHorizon',
-    tooltip: 'EPYC NAT VPS hosting from £5.50 per year',
+    tooltip: 'AMD EPYC NAT VPS hosting from £5.50 per year',
     url: 'https://webhorizon.in/',
   },
   {
