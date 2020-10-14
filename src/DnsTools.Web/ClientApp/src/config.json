@@ -136,6 +136,19 @@
       "networkAsn": 34971
     },
     {
+      "id": "jp",
+      "city": "Tokyo",
+      "region": "Kanto",
+      "country": "JP",
+      "locationDisplay": "Japan",
+      "latitude": 35.576411,
+      "longitude": 139.749032,
+      "providerName": "WebHorizon",
+      "providerUrl": "https://webhorizon.in/",
+      "dataCenterName": "Equinix Tokyo",
+      "networkAsn": 206607
+    },
+    {
       "id": "lon",
       "city": "London",
       "region": "England",
@@ -180,11 +193,11 @@
       "region": "North Holland",
       "country": "NL",
       "locationDisplay": "Netherlands",
-      "latitude": 51.912772,
-      "longitude": 4.539454,
+      "latitude": 52.392157,
+      "longitude": 4.664979,
       "providerName": "WebHorizon",
       "providerUrl": "https://webhorizon.in/",
-      "dataCenterName": "Hivelocity",
+      "dataCenterName": "Iron Mountain",
       "networkAsn": 29802
     },
     {
