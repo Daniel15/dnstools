@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using DnsClient;
 using DnsTools.Web.HealthChecks;
 using DnsTools.Web.Hubs;
@@ -6,7 +7,6 @@ using DnsTools.Web.Models.Config;
 using DnsTools.Web.Services;
 using DnsTools.Web.Tools;
 using DnsTools.Web.Utils;
-using HealthChecks.Publisher.Prometheus;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
 
 namespace DnsTools.Web
@@ -32,10 +33,10 @@ namespace DnsTools.Web
 		public void ConfigureServices(IServiceCollection services)
 		{
 			// Default caching DNS client, eg. for reverse DNS lookups
-			services.AddSingleton<ILookupClient>(_ => new LookupClient
+			services.AddSingleton<ILookupClient>(_ => new LookupClient(new LookupClientOptions
 			{
 				UseCache = true
-			});
+			}));
 
 			services.Configure<AppConfig>(Configuration);
 			services.AddSingleton<IHttp2PushManifestHandler, Http2PushManifestHandler>();
@@ -115,16 +116,22 @@ namespace DnsTools.Web
 
 			app.UseRouting();
 
+			app.UseHealthChecksPrometheusExporter("/health/prom", options =>
+			{
+				options.ResultStatusCodes = new Dictionary<HealthStatus, int>
+				{
+					// Always return HTTP 200 so Prometheus sees the request as successful.
+					{HealthStatus.Healthy, 200},
+					{HealthStatus.Degraded, 200},
+					{HealthStatus.Unhealthy, 200},
+				};
+			});
 			app.UseEndpoints(endpoints =>
 			{
 				endpoints.MapHealthChecks("/health");
 				endpoints.MapHealthChecks("/health/json", new HealthCheckOptions
 				{
-					ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
-				});
-				endpoints.MapHealthChecks("/health/prom", new HealthCheckOptions
-				{
-					ResponseWriter = (context, report) => PrometheusResponseWriter.WritePrometheusResultText(context, report, alwaysReturnHttp200Ok: true)
+					ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse,
 				});
 
 				endpoints.MapHub<ToolsHub>("/hub");
