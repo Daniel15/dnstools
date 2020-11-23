@@ -200,7 +200,7 @@ namespace DnsTools.Worker.Extensions
 				Answers = { response.Answers.ToRecords() },
 				Authorities = { response.Authorities.ToRecords() },
 				Additionals = { response.Additionals.ToRecords() },
-				From = response.NameServer.Endpoint.Address.ToString(),
+				From = response.NameServer.Address,
 			};
 		}
 	}

@@ -31,7 +31,7 @@ namespace DnsTools.Worker.Tools
 			return new List<string> {"-n", "-q 1", ipString };
 		}
 
-		protected override TracerouteResponse ParseResponse(string data)
+		protected override TracerouteResponse? ParseResponse(string data)
 		{
 			// Ignore header
 			if (data.StartsWith("traceroute to"))

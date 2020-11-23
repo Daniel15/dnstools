@@ -51,13 +51,13 @@ namespace DnsTools.Worker.Tools
 			IEnumerable<IPAddress> serverIps
 		)
 		{
-			var client = new LookupClient(serverIps.ToArray())
+			var client = new LookupClient(new LookupClientOptions(serverIps.ToArray())
 			{
 				UseCache = false,
 				ThrowDnsErrors = true,
 				Retries = 0,
 				Timeout = _timeout,
-			};
+			});
 			IDnsQueryResponse response;
 			var stopwatch = new Stopwatch();
 			stopwatch.Start();
@@ -113,7 +113,7 @@ namespace DnsTools.Worker.Tools
 					Referral = new DnsLookupReferral
 					{
 						PrevServerName = serverName,
-						PrevServerIp = response.NameServer.Endpoint.Address.ToString(),
+						PrevServerIp = response.NameServer.Address,
 						NextServerName = newServer.NSDName.Value.TrimEnd('.'),
 						NextServerIps = {newServerIps.Select(x => x.ToString())},
 						Reply = response.ToReply(),

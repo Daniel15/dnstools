@@ -94,13 +94,13 @@ namespace DnsTools.Worker.Tools
 		)
 		{
 			var serverIps = await GetDnsServerIPs(serverName, responseForGlue);
-			var client = new LookupClient(serverIps)
+			var client = new LookupClient(new LookupClientOptions(serverIps)
 			{
 				UseCache = false,
 				ThrowDnsErrors = true,
 				Retries = 0,
 				Timeout = _timeout,
-			};
+			});
 			IDnsQueryResponse response;
 			var stopwatch = new Stopwatch();
 			stopwatch.Start();
