@@ -30,12 +30,20 @@
     state: present
   when: ansible_distribution_release == "stretch" or ansible_distribution_release == "buster"
 
-- name: Install packages
+- name: Remove old .NET versions
   apt:
     name:
       - aspnetcore-runtime-3.1
-      - certbot
       - dotnet-runtime-3.1
+    state: absent
+  when: clean_old_dotnet|bool
+
+- name: Install packages
+  apt:
+    name:
+      - aspnetcore-runtime-5.0
+      - certbot
+      - dotnet-runtime-5.0
       - htop
       - iputils-ping
       - python3-requests
@@ -87,7 +95,7 @@
 
 - name: Copy worker
   synchronize:
-    src: ../src/DnsTools.Worker/bin/Release/netcoreapp3.1/linux-x64/publish/
+    src: ../src/DnsTools.Worker/bin/Release/net5.0/linux-x64/publish/
     dest: /opt/dnstools-worker/
     rsync_path: "/usr/bin/rsync" # Avoiding sudo for rsync
 
