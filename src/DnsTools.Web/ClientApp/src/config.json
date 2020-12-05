@@ -280,16 +280,16 @@
     },
     {
       "id": "us-ny",
-      "city": "Buffalo",
+      "city": "Staten Island",
       "region": "New York",
       "country": "US",
       "locationDisplay": "New York, USA",
-      "latitude": 42.892974,
-      "longitude": -78.875081,
-      "providerName": "ChicagoVPS",
-      "providerUrl": "https://www.chicagovps.net/",
-      "dataCenterName": "ColoCrossing",
-      "networkAsn": 36352
+      "latitude": 40.606645,
+      "longitude": -74.175075,
+      "providerName": "BuyVM",
+      "providerUrl": "https://buyvm.net/",
+      "dataCenterName": "Telehouse",
+      "networkAsn": 53667
     },
     {
       "id": "us-dal",
@@ -303,19 +303,6 @@
       "providerUrl": "https://www.hostnamaste.com/",
       "dataCenterName": "QuadraNet",
       "networkAsn": 8100
-    },
-    {
-      "id": "us-phx",
-      "city": "Phoenix",
-      "region": "Arizona",
-      "country": "US",
-      "locationDisplay": "Phoenix, USA",
-      "latitude": 33.416067,
-      "longitude": -112.009446,
-      "providerName": "Inception Hosting",
-      "providerUrl": "https://inceptionhosting.com/",
-      "dataCenterName": "I/O Flood",
-      "networkAsn": 53755
     },
     {
       "id": "vn",

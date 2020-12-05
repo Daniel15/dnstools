@@ -29,7 +29,6 @@ sg.worker.dns.tg
 us-dal.worker.dns.tg
 us-lv.worker.dns.tg   clean_old_dotnet=false
 us-ny.worker.dns.tg
-us-phx.worker.dns.tg
 vn.worker.dns.tg
 za.worker.dns.tg
 
