@@ -1,12 +1,7 @@
 [controller]
 control ansible_connection=local
 
-# Temporary for .NET 5.0 testing: Only deploy these servers
 [workers]
-bg.worker.dns.tg
-it.worker.dns.tg
-
-[workers-all]
 au-syd.worker.dns.tg  clean_old_dotnet=false
 au-per.worker.dns.tg
 bg.worker.dns.tg
