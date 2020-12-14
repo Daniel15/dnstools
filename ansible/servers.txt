@@ -11,6 +11,7 @@ au-syd.worker.dns.tg  clean_old_dotnet=false
 au-per.worker.dns.tg
 bg.worker.dns.tg
 ca.worker.dns.tg
+ch.worker.dns.tg
 de.worker.dns.tg
 fi.worker.dns.tg
 fr.worker.dns.tg
@@ -26,6 +27,7 @@ nz.worker.dns.tg
 ro.worker.dns.tg
 ru.worker.dns.tg
 sg.worker.dns.tg
+tw.worker.dns.tg
 us-dal.worker.dns.tg
 us-lv.worker.dns.tg   clean_old_dotnet=false
 us-ny.worker.dns.tg

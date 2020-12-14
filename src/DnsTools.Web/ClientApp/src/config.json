@@ -208,8 +208,8 @@
       "locationDisplay": "New Zealand",
       "latitude": -36.864045,
       "longitude": 174.76429,
-      "providerName": "i-83",
-      "providerUrl": "https://i-83.net/",
+      "providerName": "Zappie Host",
+      "providerUrl": "https://zappiehost.com/",
       "dataCenterName": "Zappie Host",
       "networkAsn": 61138
     },
@@ -232,12 +232,12 @@
       "region": "Moscow",
       "country": "RU",
       "locationDisplay": "Russia",
-      "latitude": 55.818534,
-      "longitude": 37.605316,
-      "providerName": "JustHost",
-      "providerUrl": "https://justhost.ru/",
-      "dataCenterName": "Rostelecom",
-      "networkAsn": 51659
+      "latitude": 55.73649986,
+      "longitude": 37.72117087,
+      "providerName": "HostNamaste",
+      "providerUrl": "https://www.hostnamaste.com/",
+      "dataCenterName": "DataPro",
+      "networkAsn": 49335
     },
     {
       "id": "sg",
@@ -264,6 +264,32 @@
       "providerUrl": "https://zappiehost.com/",
       "dataCenterName": "xneelo",
       "networkAsn": 61138
+    },
+    {
+      "id": "ch",
+      "city": "Zurich",
+      "region": "Zurich",
+      "country": "CH",
+      "locationDisplay": "Switzerland",
+      "latitude": 47.4328339,
+      "longitude": 8.55738620,
+      "providerName": "HostHatch",
+      "providerUrl": "https://hosthatch.com/",
+      "dataCenterName": "M247",
+      "networkAsn": 63473
+    },
+    {
+      "id": "tw",
+      "city": "Taipei",
+      "region": "Taiwan",
+      "country": "TW",
+      "locationDisplay": "Taiwan",
+      "latitude": 24.16272648,
+      "longitude": 120.6612263,
+      "providerName": "SoftShellWeb",
+      "providerUrl": "https://softshellweb.com/",
+      "dataCenterName": "HostingInside Ltd",
+      "networkAsn": 9678
     },
     {
       "id": "us-lv",
