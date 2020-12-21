@@ -2,6 +2,7 @@ import React, {SVGProps} from 'react';
 
 // Common country flags that are rendered (including all the countries workers exist in).
 // These are embedded directly as React components. All other countries are lazily loaded as needed.
+import {ReactComponent as at} from 'flag-icon-css/flags/4x3/at.svg';
 import {ReactComponent as au} from 'flag-icon-css/flags/4x3/au.svg';
 import {ReactComponent as bg} from 'flag-icon-css/flags/4x3/bg.svg';
 import {ReactComponent as ca} from 'flag-icon-css/flags/4x3/ca.svg';
@@ -21,6 +22,7 @@ import {ReactComponent as nz} from 'flag-icon-css/flags/4x3/nz.svg';
 import {ReactComponent as pl} from 'flag-icon-css/flags/4x3/pl.svg';
 import {ReactComponent as ro} from 'flag-icon-css/flags/4x3/ro.svg';
 import {ReactComponent as ru} from 'flag-icon-css/flags/4x3/ru.svg';
+import {ReactComponent as se} from 'flag-icon-css/flags/4x3/se.svg';
 import {ReactComponent as sg} from 'flag-icon-css/flags/4x3/sg.svg';
 import {ReactComponent as tw} from 'flag-icon-css/flags/4x3/tw.svg';
 import {ReactComponent as us} from 'flag-icon-css/flags/4x3/us.svg';
@@ -31,6 +33,7 @@ const commonFlags: Record<
   string,
   React.FunctionComponent<SVGProps<SVGSVGElement>>
 > = {
+  at,
   au,
   bg,
   ca,
@@ -50,6 +53,7 @@ const commonFlags: Record<
   pl,
   ru,
   ro,
+  se,
   sg,
   tw,
   us,
@@ -60,7 +64,7 @@ const commonFlags: Record<
 const otherFlagsContext = require.context(
   'flag-icon-css/flags/4x3/',
   false,
-  /^\.\/(?!au|bg|ca|ch|de|fi|fr|gb|hk|in|it|jp|lu|no|nl|nz|pl|ro|ru|sg|tw|us|vn|za).+\.svg$/,
+  /^\.\/(?!at|au|bg|ca|ch|de|fi|fr|gb|hk|in|it|jp|lu|no|nl|nz|pl|ro|ru|se|sg|tw|us|vn|za).+\.svg$/,
 );
 
 type Props = {

@@ -32,6 +32,19 @@
       "networkAsn": 45671
     },
     {
+      "id": "at",
+      "city": "Vienna",
+      "region": "Vienna",
+      "country": "AT",
+      "locationDisplay": "Austria",
+      "latitude": 48.26976336,
+      "longitude": 16.41074775,
+      "providerName": "HostHatch",
+      "providerUrl": "https://hosthatch.com/",
+      "dataCenterName": "Interxion",
+      "networkAsn": 63473
+    },
+    {
       "id": "bg",
       "city": "Sofia",
       "region": "Sofia City",
@@ -264,6 +277,19 @@
       "providerUrl": "https://zappiehost.com/",
       "dataCenterName": "xneelo",
       "networkAsn": 61138
+    },
+    {
+      "id": "se",
+      "city": "Stockholm",
+      "region": "Uppland",
+      "country": "SE",
+      "locationDisplay": "Sweden",
+      "latitude": 59.2898211,
+      "longitude": 18.01668672,
+      "providerName": "HostHatch",
+      "providerUrl": "https://hosthatch.com/",
+      "dataCenterName": "GleSYS",
+      "networkAsn": 63473
     },
     {
       "id": "ch",
