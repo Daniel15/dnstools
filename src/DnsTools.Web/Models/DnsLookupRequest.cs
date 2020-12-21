@@ -9,6 +9,9 @@ namespace DnsTools.Web.Models
 	{
 		public string Host { get; set; } = default!;
 
+		[TsProperty(ForceNullable = true)]
+		public string? Server { get; set; }
+
 		public DnsLookupType Type { get; set; } = DnsLookupType.A;
 
 		[TsProperty(Type = "ReadonlyArray<string>", ForceNullable = true)]

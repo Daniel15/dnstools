@@ -10,6 +10,7 @@ export interface CaptchaResponse
 export interface DnsLookupRequest
 {
 	host: string;
+	server?: string;
 	type: DnsLookupType;
 	workers?: ReadonlyArray<string>;
 }

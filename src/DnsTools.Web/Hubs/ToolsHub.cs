@@ -65,6 +65,7 @@ namespace DnsTools.Web.Hubs
 				client => client.DnsLookup(new Worker.DnsLookupRequest
 				{
 					Host = request.Host,
+					Server = request.Server ?? "",
 					Type = request.Type,
 				}, cancellationToken: cancellationToken)).Run(request, Clients.Caller, request.Workers, cancellationToken);
 		}

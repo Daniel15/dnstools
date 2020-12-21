@@ -41,6 +41,7 @@ export type ToolInput = {
   dnsLookupType: DnsLookupType;
   host: string;
   protocol: Protocol;
+  server: string;
   // For tools that allow selection of multiple workers
   workers: ReadonlySet<string>;
   // For tools that only allow one worker
@@ -89,6 +90,7 @@ export function getDefaultInput(): ToolInput {
     dnsLookupType: DnsLookupType.A,
     host: '',
     protocol: Protocol.Any,
+    server: '',
     workers: new Set(Config.workers.map(worker => worker.id)),
     worker: Config.defaultWorker,
   };
@@ -263,11 +265,32 @@ function DnsLookupInput(props: {
         </FormRow>
       )}
       {props.tool !== Tool.DnsTraversal && (
-        <Locations
-          input={props.input}
-          onChangeInput={props.onChangeInput}
-          workerOptions={props.workerOptions}
-        />
+        <>
+          <Locations
+            input={props.input}
+            onChangeInput={props.onChangeInput}
+            workerOptions={props.workerOptions}
+          />
+          <FormRow id="server" label="Server">
+            <input
+              aria-describedby="server-desc"
+              type="text"
+              className="form-control"
+              id="server"
+              value={props.input.server}
+              onChange={evt =>
+                props.onChangeInput({
+                  ...props.input,
+                  server: evt.target.value.trim(),
+                })
+              }
+            />
+            <small id="server-desc" className="form-text text-muted">
+              Advanced: Name server to query. If not provided, will use root
+              servers.
+            </small>
+          </FormRow>
+        </>
       )}
       {props.tool === Tool.DnsTraversal && (
         <FormRowDropdownList
@@ -377,6 +400,13 @@ function buildToolURI({
   if (tool === Tool.DnsTraversal) {
     if (input.worker !== Config.defaultWorker) {
       params.append('workers', input.worker);
+    }
+  }
+
+  if (tool === Tool.DnsLookup || tool === Tool.ReverseDns) {
+    const server = input.server.trim();
+    if (input.server !== '') {
+      params.append('server', server);
     }
   }
 
