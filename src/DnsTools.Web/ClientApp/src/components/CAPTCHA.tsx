@@ -1,6 +1,6 @@
 import React, {useEffect, useRef, useState, useCallback} from 'react';
 
-import Config from '../config.json';
+import {apiUrl, ReCaptcha as ReCaptchaConfig} from '../config';
 import {CaptchaResponse} from '../types/generated';
 import Spinner from './Spinner';
 
@@ -51,7 +51,7 @@ export default function CAPTCHA(props: Props) {
     async recaptchaResponse => {
       try {
         onVerifyStarted();
-        const rawResponse = await fetch('/captcha', {
+        const rawResponse = await fetch(`${apiUrl}captcha`, {
           credentials: 'include',
           body: 'response=' + encodeURIComponent(recaptchaResponse),
           headers: {
@@ -78,7 +78,7 @@ export default function CAPTCHA(props: Props) {
     }
 
     grecaptcha.render(ref.current, {
-      sitekey: Config.ReCaptcha.siteKey,
+      sitekey: ReCaptchaConfig.siteKey,
       theme: 'dark',
       callback: onCompleteWrapper,
     });

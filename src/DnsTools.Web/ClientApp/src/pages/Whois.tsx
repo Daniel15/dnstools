@@ -2,6 +2,7 @@ import React, {useState, useEffect, useCallback} from 'react';
 import Helmet from 'react-helmet';
 import {RouteComponentProps} from 'react-router-dom';
 
+import {apiUrl} from '../config';
 import InlineWhoisForm from '../components/InlineWhoisForm';
 import Spinner from '../components/Spinner';
 import CAPTCHA from '../components/CAPTCHA';
@@ -35,7 +36,7 @@ export default function Whois(props: Props) {
         setResults(null);
         setError(null);
         setShowCaptcha(false);
-        const rawResponse = await fetch(`/data/whois/${host}/`, {
+        const rawResponse = await fetch(`${apiUrl}data/whois/${host}/`, {
           credentials: 'include',
         });
         const response = await rawResponse.text();

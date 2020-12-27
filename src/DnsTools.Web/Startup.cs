@@ -22,6 +22,9 @@ namespace DnsTools.Web
 {
 	public class Startup
 	{
+		private const string CORS_PROD = "prod";
+		private const string CORS_DEV = "dev";
+		
 		public Startup(IConfiguration configuration)
 		{
 			Configuration = configuration;
@@ -49,6 +52,29 @@ namespace DnsTools.Web
 
 			services.AddHttpClient();
 			services.AddHttpContextAccessor();
+
+			services.AddCors(options =>
+			{
+				options.AddPolicy(CORS_PROD , builder =>
+				{
+					builder.WithOrigins("https://dnstools.ws")
+						.AllowAnyHeader()
+						.AllowCredentials();
+				});
+				
+				options.AddPolicy(CORS_DEV, builder =>
+				{
+					builder.WithOrigins(
+						// create-react-app server
+						"http://localhost:31429",
+						// react-snap server
+						"http://localhost:45678"
+					)
+					.AllowAnyHeader()
+					.AllowCredentials();
+				});
+			});
+
 			services.AddControllersWithViews();
 			services.AddSignalR().AddJsonProtocol(options =>
 			{
@@ -85,19 +111,6 @@ namespace DnsTools.Web
 				app.UseDeveloperExceptionPage();
 				// Allow unencrypted gRPC calls in development
 				AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
-
-				// Enable CORS from create-react-app server
-				app.UseCors(config =>
-				{
-					config.WithOrigins(
-						// create-react-app server
-						"http://localhost:31429",
-						// react-snap server
-						"http://localhost:45678"
-					)
-					.AllowAnyHeader()
-					.AllowCredentials();
-				});
 			}
 			else
 			{
@@ -115,6 +128,7 @@ namespace DnsTools.Web
 			app.UseSession();
 
 			app.UseRouting();
+			app.UseCors(env.IsDevelopment() ? CORS_DEV : CORS_PROD);
 
 			app.UseHealthChecksPrometheusExporter("/health/prom", options =>
 			{

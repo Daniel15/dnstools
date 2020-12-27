@@ -2,6 +2,7 @@ import React, {useState, useEffect} from 'react';
 import {BrowserRouter as Router, Switch, Route} from 'react-router-dom';
 import {HubConnectionBuilder} from '@microsoft/signalr';
 
+import {apiUrl} from './config';
 import useIpData from './hooks/useIpData';
 import SignalrContext from './SignalrContext';
 import NavigationSideEffects from './components/NavigationSideEffects';
@@ -16,11 +17,7 @@ import Traceroute from './pages/Traceroute';
 import Whois from './pages/Whois';
 
 const connection = new HubConnectionBuilder()
-  .withUrl(
-    /^(localhost|dnstools.test)/.test(window.location.hostname)
-      ? 'https://localhost:5001/hub'
-      : '/hub',
-  )
+  .withUrl(`${apiUrl}hub`)
   .withAutomaticReconnect()
   .build();
 
