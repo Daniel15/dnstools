@@ -239,6 +239,9 @@ function DnsLookupInput(props: {
   tool: Tool;
   workerOptions: ReadonlyArray<Option>;
 }) {
+  const [showAdvancedOptions, setShowAdvancedOptions] = useState(() =>
+    isUsingAdvancedOptions(props.input),
+  );
   return (
     <>
       {props.tool !== Tool.ReverseDns && (
@@ -271,25 +274,37 @@ function DnsLookupInput(props: {
             onChangeInput={props.onChangeInput}
             workerOptions={props.workerOptions}
           />
-          <FormRow id="server" label="Server">
-            <input
-              aria-describedby="server-desc"
-              type="text"
-              className="form-control"
-              id="server"
-              value={props.input.server}
-              onChange={evt =>
-                props.onChangeInput({
-                  ...props.input,
-                  server: evt.target.value.trim(),
-                })
-              }
-            />
-            <small id="server-desc" className="form-text text-muted">
-              Advanced: Name server to query. If not provided, will use root
-              servers.
-            </small>
-          </FormRow>
+          {!showAdvancedOptions && (
+            <div>
+              <button
+                className="btn btn-link border-0 m-0 mb-3 p-0"
+                type="button"
+                onClick={() => setShowAdvancedOptions(true)}>
+                Show advanced options
+              </button>
+            </div>
+          )}
+          {showAdvancedOptions && (
+            <FormRow id="server" label="Server">
+              <input
+                aria-describedby="server-desc"
+                type="text"
+                className="form-control"
+                id="server"
+                value={props.input.server}
+                onChange={evt =>
+                  props.onChangeInput({
+                    ...props.input,
+                    server: evt.target.value.trim(),
+                  })
+                }
+              />
+              <small id="server-desc" className="form-text text-muted">
+                Advanced: Name server to query. If not provided, will use root
+                servers.
+              </small>
+            </FormRow>
+          )}
         </>
       )}
       {props.tool === Tool.DnsTraversal && (
@@ -415,4 +430,8 @@ function buildToolURI({
     pathname: uri,
     search: queryString === '' ? '' : '?' + queryString.replace(/%2C/g, ','),
   };
+}
+
+function isUsingAdvancedOptions(input: ToolInput): boolean {
+  return input.server !== '';
 }
