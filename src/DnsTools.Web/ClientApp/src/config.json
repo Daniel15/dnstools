@@ -227,6 +227,19 @@
       "networkAsn": 61138
     },
     {
+      "id": "pl",
+      "city": "Warsaw",
+      "region": "Mazovia",
+      "country": "PL",
+      "locationDisplay": "Poland",
+      "latitude": 52.22773771,
+      "longitude": 21.00500235,
+      "providerName": "HostHatch",
+      "providerUrl": "https://hosthatch.com/",
+      "dataCenterName": "Equinix WA2",
+      "networkAsn": 63473
+    },
+    {
       "id": "ro",
       "city": "Oradea",
       "region": "Bihor",

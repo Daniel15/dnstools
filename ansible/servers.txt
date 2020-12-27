@@ -20,6 +20,7 @@ lu.worker.dns.tg
 nl.worker.dns.tg
 no.worker.dns.tg
 nz.worker.dns.tg
+pl.worker.dns.tg
 ro.worker.dns.tg
 ru.worker.dns.tg
 se.worker.dns.tg
