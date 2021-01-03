@@ -16,7 +16,7 @@ import {
 } from '../types/protobuf';
 import {useMultipleSignalrStreams} from '../hooks/useSignalrStream';
 import {createRow} from '../components/PingWorkerResult';
-import Table, {Header} from '../components/Table';
+import Table from '../components/Table';
 import Spinner from '../components/Spinner';
 import useQueryString from '../hooks/useQueryString';
 import {getProtocol, getWorkers} from '../utils/queryString';
@@ -25,7 +25,6 @@ import MainForm, {getDefaultInput, Tool} from '../components/MainForm';
 import {useSignalrStreamCache} from '../hooks/CachedSignalrStream';
 import {defaultWorker} from '../config';
 import {buildToolURI} from '../utils/url';
-import CountryFlag from '../components/CountryFlag';
 import WorkerLocation from '../components/WorkerLocation';
 
 type Props = RouteComponentProps<{
