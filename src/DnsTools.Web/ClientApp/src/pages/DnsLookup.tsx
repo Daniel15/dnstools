@@ -12,7 +12,7 @@ import {DnsLookupResponse} from '../types/protobuf';
 import MainForm, {Tool, getDefaultInput} from '../components/MainForm';
 import {getWorkers, getLookupType} from '../utils/queryString';
 import useQueryString from '../hooks/useQueryString';
-import useSignalrStream from '../hooks/useSignalrStream';
+import {useSignalrStream} from '../hooks/useSignalrStream';
 import Spinner from '../components/Spinner';
 import DnsLookupResults from '../components/DnsLookupResults';
 import {createRow} from '../components/DnsLookupWorkerResult';

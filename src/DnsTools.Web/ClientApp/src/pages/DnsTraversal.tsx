@@ -16,7 +16,7 @@ import {
   DnsTraversalResponse,
   DnsTraversalErrorResponse,
 } from '../types/protobuf';
-import useSignalrStream from '../hooks/useSignalrStream';
+import {useSignalrStream} from '../hooks/useSignalrStream';
 import Spinner from '../components/Spinner';
 import {rootServers} from '../dnsConfig';
 import {groupBy, map} from '../utils/maps';

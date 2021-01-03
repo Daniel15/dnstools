@@ -1,7 +1,7 @@
 import {useState, useEffect} from 'react';
 
 import useSignalrConnection from './useSignalrConnection';
-import {Return as SignalrStream} from './useSignalrStream';
+import {SignalrStream} from './useSignalrStream';
 import useLazyRef from './useLazyRef';
 
 type CacheData<T> = {

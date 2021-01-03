@@ -1,43 +1,88 @@
-import {useState} from 'react';
-import useDeepCompareEffect from 'use-deep-compare-effect';
+import {useCallback, useEffect, useMemo, useState} from 'react';
 
 import useSignalrConnection from './useSignalrConnection';
 
-export type Return<T> = Readonly<{
+export type SignalrStream<T> = Readonly<{
   error: Error | null;
   results: ReadonlyArray<T>;
   isComplete: boolean;
 }>;
 
-export default function useSignalrStream<T>(
-  methodName: string,
-  ...args: any[]
-): Return<T> {
-  const {connection, isConnected} = useSignalrConnection();
-  const [results, setResults] = useState<ReadonlyArray<T>>([]);
-  const [error, setError] = useState<Error | null>(null);
-  const [isComplete, setIsComplete] = useState<boolean>(false);
+type Requests = ReadonlyArray<
+  Readonly<{
+    methodName: string;
+    args: any[];
+  }>
+>;
 
-  useDeepCompareEffect(() => {
-    setResults([]);
-    setError(null);
-    setIsComplete(false);
+/**
+ * Calls multiple SignalR streaming methods and returns all the results together.
+ */
+export function useMultipleSignalrStreams<T>(
+  requests: Requests,
+): ReadonlyArray<SignalrStream<T>> {
+  const {connection, isConnected} = useSignalrConnection();
+  const [results, setResults] = useState<ReadonlyArray<SignalrStream<T>>>(() =>
+    getInitialResultState(requests),
+  );
+
+  const updateSignalrStream = useCallback(
+    (
+      index: number,
+      updates: (oldResult: SignalrStream<T>) => Partial<SignalrStream<T>>,
+    ) => {
+      setResults(results => {
+        const newResults = [...results];
+        newResults[index] = {...results[index], ...updates(results[index])};
+        return newResults;
+      });
+    },
+    [],
+  );
+
+  useEffect(() => {
+    setResults(getInitialResultState(requests));
 
     if (!isConnected) {
       // Not connected yet, so wait for a connection...
-      return () => {};
+      return;
     }
 
-    const subscription = connection.stream<T>(methodName, ...args).subscribe({
-      next: item => setResults(results => [...results, item]),
-      error: error => setError(error),
-      complete: () => setIsComplete(true),
-    });
-
+    const subscriptions = requests.map((request, index) =>
+      connection.stream<T>(request.methodName, ...request.args).subscribe({
+        next: item =>
+          updateSignalrStream(index, result => ({
+            results: [...result.results, item],
+          })),
+        error: error => updateSignalrStream(index, () => ({error})),
+        complete: () => updateSignalrStream(index, () => ({isComplete: true})),
+      }),
+    );
     return () => {
-      subscription.dispose();
+      subscriptions.forEach(x => x.dispose());
     };
-  }, [methodName, args, isConnected]);
+  }, [connection, isConnected, requests, updateSignalrStream]);
 
-  return {results, error, isComplete};
+  return results;
+}
+
+function getInitialResultState(requests: Requests) {
+  return requests.map(_ => ({
+    error: null,
+    results: [],
+    isComplete: false,
+  }));
+}
+
+/**
+ * Calls a SignalR streaming method.
+ */
+export function useSignalrStream<T>(
+  methodName: string,
+  ...args: any[]
+): SignalrStream<T> {
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const requests = useMemo(() => [{methodName, args}], [methodName, ...args]);
+  const result = useMultipleSignalrStreams<T>(requests);
+  return result[0];
 }

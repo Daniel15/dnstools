@@ -4,7 +4,7 @@ import Helmet from 'react-helmet';
 
 import {IpData, PingRequest, WorkerResponse} from '../types/generated';
 import {TracerouteResponse} from '../types/protobuf';
-import useSignalrStream from '../hooks/useSignalrStream';
+import {useSignalrStream} from '../hooks/useSignalrStream';
 import useQueryString from '../hooks/useQueryString';
 import {getProtocol, getWorkers} from '../utils/queryString';
 import MainForm, {getDefaultInput, Tool} from '../components/MainForm';
