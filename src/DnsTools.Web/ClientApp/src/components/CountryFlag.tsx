@@ -69,15 +69,18 @@ const otherFlagsContext = require.context(
 
 type Props = {
   country: string;
+  size?: number;
 };
 
 export default function CountryFlag(props: Props) {
   const country = props.country.toLowerCase();
+  const width = props.size || 15;
+  const height = (width * 4) / 3;
 
   // Check if it's a "common" flag
   const Component = commonFlags[country];
   if (Component != null) {
-    return <Component className="mr-1" height={15} width={20} />;
+    return <Component className="mr-1" height={height} width={width} />;
   }
 
   // Try to find the image
@@ -87,9 +90,9 @@ export default function CountryFlag(props: Props) {
       <img
         alt={`${props.country} flag`}
         className="mr-1"
-        height={15}
+        height={height}
         src={flag}
-        width={20}
+        width={(width * 4) / 3}
       />
     );
   } catch (ex) {

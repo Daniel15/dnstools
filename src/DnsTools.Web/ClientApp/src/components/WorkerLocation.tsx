@@ -5,10 +5,11 @@ import CountryFlag from './CountryFlag';
 import WithHovercard, {HovercardLocation} from './WithHovercard';
 
 type Props = Readonly<{
+  flagSize?: number;
   worker: WorkerConfig;
 }>;
 
-export default function WorkerLocation({worker}: Props) {
+export default function WorkerLocation({flagSize, worker}: Props) {
   const url =
     worker.providerUrl +
     (worker.providerUrl.includes('?') ? '&' : '?') +
@@ -42,7 +43,7 @@ export default function WorkerLocation({worker}: Props) {
           Data Center: {worker.dataCenterName}
         </>
       }>
-      <CountryFlag country={worker.country} />
+      <CountryFlag country={worker.country} size={flagSize} />
       {worker.locationDisplay}
     </WithHovercard>
   );
