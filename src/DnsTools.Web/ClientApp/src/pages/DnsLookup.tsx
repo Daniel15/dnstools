@@ -101,7 +101,7 @@ export default function DnsLookup(props: Props) {
           <MainForm
             initialInput={{
               ...getDefaultInput(),
-              host,
+              hosts: [host],
               dnsLookupType: type,
               server: server || '',
               workers,

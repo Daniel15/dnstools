@@ -101,7 +101,7 @@ export default function DnsTraversal(props: Props) {
       <MainForm
         initialInput={{
           ...getDefaultInput(),
-          host,
+          hosts: [host],
           dnsLookupType: type,
           worker: workers.values().next().value,
         }}

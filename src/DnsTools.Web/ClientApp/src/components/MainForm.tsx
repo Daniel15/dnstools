@@ -1,4 +1,3 @@
-import {LocationDescriptorObject} from 'history';
 import React, {useState, FormEvent} from 'react';
 import {useHistory} from 'react-router';
 
@@ -13,6 +12,8 @@ import {navigateWithReload} from '../utils/routing';
 import CountryFlag from './CountryFlag';
 import ToolSelector from './ToolSelector';
 import PromotedServerProviders from './PromotedServerProviders';
+import WithHovercard, {HovercardLocation} from './WithHovercard';
+import {buildToolURI} from '../utils/url';
 
 type Props = {
   initialSelectedTool?: Tool;
@@ -39,7 +40,7 @@ export type ToolMetadata = {
 
 export type ToolInput = {
   dnsLookupType: DnsLookupType;
-  host: string;
+  hosts: ReadonlyArray<string>;
   protocol: Protocol;
   server: string;
   // For tools that allow selection of multiple workers
@@ -88,7 +89,7 @@ const toolOptions: ReadonlyArray<ToolMetadata> = [
 export function getDefaultInput(): ToolInput {
   return {
     dnsLookupType: DnsLookupType.A,
-    host: '',
+    hosts: [''],
     protocol: Protocol.Any,
     server: '',
     workers: new Set(Config.workers.map(worker => worker.id)),
@@ -137,17 +138,11 @@ export default function MainForm(props: Props) {
             onSelectTool={setSelectedTool}
           />
         </FormRow>
-        <FormRow id="host" label="Host">
-          <input
-            type="text"
-            className="form-control"
-            id="host"
-            value={input.host}
-            onChange={evt =>
-              setInput({...input, host: evt.target.value.trim()})
-            }
-          />
-        </FormRow>
+        <HostInput
+          input={input}
+          tool={selectedTool.tool}
+          onChangeInput={setInput}
+        />
         {(selectedTool.tool === Tool.Ping ||
           selectedTool.tool === Tool.Traceroute) && (
           <PingInput
@@ -168,14 +163,17 @@ export default function MainForm(props: Props) {
         )}
         <button
           className="btn btn-primary btn-lg"
-          disabled={props.isLoading || input.host === ''}
+          disabled={
+            props.isLoading ||
+            (input.hosts.length === 1 && input.hosts[0] === '')
+          }
           type="submit">
           {props.isLoading ? 'Loading...' : 'Do it!'}
         </button>
       </form>
       <p className="mt-3">
         <small>
-          &copy; 2007-2019 <a href="https://d.sb/">Daniel15</a>. Send feedback
+          &copy; 2007-2021 <a href="https://d.sb/">Daniel15</a>. Send feedback
           to <a href="mailto:feedback@dns.tg">feedback@dns.tg</a>.{' '}
           <a href="https://github.com/Daniel15/dnstools">I'm open-source!</a>
         </small>
@@ -188,6 +186,84 @@ export default function MainForm(props: Props) {
         </div>
       )}
     </>
+  );
+}
+
+function HostInput(
+  props: Readonly<{
+    input: ToolInput;
+    onChangeInput: (input: ToolInput) => void;
+    tool: Tool;
+  }>,
+) {
+  const [wasExpanded, setWasExpanded] = useState(false);
+  const shouldAllowMultipleHosts = props.tool === Tool.Ping;
+  const hasMultipleHosts = wasExpanded || props.input.hosts.length > 1;
+  if (!shouldAllowMultipleHosts || !hasMultipleHosts) {
+    return (
+      <FormRow id="host" label="Host">
+        <div className="d-flex">
+          <input
+            type="text"
+            className="form-control"
+            id="host"
+            value={props.input.hosts[0]}
+            onChange={evt => {
+              props.onChangeInput({
+                ...props.input,
+                hosts: [evt.target.value.trim()],
+              });
+            }}
+          />
+          {shouldAllowMultipleHosts && (
+            <WithHovercard
+              location={HovercardLocation.Top}
+              tooltipBody={
+                <>
+                  New: Ping multiple different hosts from one location. Enter
+                  one host name per line
+                </>
+              }>
+              <button
+                className="btn btn-primary ml-2"
+                type="button"
+                onClick={() => setWasExpanded(true)}>
+                +&nbsp;Multiple&nbsp;Hosts
+              </button>
+            </WithHovercard>
+          )}
+        </div>
+      </FormRow>
+    );
+  }
+
+  return (
+    <FormRow id="host" label="Hosts">
+      <textarea
+        aria-describedby="multi-host-desc"
+        className="form-control"
+        id="host"
+        rows={3}
+        style={{height: 150}}
+        value={props.input.hosts.join('\n')}
+        onBlur={() => {
+          // Remove empty lines on blur
+          props.onChangeInput({
+            ...props.input,
+            hosts: props.input.hosts.filter(x => Boolean(x)),
+          });
+        }}
+        onChange={evt => {
+          props.onChangeInput({
+            ...props.input,
+            hosts: evt.target.value.split('\n').map(x => x.trim()),
+          });
+        }}
+      />
+      <small id="multi-host-desc" className="form-text text-muted">
+        Enter one hostname per line
+      </small>
+    </FormRow>
   );
 }
 
@@ -225,6 +301,7 @@ function PingInput(props: {
         />
       </FormRow>
       <Locations
+        allowMultiSelect={props.input.hosts.length === 1}
         input={props.input}
         onChangeInput={props.onChangeInput}
         workerOptions={props.workerOptions}
@@ -267,13 +344,14 @@ function DnsLookupInput(props: {
           </select>
         </FormRow>
       )}
+      <Locations
+        allowMultiSelect={props.tool !== Tool.DnsTraversal}
+        input={props.input}
+        onChangeInput={props.onChangeInput}
+        workerOptions={props.workerOptions}
+      />
       {props.tool !== Tool.DnsTraversal && (
         <>
-          <Locations
-            input={props.input}
-            onChangeInput={props.onChangeInput}
-            workerOptions={props.workerOptions}
-          />
           {!showAdvancedOptions && (
             <div>
               <button
@@ -307,28 +385,31 @@ function DnsLookupInput(props: {
           )}
         </>
       )}
-      {props.tool === Tool.DnsTraversal && (
-        <FormRowDropdownList
-          label="From"
-          options={props.workerOptions}
-          selectedItem={props.input.worker}
-          onSelect={newWorker =>
-            props.onChangeInput({
-              ...props.input,
-              worker: newWorker || Config.defaultWorker,
-            })
-          }
-        />
-      )}
     </>
   );
 }
 
 function Locations(props: {
+  allowMultiSelect: boolean;
   input: ToolInput;
   onChangeInput: (input: ToolInput) => void;
   workerOptions: ReadonlyArray<Option>;
 }) {
+  if (!props.allowMultiSelect) {
+    return (
+      <FormRowDropdownList
+        label="From"
+        options={props.workerOptions}
+        selectedItem={props.input.worker}
+        onSelect={newWorker =>
+          props.onChangeInput({
+            ...props.input,
+            worker: newWorker || Config.defaultWorker,
+          })
+        }
+      />
+    );
+  }
   let label = 'All';
   if (props.input.workers.size < Config.workers.length) {
     const selectedWorkers = Config.workers.filter(worker =>
@@ -353,83 +434,6 @@ function Locations(props: {
       </DropdownButton>
     </FormRow>
   );
-}
-
-function buildToolURI({
-  tool,
-  input,
-}: {
-  tool: Tool;
-  input: ToolInput;
-}): LocationDescriptorObject {
-  let uri;
-  const params = new URLSearchParams();
-
-  switch (tool) {
-    case Tool.Ping:
-      uri = `/ping/${input.host}/`;
-      break;
-
-    case Tool.Traceroute:
-      uri = `/traceroute/${input.host}/`;
-      break;
-
-    case Tool.DnsLookup:
-      uri = `/lookup/${input.host}/${DnsLookupType[
-        input.dnsLookupType
-      ].toUpperCase()}/`;
-      break;
-
-    case Tool.DnsTraversal:
-      uri = `/traversal/${input.host}/${DnsLookupType[
-        input.dnsLookupType
-      ].toUpperCase()}/`;
-      break;
-
-    case Tool.ReverseDns:
-      uri = `/lookup/${input.host}/Ptr/`;
-      break;
-
-    case Tool.Whois:
-      uri = `/whois/${input.host}/`;
-      break;
-  }
-
-  if (tool === Tool.Ping || tool === Tool.Traceroute) {
-    if (input.protocol !== Protocol.Any) {
-      params.append('proto', Protocol[input.protocol]);
-    }
-  }
-
-  if (
-    tool === Tool.Ping ||
-    tool === Tool.Traceroute ||
-    tool === Tool.DnsLookup ||
-    tool === Tool.ReverseDns
-  ) {
-    if (input.workers.size < Config.workers.length) {
-      params.append('workers', Array.from(input.workers).join(','));
-    }
-  }
-
-  if (tool === Tool.DnsTraversal) {
-    if (input.worker !== Config.defaultWorker) {
-      params.append('workers', input.worker);
-    }
-  }
-
-  if (tool === Tool.DnsLookup || tool === Tool.ReverseDns) {
-    const server = input.server.trim();
-    if (input.server !== '') {
-      params.append('server', server);
-    }
-  }
-
-  const queryString = params.toString();
-  return {
-    pathname: uri,
-    search: queryString === '' ? '' : '?' + queryString.replace(/%2C/g, ','),
-  };
 }
 
 function isUsingAdvancedOptions(input: ToolInput): boolean {

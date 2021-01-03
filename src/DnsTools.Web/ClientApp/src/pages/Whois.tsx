@@ -92,7 +92,7 @@ export default function Whois(props: Props) {
         <MainForm
           initialInput={{
             ...getDefaultInput(),
-            host,
+            hosts: [host],
           }}
           initialSelectedTool={Tool.Whois}
           isStandalone={true}

@@ -49,8 +49,16 @@ export default function App() {
             <Route path="/lookup/:host/:type/" component={DnsLookup} />
             <Route path="/traversal/:host/:type/" component={DnsTraversal} />
             <Route
-              path="/ping/:host/"
-              render={routeProps => <Ping {...routeProps} ipData={ipData} />}
+              path="/:worker/ping/:hosts/"
+              render={routeProps => (
+                <Ping {...routeProps} ipData={ipData} isSingleWorker={true} />
+              )}
+            />
+            <Route
+              path="/ping/:hosts/"
+              render={routeProps => (
+                <Ping {...routeProps} ipData={ipData} isSingleWorker={false} />
+              )}
             />
             <Route
               path="/traceroute/:host/"

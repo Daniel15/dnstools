@@ -97,11 +97,11 @@ export default function Table(props: Props) {
         sortOrder={sortOrder}
         onChangeSortColumn={changeSortColumn}
       />
-      {sortedData.map(section => (
+      {sortedData.map((section, index) => (
         <TableSection
           areRowsExpandable={!!props.areRowsExpandable}
           isStriped={!!props.isStriped}
-          key={section.title || ''}
+          key={section.title || index}
           section={section}
         />
       ))}
@@ -210,7 +210,7 @@ function TableRow(props: TableRowProps) {
   return (
     <>
       <tr className={className} key={row.id}>
-        {props.isExpandable && (
+        {props.isExpandable && row.getExpandedContent && (
           <td className="align-middle expand-cell" onClick={onToggle}>
             <ExpandChevron isExpanded={isExpanded} />
           </td>

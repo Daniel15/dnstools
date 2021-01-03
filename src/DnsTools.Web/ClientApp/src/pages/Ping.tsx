@@ -1,6 +1,6 @@
-import React, {useMemo} from 'react';
+import React, {useMemo, useState} from 'react';
 import Helmet from 'react-helmet';
-import {RouteComponentProps} from 'react-router';
+import {RouteComponentProps, useHistory} from 'react-router';
 
 import {
   PingRequest,
@@ -14,7 +14,7 @@ import {
   PingHostLookupResponse,
   TracerouteResponse,
 } from '../types/protobuf';
-import useSignalrStream from '../hooks/useSignalrStream';
+import {useMultipleSignalrStreams} from '../hooks/useSignalrStream';
 import {createRow} from '../components/PingWorkerResult';
 import Table, {Header} from '../components/Table';
 import Spinner from '../components/Spinner';
@@ -23,39 +23,68 @@ import {getProtocol, getWorkers} from '../utils/queryString';
 import {serializeWorkers, groupResponsesByWorker} from '../utils/workers';
 import MainForm, {getDefaultInput, Tool} from '../components/MainForm';
 import {useSignalrStreamCache} from '../hooks/CachedSignalrStream';
+import {defaultWorker} from '../config';
+import {buildToolURI} from '../utils/url';
+import CountryFlag from '../components/CountryFlag';
+import WorkerLocation from '../components/WorkerLocation';
 
 type Props = RouteComponentProps<{
-  host: string;
+  hosts: string;
+  worker?: string;
 }> & {
   ipData: ReadonlyMap<string, IpData>;
+  isSingleWorker: boolean;
 };
 
-const headers: ReadonlyArray<Header> = [
-  {label: 'Location', width: '25%'},
-  {label: 'Response Time', width: '20%'},
-  {label: 'Deviation', width: '20%'},
-  {label: 'Info'},
-];
-
 export default function Ping(props: Props) {
-  const host = props.match.params.host;
   const queryString = useQueryString();
   const protocol = getProtocol(queryString);
-  const workers = useMemo(() => getWorkers(queryString), [queryString]);
+  const hosts = useMemo(() => {
+    const hosts = props.match.params.hosts.split(',');
+    return props.isSingleWorker ? hosts : [hosts[0]];
+  }, [props.match.params.hosts, props.isSingleWorker]);
+  const workers = useMemo(
+    () =>
+      props.isSingleWorker
+        ? new Set([props.match.params.worker || defaultWorker])
+        : getWorkers(queryString),
+    [props.isSingleWorker, props.match.params.worker, queryString],
+  );
+
   const tracerouteCache = useSignalrStreamCache<
     WorkerResponse<TracerouteResponse>
   >();
 
-  const request: PingRequest = useMemo(
-    () => ({host, protocol, workers: serializeWorkers(workers)}),
-    [host, protocol, workers],
+  const requests = useMemo(
+    () =>
+      hosts.map(host => {
+        const request: PingRequest = {
+          host,
+          protocol,
+          workers: serializeWorkers(workers),
+        };
+        return {methodName: 'ping', args: [request]};
+      }),
+    [hosts, protocol, workers],
   );
-  const data = useSignalrStream<WorkerResponse<PingResponse>>('ping', request);
-  const workerResponses = groupResponsesByWorker(workers, data.results);
 
-  const {showIPs, onlyIP} = summarizeIPs(data.results);
+  const data = useMultipleSignalrStreams<WorkerResponse<PingResponse>>(
+    requests,
+  );
+
+  const workerResponses = data.flatMap(streamResult =>
+    groupResponsesByWorker(workers, streamResult.results),
+  );
+
+  let showIPs = true;
+  let onlyIP = null;
+  if (!props.isSingleWorker) {
+    ({showIPs, onlyIP} = summarizeIPs(data[0].results || []));
+  }
+
   const rows = workerResponses.map((worker, index) =>
     createRow({
+      host: props.isSingleWorker ? hosts[index] : null,
       ipData: props.ipData,
       results: worker.responses,
       showIP: showIPs,
@@ -65,30 +94,106 @@ export default function Ping(props: Props) {
     }),
   );
 
+  const title = props.isSingleWorker
+    ? `Ping from ${workerResponses[0].worker.locationDisplay}`
+    : `Ping ${hosts}`;
+
+  const history = useHistory();
+  const [newHost, setNewHost] = useState('');
+
+  const currentInput = {
+    ...getDefaultInput(),
+    hosts,
+    protocol,
+    worker: props.match.params.worker || defaultWorker,
+    workers,
+  };
+
   return (
     <>
       <Helmet>
-        <title>Ping {host}</title>
+        <title>{title}</title>
       </Helmet>
       <h1 className="main-header">
-        Ping {host} {onlyIP && onlyIP !== host && <>({onlyIP})</>}{' '}
-        {!data.isComplete && <Spinner />}
+        {props.isSingleWorker ? (
+          <>
+            Ping from{' '}
+            <WorkerLocation flagSize={30} worker={workerResponses[0].worker} />
+          </>
+        ) : (
+          title
+        )}{' '}
+        {onlyIP && onlyIP !== props.match.params.hosts && <>({onlyIP})</>}{' '}
+        {!data.every(x => x.isComplete) && <Spinner />}
       </h1>
       <Table
         areRowsExpandable={true}
-        defaultSortColumn="Location"
-        headers={headers}
+        defaultSortColumn={props.isSingleWorker ? 'Host' : 'Location'}
+        headers={[
+          props.isSingleWorker
+            ? {label: 'Host', width: '25%'}
+            : {label: 'Location', width: '25%'},
+          {label: 'Response Time', width: '20%'},
+          {label: 'Deviation', width: '20%'},
+          {label: 'Info'},
+        ]}
         isStriped={true}
-        sections={[{rows}]}
+        key={title}
+        sections={[{rows}].concat(
+          props.isSingleWorker
+            ? {
+                rows: [
+                  {
+                    columns: [
+                      {
+                        colSpan: 2,
+                        sortValue: '',
+                        value: (
+                          <form
+                            onSubmit={evt => {
+                              evt.preventDefault();
+                              if (newHost === '') {
+                                return;
+                              }
+                              history.push(
+                                buildToolURI({
+                                  tool: Tool.Ping,
+                                  input: {
+                                    ...currentInput,
+                                    hosts: [...hosts, newHost],
+                                  },
+                                }),
+                              );
+                              setNewHost('');
+                            }}>
+                            <input
+                              type="text"
+                              className="form-control"
+                              id="host"
+                              placeholder="Add another"
+                              value={newHost}
+                              onChange={evt =>
+                                setNewHost(evt.target.value.trim())
+                              }
+                            />
+                          </form>
+                        ),
+                      },
+                      {
+                        colSpan: 3,
+                        sortValue: '',
+                        value: '',
+                      },
+                    ],
+                    id: 'add_more',
+                  },
+                ],
+              }
+            : [],
+        )}
       />
-
       <MainForm
-        initialInput={{
-          ...getDefaultInput(),
-          host,
-          protocol,
-          workers,
-        }}
+        initialInput={currentInput}
         initialSelectedTool={Tool.Ping}
         isStandalone={true}
       />

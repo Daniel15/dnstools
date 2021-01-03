@@ -18,6 +18,8 @@ import PingDetails from './PingDetails';
 import {SignalrCache} from '../hooks/CachedSignalrStream';
 
 type Props = {
+  // If provided, will show host name instead of worker location as first column
+  host?: string | null;
   ipData: ReadonlyMap<string, IpData>;
   results: ReadonlyArray<PingResponse>;
   showIP: boolean;
@@ -78,12 +80,18 @@ export function createRow(props: Props): Row {
   }
 
   const columns: Array<Column> = [
-    {
-      expandOnClick: true,
-      // Maintain original order as per config
-      sortValue: props.workerIndex,
-      value: <WorkerLocation worker={props.worker} />,
-    },
+    props.host
+      ? {
+          expandOnClick: true,
+          sortValue: props.host,
+          value: props.host,
+        }
+      : {
+          expandOnClick: true,
+          // Maintain original order as per config
+          sortValue: props.workerIndex,
+          value: <WorkerLocation worker={props.worker} />,
+        },
   ];
 
   if (rowText) {
@@ -120,7 +128,7 @@ export function createRow(props: Props): Row {
 
   return {
     columns,
-    id: props.worker.id,
+    id: `${props.worker.id}-${props.host}`,
     getExpandedContent: () => (
       <PingDetails
         ip={ip}

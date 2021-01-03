@@ -54,7 +54,7 @@ export default function Traceroute(props: Props) {
       <MainForm
         initialInput={{
           ...getDefaultInput(),
-          host,
+          hosts: [host],
           protocol,
           workers,
         }}
