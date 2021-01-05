@@ -110,19 +110,6 @@
       "networkAsn": 24940
     },
     {
-      "id": "hk",
-      "city": "Hong Kong",
-      "region": "Hong Kong",
-      "country": "HK",
-      "locationDisplay": "Hong Kong",
-      "latitude": 22.4949,
-      "longitude": 114.1395,
-      "providerName": "Host Hong Kong",
-      "providerUrl": "https://hosthongkong.net/",
-      "dataCenterName": "Tele Asia",
-      "networkAsn": 133398
-    },
-    {
       "id": "in",
       "city": "Mumbai",
       "region": "Maharashtra",
