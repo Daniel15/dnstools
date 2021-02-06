@@ -4,6 +4,7 @@ import React, {SVGProps} from 'react';
 // These are embedded directly as React components. All other countries are lazily loaded as needed.
 import {ReactComponent as at} from 'flag-icon-css/flags/4x3/at.svg';
 import {ReactComponent as au} from 'flag-icon-css/flags/4x3/au.svg';
+import {ReactComponent as be} from 'flag-icon-css/flags/4x3/be.svg';
 import {ReactComponent as bg} from 'flag-icon-css/flags/4x3/bg.svg';
 import {ReactComponent as ca} from 'flag-icon-css/flags/4x3/ca.svg';
 import {ReactComponent as ch} from 'flag-icon-css/flags/4x3/ch.svg';
@@ -35,6 +36,7 @@ const commonFlags: Record<
 > = {
   at,
   au,
+  be,
   bg,
   ca,
   ch,
@@ -64,7 +66,7 @@ const commonFlags: Record<
 const otherFlagsContext = require.context(
   'flag-icon-css/flags/4x3/',
   false,
-  /^\.\/(?!at|au|bg|ca|ch|de|fi|fr|gb|hk|in|it|jp|lu|no|nl|nz|pl|ro|ru|se|sg|tw|us|vn|za).+\.svg$/,
+  /^\.\/(?!at|au|be|bg|ca|ch|de|fi|fr|gb|hk|in|it|jp|lu|no|nl|nz|pl|ro|ru|se|sg|tw|us|vn|za).+\.svg$/,
 );
 
 type Props = {

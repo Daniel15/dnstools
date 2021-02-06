@@ -22,6 +22,11 @@ const providers = [
     url: 'https://mrvm.net/natvps/',
   },
   {
+    name: 'NOVOS',
+    tooltip: 'AMD Ryzen and EPYC VPS hosting in Belgium',
+    url: 'https://novos.be/',
+  },
+  {
     name: 'WebHorizon',
     tooltip: 'AMD EPYC NAT VPS hosting from £5.50 per year',
     url: 'https://webhorizon.in/',

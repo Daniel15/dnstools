@@ -45,6 +45,19 @@
       "networkAsn": 63473
     },
     {
+      "id": "be",
+      "city": "Antwerp",
+      "region": "Flanders",
+      "country": "BE",
+      "locationDisplay": "Belgium",
+      "latitude": 51.2224088820,
+      "longitude": 4.38512852455,
+      "providerName": "NOVOS",
+      "providerUrl": "https://novos.be/",
+      "dataCenterName": "LCP NV",
+      "networkAsn": 42160
+    },
+    {
       "id": "bg",
       "city": "Sofia",
       "region": "Sofia City",
@@ -277,6 +290,19 @@
       "providerUrl": "https://zappiehost.com/",
       "dataCenterName": "xneelo",
       "networkAsn": 61138
+    },
+    {
+      "id": "es",
+      "city": "Madrid",
+      "region": "Community of Madrid",
+      "country": "ES",
+      "locationDisplay": "Spain",
+      "latitude": 40.4168,
+      "longitude": -3.70379,
+      "providerName": "HostHatch",
+      "providerUrl": "https://hosthatch.com/",
+      "dataCenterName": "M247",
+      "networkAsn": 63473
     },
     {
       "id": "se",
