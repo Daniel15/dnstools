@@ -60,6 +60,12 @@ namespace DnsTools.Worker.Services
 			}
 			catch (Exception ex)
 			{
+				if (ex is OperationCanceledException)
+				{
+					// Cancellation doesn't need to bubble up an error message.
+					return;
+				}
+
 				await responseStream.WriteAsync(new TResponse
 				{
 					Error = new Error
