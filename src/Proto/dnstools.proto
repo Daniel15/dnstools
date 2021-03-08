@@ -9,6 +9,7 @@ service DnsToolsWorker {
   rpc Traceroute (TracerouteRequest) returns (stream TracerouteResponse);
   rpc DnsLookup (DnsLookupRequest) returns (stream DnsLookupResponse);
   rpc DnsTraversal (DnsTraversalRequest) returns (stream DnsTraversalResponse);
+  rpc Mtr (TracerouteRequest) returns (stream MtrResponse);
 }
 
 enum Protocol {
@@ -68,6 +69,35 @@ message PingTimeout {
 message PingSummary {
   int32 sent = 1;
   int32 received = 2;
+}
+
+message MtrResponse {
+  uint32 pos = 1;
+  oneof response {
+    HostLookupResult lookup = 2;
+    MtrHostLine host = 3;
+    MtrTransmitLine transmit = 4;
+    MtrPingLine ping = 5;
+    MtrDnsLine dns = 6;
+    Error error = 7;
+  }
+}
+
+message MtrHostLine {
+  string ip = 1;
+}
+
+message MtrTransmitLine {
+  uint32 seqnum = 1;
+}
+
+message MtrPingLine {
+  float rtt = 1;
+  uint32 seqnum = 2;
+}
+
+message MtrDnsLine {
+  string hostname = 1;
 }
 
 message HostLookupResult {

@@ -7,6 +7,7 @@ RUN apt-get -y update && \
   apt-get install -y --no-install-recommends \
     iputils-ping \
 	traceroute \
+	mtr-tiny \
   && \
   apt-get clean && \
   rm -rf /var/lib/apt/lists/*

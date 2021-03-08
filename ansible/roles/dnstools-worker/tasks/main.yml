@@ -46,6 +46,7 @@
       - dotnet-runtime-5.0
       - htop
       - iputils-ping
+      - mtr-tiny
       - python3-requests
       - rsync
       - rsyslog

@@ -45,6 +45,15 @@ namespace DnsTools.Worker.Services
 			await RunTool<DnsTraversalRequest, DnsTraversalResponse, DnsTraversal>(request, responseStream, context);
 		}
 
+		public override async Task Mtr(
+			TracerouteRequest request,
+			IServerStreamWriter<MtrResponse> responseStream,
+			ServerCallContext context
+		)
+		{
+			await RunTool<TracerouteRequest, MtrResponse, Mtr>(request, responseStream, context);
+		}
+
 		private async Task RunTool<TRequest, TResponse, TTool>(
 			TRequest request,
 			IServerStreamWriter<TResponse> responseStream,
