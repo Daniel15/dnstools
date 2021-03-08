@@ -111,6 +111,23 @@ export interface IDnsTXTRecord
 {
 	text: string;
 }
+export interface MtrHostLine
+{
+	ip: string;
+}
+export interface MtrTransmitLine
+{
+	seqnum: number;
+}
+export interface MtrPingLine
+{
+	rtt: number;
+	seqnum: number;
+}
+export interface MtrDnsLine
+{
+	hostname: string;
+}
 export enum PingResponseType { 
 	None = 0, 
 	Reply = 1, 
@@ -149,6 +166,15 @@ export enum DnsRecordType {
 	Ptr = 9, 
 	Soa = 10, 
 	Txt = 11
+}
+export enum MtrResponseType { 
+	None = 0, 
+	Lookup = 2, 
+	Host = 3, 
+	Transmit = 4, 
+	Ping = 5, 
+	Dns = 6, 
+	Error = 7
 }
 export interface IError
 {

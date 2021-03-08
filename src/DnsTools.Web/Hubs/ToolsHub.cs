@@ -84,5 +84,19 @@ namespace DnsTools.Web.Hubs
 					Type = request.Type,
 				}, cancellationToken: cancellationToken)).Run(request, Clients.Caller, workers, cancellationToken);
 		}
+		
+		public ChannelReader<WorkerResponse<MtrResponse>> Mtr(
+			PingRequest request,
+			CancellationToken cancellationToken
+		)
+		{
+			var workers = request.Workers ?? new[] { _defaultWorker }.ToImmutableHashSet();
+			return _serviceProvider.GetRequiredService<MtrRunner>()
+				.Run(new TracerouteRequest
+				{
+					Host = request.Host,
+					Protocol = request.Protocol
+				}, Clients.Caller, workers, cancellationToken);
+		}
 	}
 }

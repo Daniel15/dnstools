@@ -5,7 +5,7 @@ import {
   ITracerouteReply,
   TracerouteResponseType,
 } from '../types/generated';
-import CountryFlag from './CountryFlag';
+import IPDetails from './IPDetails';
 import {milliseconds} from '../utils/format';
 import {TracerouteResponse as TracerouteResponseData} from '../types/protobuf';
 
@@ -60,21 +60,6 @@ type ReplyProps = {
 
 function TracerouteReply(props: ReplyProps) {
   const {ipData, reply} = props;
-  const metadata: Array<React.ReactNode> = [];
-  if (ipData) {
-    if (ipData.countryIso) {
-      metadata.push(
-        <>
-          <CountryFlag country={ipData.countryIso} />
-          {[ipData.city, ipData.country].filter(Boolean).join(', ')}
-        </>,
-      );
-    }
-    if (ipData.asn) {
-      metadata.push(`AS${ipData.asn} ${ipData.asnName}`);
-    }
-  }
-
   return (
     <>
       <span
@@ -83,20 +68,7 @@ function TracerouteReply(props: ReplyProps) {
         }`}>
         {milliseconds(reply.rtt)}
       </span>{' '}
-      {ipData && ipData.hostName ? (
-        <>
-          <strong>{ipData.hostName}</strong> ({reply.ip})
-        </>
-      ) : (
-        <strong>{reply.ip}</strong>
-      )}{' '}
-      <ul className="list-inline text-muted">
-        {metadata.map((item, index) => (
-          <li className="list-inline-item" key={index}>
-            {item}
-          </li>
-        ))}
-      </ul>
+      <IPDetails ip={reply.ip} ipData={ipData} />
     </>
   );
 }

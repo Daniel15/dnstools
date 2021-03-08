@@ -23,6 +23,7 @@ namespace DnsTools.Web.Controllers
 		// ALL client-side routes must be covered below:
 
 		[Route("/ping/{host}/")]
+		[Route("/{worker}/ping/{host}/")]
 		public IActionResult Ping(string host)
 		{
 			return RenderNonPreRenderedPage($"Ping {host}");
@@ -50,6 +51,12 @@ namespace DnsTools.Web.Controllers
 		public IActionResult Whois(string host)
 		{
 			return RenderNonPreRenderedPage($"WHOIS for {host}");
+		}
+
+		[Route("/{worker}/mtr/{host}/")]
+		public IActionResult Mtr(string host)
+		{
+			return RenderNonPreRenderedPage($"MTR for {host}");
 		}
 
 		[Route("/locations/")]

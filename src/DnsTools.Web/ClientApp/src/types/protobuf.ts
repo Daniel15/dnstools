@@ -4,6 +4,7 @@ import {
   IPingTimeout,
   IPingSummary,
   IError,
+  MtrResponseType,
   TracerouteResponseType,
   ITracerouteReply,
   IHostLookupResult,
@@ -19,6 +20,10 @@ import {
   IDnsTXTRecord,
   DnsLookupResponseType,
   DnsTraversalResponseType,
+  MtrHostLine,
+  MtrTransmitLine,
+  MtrPingLine,
+  MtrDnsLine,
 } from './generated';
 
 export type PingHostLookupResponse = {
@@ -166,3 +171,30 @@ export type DnsTraversalResponse = DnsTraversalResponseSharedFields &
       }
     | DnsTraversalErrorResponse
   );
+
+export type MtrResponse = {pos: number} & (
+  | {
+      responseCase: MtrResponseType.Lookup;
+      lookup: IHostLookupResult;
+    }
+  | {
+      responseCase: MtrResponseType.Host;
+      host: MtrHostLine;
+    }
+  | {
+      responseCase: MtrResponseType.Transmit;
+      transmit: MtrTransmitLine;
+    }
+  | {
+      responseCase: MtrResponseType.Ping;
+      ping: MtrPingLine;
+    }
+  | {
+      responseCase: MtrResponseType.Dns;
+      dns: MtrDnsLine;
+    }
+  | {
+      responseCase: MtrResponseType.Error;
+      error: IError;
+    }
+);

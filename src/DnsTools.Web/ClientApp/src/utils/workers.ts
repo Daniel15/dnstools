@@ -54,3 +54,14 @@ export function getLongLocationDisplay(worker: WorkerConfig): string {
   }
   return location;
 }
+
+/**
+ * Gets the configuration for an individual worker by its ID.
+ */
+export function getWorkerConfig(worker: string): WorkerConfig {
+  const config = Config.workers.find(x => x.id === worker);
+  if (config == null) {
+    throw new Error(`Invalid worker: ${worker}`);
+  }
+  return config;
+}

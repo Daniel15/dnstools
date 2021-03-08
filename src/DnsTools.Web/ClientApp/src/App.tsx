@@ -12,6 +12,7 @@ import DnsLookup from './pages/DnsLookup';
 import DnsTraversal from './pages/DnsTraversal';
 import Index from './pages/Index';
 import Locations from './pages/Locations';
+import Mtr from './pages/Mtr';
 import Ping from './pages/Ping';
 import Traceroute from './pages/Traceroute';
 import Whois from './pages/Whois';
@@ -67,6 +68,10 @@ export default function App() {
               )}
             />
             <Route path="/whois/:host/" component={Whois} />
+            <Route
+              path="/:worker/mtr/:host/"
+              render={routeProps => <Mtr {...routeProps} ipData={ipData} />}
+            />
             <Route path="/locations/">
               <Locations />
             </Route>

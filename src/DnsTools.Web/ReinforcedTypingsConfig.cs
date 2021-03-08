@@ -38,11 +38,17 @@ namespace DnsTools.Web
 			builder.ExportAsInterface<DnsSOARecord>().WithPublicInstanceProperties();
 			builder.ExportAsInterface<DnsTXTRecord>().WithPublicInstanceProperties();
 
+			builder.ExportAsInterface<MtrHostLine>().WithPublicInstanceProperties().AutoI(false);
+			builder.ExportAsInterface<MtrTransmitLine>().WithPublicInstanceProperties().AutoI(false);
+			builder.ExportAsInterface<MtrPingLine>().WithPublicInstanceProperties().AutoI(false);
+			builder.ExportAsInterface<MtrDnsLine>().WithPublicInstanceProperties().AutoI(false);
+
 			builder.ExportAsEnum<PingResponse.ResponseOneofCase>().OverrideName("PingResponseType");
 			builder.ExportAsEnum<TracerouteResponse.ResponseOneofCase>().OverrideName("TracerouteResponseType");
 			builder.ExportAsEnum<DnsLookupResponse.ResponseOneofCase>().OverrideName("DnsLookupResponseType");
 			builder.ExportAsEnum<DnsTraversalResponse.ResponseOneofCase>().OverrideName("DnsTraversalResponseType");
 			builder.ExportAsEnum<DnsRecord.RecordOneofCase>().OverrideName("DnsRecordType");
+			builder.ExportAsEnum<MtrResponse.ResponseOneofCase>().OverrideName("MtrResponseType");
 
 			builder.ExportAsInterface<Error>().WithPublicInstanceProperties();
 

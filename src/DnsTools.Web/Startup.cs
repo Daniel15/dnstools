@@ -49,6 +49,7 @@ namespace DnsTools.Web
 			services.AddScoped<ICaptcha, Captcha>();
 
 			services.AddSingleton<TracerouteRunner>();
+			services.AddTransient<MtrRunner>();
 
 			services.AddHttpClient();
 			services.AddHttpContextAccessor();
