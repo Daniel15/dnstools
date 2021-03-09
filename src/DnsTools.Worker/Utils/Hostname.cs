@@ -50,45 +50,25 @@ namespace DnsTools.Worker.Utils
 			// Find first IP that matches requested protocol
 			var ipv4 = ips.FirstOrDefault(x => x.AddressFamily == AddressFamily.InterNetwork);
 			var ipv6 = ips.FirstOrDefault(x => x.AddressFamily == AddressFamily.InterNetworkV6);
-			IPAddress? ip;
-			switch (protocol)
+			var ip = protocol switch
 			{
-				case Protocol.Ipv4:
-					ip = ipv4;
-					break;
-
-				case Protocol.Ipv6:
-					ip = ipv6;
-					break;
-
-				case Protocol.Any:
-					ip = ipv6 ?? ipv4;
-					break;
-
-				default:
-					throw new ArgumentOutOfRangeException(nameof(protocol), protocol, null);
-			}
-
+				Protocol.Ipv4 => ipv4,
+				Protocol.Ipv6 => ipv6,
+				Protocol.Any => ipv6 ?? ipv4,
+				_ => throw new ArgumentOutOfRangeException(nameof(protocol), protocol, null),
+			};
 			if (ip != null)
 			{
 				return ip;
 			}
 
-			string protocolLabel;
-			switch (protocol)
+			var protocolLabel = protocol switch
 			{
-				case Protocol.Ipv4:
-					protocolLabel = "IPv4";
-					break;
-				case Protocol.Ipv6:
-					protocolLabel = "IPv6";
-					break;
-				case Protocol.Any:
-					protocolLabel = "IPv4 or IPv6";
-					break;
-				default:
-					throw new ArgumentOutOfRangeException();
-			}
+				Protocol.Ipv4 => "IPv4",
+				Protocol.Ipv6 => "IPv6",
+				Protocol.Any => "IPv4 or IPv6",
+				_ => throw new ArgumentOutOfRangeException(nameof(protocol), protocol, null),
+			};
 			throw new ArgumentException($"No {protocolLabel} address for {host}");
 		}
 	}
