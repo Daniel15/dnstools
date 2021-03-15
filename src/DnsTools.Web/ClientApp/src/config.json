@@ -130,8 +130,8 @@
       "locationDisplay": "India",
       "latitude": 18.564534,
       "longitude": 73.784045,
-      "providerName": "HostNamaste",
-      "providerUrl": "https://www.hostnamaste.com/",
+      "providerName": "WebHorizon",
+      "providerUrl": "https://webhorizon.in/",
       "dataCenterName": "LeapSwitch Networks",
       "networkAsn": 132335
     },
@@ -325,8 +325,8 @@
       "locationDisplay": "Switzerland",
       "latitude": 47.4328339,
       "longitude": 8.55738620,
-      "providerName": "HostHatch",
-      "providerUrl": "https://hosthatch.com/",
+      "providerName": "WebHorizon",
+      "providerUrl": "https://webhorizon.in/",
       "dataCenterName": "M247",
       "networkAsn": 63473
     },
