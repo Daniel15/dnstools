@@ -140,7 +140,6 @@ function parseMTRData(
 }
 
 // https://github.com/traviscross/mtr/issues/388
-const MISSING_TRANSMITS_TO_CONSIDER_EXTRANEOUS = 2;
 function trimExtraneousHopsFromEnd(
   hops: ReadonlyArray<MtrPosData>,
 ): ReadonlyArray<MtrPosData> {
@@ -148,18 +147,25 @@ function trimExtraneousHopsFromEnd(
     return hops;
   }
 
-  const firstHopTransmits = hops[0].transmits.length;
+  let lastIP;
+  const hopsToRemove = new Set();
+  for (let i = hops.length - 1; i >= 0; i--) {
+    const currHop = hops[i];
 
-  let currHop = hops.length - 1;
-  let hopsToRemove = 0;
-  while (
-    currHop > 0 &&
-    hops[currHop].transmits.length <
-      firstHopTransmits - MISSING_TRANSMITS_TO_CONSIDER_EXTRANEOUS
-  ) {
-    hopsToRemove++;
-    currHop--;
+    if (lastIP == null && currHop.ips[0] != null) {
+      // This is the last hop with a resolved IP. Save the IP to check the other hops
+      lastIP = currHop.ips[0];
+    } else if (lastIP != null) {
+      if (currHop.ips.includes(lastIP)) {
+        // This hop has an IP identical to the last IP. Remove the hop.
+        hopsToRemove.add(i);
+      } else {
+        break;
+      }
+    }
   }
 
-  return hopsToRemove === 0 ? hops : hops.slice(0, hops.length - hopsToRemove);
+  return hopsToRemove.size === 0
+    ? hops
+    : hops.filter((_, index) => !hopsToRemove.has(index));
 }
