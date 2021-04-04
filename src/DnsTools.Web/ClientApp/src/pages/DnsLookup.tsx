@@ -3,11 +3,7 @@ import Helmet from 'react-helmet';
 import {RouteComponentProps} from 'react-router';
 import {Link} from 'react-router-dom';
 
-import {
-  DnsLookupType,
-  DnsLookupRequest,
-  WorkerResponse,
-} from '../types/generated';
+import {DnsLookupRequest, WorkerResponse} from '../types/generated';
 import {DnsLookupResponse} from '../types/protobuf';
 import MainForm, {Tool, getDefaultInput} from '../components/MainForm';
 import {getWorkers, getLookupType} from '../utils/queryString';
@@ -106,9 +102,7 @@ export default function DnsLookup(props: Props) {
               server: server || '',
               workers,
             }}
-            initialSelectedTool={
-              type === DnsLookupType.Ptr ? Tool.ReverseDns : Tool.DnsLookup
-            }
+            initialSelectedTool={Tool.DnsLookup}
             isStandalone={true}
           />
         </>

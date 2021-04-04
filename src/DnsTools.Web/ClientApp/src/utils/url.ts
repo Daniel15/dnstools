@@ -25,6 +25,10 @@ export function buildToolURI({
       uri = `/traceroute/${input.hosts[0]}/`;
       break;
 
+    case Tool.Mtr:
+      uri = `/${input.worker}/mtr/${input.hosts[0]}/`;
+      break;
+
     case Tool.DnsLookup:
       uri = `/lookup/${input.hosts[0]}/${DnsLookupType[
         input.dnsLookupType
@@ -37,16 +41,12 @@ export function buildToolURI({
       ].toUpperCase()}/`;
       break;
 
-    case Tool.ReverseDns:
-      uri = `/lookup/${input.hosts[0]}/Ptr/`;
-      break;
-
     case Tool.Whois:
       uri = `/whois/${input.hosts[0]}/`;
       break;
   }
 
-  if (tool === Tool.Ping || tool === Tool.Traceroute) {
+  if (tool === Tool.Ping || tool === Tool.Traceroute || tool === Tool.Mtr) {
     if (input.protocol !== Protocol.Any) {
       params.append('proto', Protocol[input.protocol]);
     }
@@ -55,8 +55,7 @@ export function buildToolURI({
   if (
     (tool === Tool.Ping && !hasMultipleHosts) ||
     tool === Tool.Traceroute ||
-    tool === Tool.DnsLookup ||
-    tool === Tool.ReverseDns
+    tool === Tool.DnsLookup
   ) {
     if (input.workers.size < WorkersConfig.length) {
       params.append('workers', Array.from(input.workers).join(','));
@@ -69,7 +68,7 @@ export function buildToolURI({
     }
   }
 
-  if (tool === Tool.DnsLookup || tool === Tool.ReverseDns) {
+  if (tool === Tool.DnsLookup) {
     const server = input.server.trim();
     if (input.server !== '') {
       params.append('server', server);

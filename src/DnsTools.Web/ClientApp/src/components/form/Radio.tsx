@@ -3,7 +3,7 @@ import React from 'react';
 export default function Radio(props: {
   id: string;
   isChecked: boolean;
-  label: string;
+  label: React.ReactNode;
   name: string;
   onMouseEnter?: (() => void) | undefined;
   onMouseLeave?: (() => void) | undefined;

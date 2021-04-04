@@ -3,6 +3,7 @@ import React from 'react';
 import Radio from './Radio';
 
 type Option<T> = {
+  extraContent?: React.ReactNode | null;
   id: string;
   label: string;
   value: T;
@@ -24,7 +25,12 @@ export default function RadioList<TValue>(props: {
           id={option.id}
           isChecked={option.value === props.selectedValue}
           key={option.label}
-          label={option.label}
+          label={
+            <>
+              {option.label}
+              {option.extraContent}
+            </>
+          }
           name={props.name}
           onMouseEnter={
             onRadioMouseEnter

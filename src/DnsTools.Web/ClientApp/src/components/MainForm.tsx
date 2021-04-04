@@ -26,7 +26,7 @@ type Props = {
 export enum Tool {
   DnsLookup = 'DnsLookup',
   DnsTraversal = 'DnsTraversal',
-  ReverseDns = 'ReverseDns',
+  Mtr = 'Mtr',
   Ping = 'Ping',
   Traceroute = 'Traceroute',
   Whois = 'Whois',
@@ -35,6 +35,7 @@ export enum Tool {
 export type ToolMetadata = {
   tool: Tool;
   label: string;
+  isNew?: boolean;
   description: string;
 };
 
@@ -63,10 +64,16 @@ const toolOptions: ReadonlyArray<ToolMetadata> = [
       'Shows every DNS server that is (or may be) used for a DNS lookup, and what the servers return.',
   },
   {
-    tool: Tool.ReverseDns,
-    label: 'Reverse DNS (PTR)',
-    description: 'Convert an IP address into a hostname.',
+    tool: Tool.Mtr,
+    label: 'MTR',
+    isNew: true,
+    description: 'Show the route packets take to a particular host',
   },
+  // {
+  //   tool: Tool.ReverseDns,
+  //   label: 'Reverse DNS (PTR)',
+  //   description: 'Convert an IP address into a hostname.',
+  // },
   {
     tool: Tool.Ping,
     label: 'Ping',
@@ -144,16 +151,17 @@ export default function MainForm(props: Props) {
           onChangeInput={setInput}
         />
         {(selectedTool.tool === Tool.Ping ||
-          selectedTool.tool === Tool.Traceroute) && (
+          selectedTool.tool === Tool.Traceroute ||
+          selectedTool.tool === Tool.Mtr) && (
           <PingInput
             input={input}
+            tool={selectedTool.tool}
             onChangeInput={setInput}
             workerOptions={workerOptions}
           />
         )}
         {(selectedTool.tool === Tool.DnsLookup ||
-          selectedTool.tool === Tool.DnsTraversal ||
-          selectedTool.tool === Tool.ReverseDns) && (
+          selectedTool.tool === Tool.DnsTraversal) && (
           <DnsLookupInput
             input={input}
             onChangeInput={setInput}
@@ -269,6 +277,7 @@ function HostInput(
 
 function PingInput(props: {
   input: ToolInput;
+  tool: Tool;
   onChangeInput: (input: ToolInput) => void;
   workerOptions: ReadonlyArray<Option>;
 }) {
@@ -301,7 +310,9 @@ function PingInput(props: {
         />
       </FormRow>
       <Locations
-        allowMultiSelect={props.input.hosts.length === 1}
+        allowMultiSelect={
+          props.tool !== Tool.Mtr && props.input.hosts.length === 1
+        }
         input={props.input}
         onChangeInput={props.onChangeInput}
         workerOptions={props.workerOptions}
@@ -321,29 +332,27 @@ function DnsLookupInput(props: {
   );
   return (
     <>
-      {props.tool !== Tool.ReverseDns && (
-        <FormRow id="dns-lookup-type" label="Type">
-          <select
-            className="custom-select"
-            id="dns-lookup-type"
-            value={props.input.dnsLookupType}
-            onChange={evt =>
-              props.onChangeInput({
-                ...props.input,
-                dnsLookupType: +evt.target.value,
-              })
-            }>
-            <option value={DnsLookupType.A}>A</option>
-            <option value={DnsLookupType.Aaaa}>AAAA (IPv6)</option>
-            <option value={DnsLookupType.Cname}>CNAME</option>
-            <option value={DnsLookupType.Mx}>MX</option>
-            <option value={DnsLookupType.Ptr}>PTR (Reverse DNS)</option>
-            <option value={DnsLookupType.Ns}>NS</option>
-            <option value={DnsLookupType.Txt}>TXT</option>
-            <option value={DnsLookupType.Soa}>SOA</option>
-          </select>
-        </FormRow>
-      )}
+      <FormRow id="dns-lookup-type" label="Type">
+        <select
+          className="custom-select"
+          id="dns-lookup-type"
+          value={props.input.dnsLookupType}
+          onChange={evt =>
+            props.onChangeInput({
+              ...props.input,
+              dnsLookupType: +evt.target.value,
+            })
+          }>
+          <option value={DnsLookupType.A}>A</option>
+          <option value={DnsLookupType.Aaaa}>AAAA (IPv6)</option>
+          <option value={DnsLookupType.Cname}>CNAME</option>
+          <option value={DnsLookupType.Mx}>MX</option>
+          <option value={DnsLookupType.Ptr}>PTR (Reverse DNS)</option>
+          <option value={DnsLookupType.Ns}>NS</option>
+          <option value={DnsLookupType.Txt}>TXT</option>
+          <option value={DnsLookupType.Soa}>SOA</option>
+        </select>
+      </FormRow>
       <Locations
         allowMultiSelect={props.tool !== Tool.DnsTraversal}
         input={props.input}

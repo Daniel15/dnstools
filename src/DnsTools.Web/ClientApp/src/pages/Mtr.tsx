@@ -20,6 +20,7 @@ import {getProtocol} from '../utils/queryString';
 import useQueryString from '../hooks/useQueryString';
 import {SignalrStream, useSignalrStream} from '../hooks/useSignalrStream';
 import {getWorkerConfig} from '../utils/workers';
+import MainForm, {getDefaultInput, Tool} from '../components/MainForm';
 
 type Props = RouteComponentProps<{
   host: string;
@@ -59,6 +60,13 @@ export default function Mtr(props: Props) {
   const rawData = useSignalrStream<WorkerResponse<MtrResponse>>('mtr', request);
   const data = parseMTRData(rawData);
 
+  // Show the form at the bottom once we have more than 2 responses for the first hop
+  // (don't show it while the hops are still populating)
+  // TODO: Use ?. once Babel is upgraded
+  //const showForm = data.hops[0]?.responses?.length > 2;
+  const showForm =
+    data.hops[0] && data.hops[0].transmits && data.hops[0].transmits.length > 1;
+
   return (
     <>
       <Helmet>
@@ -78,12 +86,18 @@ export default function Mtr(props: Props) {
         </div>
       ))}
       {/* TODO: Stop button */}
-
-      {/* TODO <MainForm
-        initialInput={currentInput}
-        initialSelectedTool={Tool.Ping}
-        isStandalone={true}
-      /> */}
+      {showForm && (
+        <MainForm
+          initialInput={{
+            ...getDefaultInput(),
+            hosts: [host],
+            protocol,
+            worker,
+          }}
+          initialSelectedTool={Tool.Mtr}
+          isStandalone={true}
+        />
+      )}
     </>
   );
 }

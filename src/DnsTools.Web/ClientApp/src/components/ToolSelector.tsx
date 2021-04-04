@@ -44,6 +44,9 @@ function LargeToolSelector(props: Props) {
                       onChange={() => props.onSelectTool(tool)}
                     />{' '}
                     <label htmlFor={id}>{tool.label}</label>
+                    {tool.isNew && (
+                      <span className="badge badge-info ml-2">New</span>
+                    )}
                   </h5>
                   <p className="card-text">
                     {tool.description.replace(
@@ -77,6 +80,9 @@ function SmallToolSelector(props: Props) {
       <RadioList
         name="tool"
         options={props.toolOptions.map(tool => ({
+          extraContent: tool.isNew ? (
+            <span className="badge badge-info ml-1">New</span>
+          ) : null,
           id: tool.tool,
           label: tool.label,
           value: tool,
