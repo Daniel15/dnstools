@@ -9,6 +9,7 @@ type CacheData<T> = {
   error: Error | null;
   results: ReadonlyArray<T>;
   isComplete: boolean;
+  stop: (() => void) | null;
 };
 
 export type SignalrCache<T> = Map<string, CacheData<T>>;
@@ -31,6 +32,7 @@ export function useCachedSignalrStream<T>(
     error: null,
     isComplete: false,
     results: [],
+    stop: null,
   });
 
   useEffect(() => {
@@ -43,14 +45,7 @@ export function useCachedSignalrStream<T>(
     let cachedData = cache.get(cacheKey);
     if (cachedData == null) {
       // No cached data for this request yet, so cache some initial data and kick off the request
-      const newData: CacheData<T> = {
-        callbacks: new Set(),
-        error: null,
-        isComplete: false,
-        results: [],
-      };
-      cache.set(cacheKey, newData);
-      connection.stream<T>(methodName, ...args).subscribe({
+      const subscription = connection.stream<T>(methodName, ...args).subscribe({
         next: item => {
           newData.results = [...newData.results, item];
           runCallbacks(newData);
@@ -64,6 +59,14 @@ export function useCachedSignalrStream<T>(
           runCallbacks(newData);
         },
       });
+      const newData: CacheData<T> = {
+        callbacks: new Set(),
+        error: null,
+        isComplete: false,
+        results: [],
+        stop: subscription.dispose,
+      };
+      cache.set(cacheKey, newData);
       cachedData = newData;
     }
     setStreamData(cachedData);

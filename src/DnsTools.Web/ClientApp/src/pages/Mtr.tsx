@@ -77,6 +77,14 @@ export default function Mtr(props: Props) {
       <h1 className="main-header">
         MTR for {host} from{' '}
         <WorkerLocation flagSize={30} worker={workerConfig} />
+        {rawData.stop && (
+          <button
+            type="button"
+            className="btn btn-secondary my-1 float-right"
+            onClick={rawData.stop}>
+            Stop
+          </button>
+        )}
       </h1>
       <MtrTable data={data.hops} ipData={props.ipData} />
 

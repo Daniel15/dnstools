@@ -1,3 +1,4 @@
+import {ISubscription} from '@microsoft/signalr';
 import {useCallback, useEffect, useMemo, useState} from 'react';
 import useDeepCompareEffect from 'use-deep-compare-effect';
 
@@ -7,6 +8,7 @@ export type SignalrStream<T> = Readonly<{
   error: Error | null;
   results: ReadonlyArray<T>;
   isComplete: boolean;
+  stop: (() => void) | null;
 }>;
 
 type Requests = ReadonlyArray<
@@ -20,6 +22,7 @@ const initialStreamState = {
   error: null,
   results: [],
   isComplete: false,
+  stop: null,
 };
 
 /**
@@ -69,21 +72,26 @@ export function useMultipleSignalrStreams<T>(
       const cacheKey = requestCacheKeys[index];
       let cachedData = results.get(cacheKey);
       if (cachedData == null) {
-        connection.stream<T>(request.methodName, ...request.args).subscribe({
-          next: item =>
-            updateSignalrStream(cacheKey, result => ({
-              ...result,
-              results: [...result.results, item],
-            })),
-          error: error =>
-            updateSignalrStream(cacheKey, result => ({...result, error})),
-          complete: () =>
-            updateSignalrStream(cacheKey, result => ({
-              ...result,
-              isComplete: true,
-            })),
-        });
-        updateSignalrStream(cacheKey, () => initialStreamState);
+        const subscription = connection
+          .stream<T>(request.methodName, ...request.args)
+          .subscribe({
+            next: item =>
+              updateSignalrStream(cacheKey, result => ({
+                ...result,
+                results: [...result.results, item],
+              })),
+            error: error =>
+              updateSignalrStream(cacheKey, result => ({...result, error})),
+            complete: () =>
+              updateSignalrStream(cacheKey, result => ({
+                ...result,
+                isComplete: true,
+              })),
+          });
+        updateSignalrStream(cacheKey, () => ({
+          ...initialStreamState,
+          stop: subscription.dispose,
+        }));
       }
     });
   }, [
@@ -111,6 +119,9 @@ export function useSignalrStream<T>(
   const [results, setResults] = useState<ReadonlyArray<T>>([]);
   const [error, setError] = useState<Error | null>(null);
   const [isComplete, setIsComplete] = useState<boolean>(false);
+  const [subscription, setSubscription] = useState<ISubscription<T> | null>(
+    null,
+  );
 
   useDeepCompareEffect(() => {
     setResults([]);
@@ -127,11 +138,18 @@ export function useSignalrStream<T>(
       error: error => setError(error),
       complete: () => setIsComplete(true),
     });
+    setSubscription(subscription);
 
     return () => {
       subscription.dispose();
     };
   }, [methodName, args, isConnected]);
 
-  return {results, error, isComplete};
+  const stop = useCallback(() => {
+    // TODO: subscription?.dispose() after Babel upgrade
+    subscription && subscription.dispose();
+    setSubscription(null);
+  }, [subscription]);
+
+  return {results, error, isComplete, stop: subscription ? stop : null};
 }
