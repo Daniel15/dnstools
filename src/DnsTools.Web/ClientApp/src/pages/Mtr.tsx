@@ -153,7 +153,12 @@ function parseMTRData(
   };
 }
 
-// https://github.com/traviscross/mtr/issues/388
+/**
+ * mtr can return extraneous hops at the end, as the initial number of pings it sends
+ * may be greater than the number of hops to reach the destination. This function
+ * trims those extraneous hops from the end of the results.
+ * @see https://github.com/traviscross/mtr/issues/388
+ */
 function trimExtraneousHopsFromEnd(
   hops: ReadonlyArray<MtrPosData>,
 ): ReadonlyArray<MtrPosData> {
@@ -162,24 +167,27 @@ function trimExtraneousHopsFromEnd(
   }
 
   let lastIP;
-  const hopsToRemove = new Set();
+  const hopsWithLastIP: Array<number> = [];
   for (let i = hops.length - 1; i >= 0; i--) {
     const currHop = hops[i];
 
     if (lastIP == null && currHop.ips[0] != null) {
       // This is the last hop with a resolved IP. Save the IP to check the other hops
       lastIP = currHop.ips[0];
-    } else if (lastIP != null) {
-      if (currHop.ips.includes(lastIP)) {
-        // This hop has an IP identical to the last IP. Remove the hop.
-        hopsToRemove.add(i);
-      } else {
-        break;
-      }
     }
+
+    if (lastIP != null && !currHop.ips.includes(lastIP)) {
+      // We've reached a hop that doesn't include the last IP
+      break;
+    }
+
+    hopsWithLastIP.push(i);
   }
 
-  return hopsToRemove.size === 0
-    ? hops
-    : hops.filter((_, index) => !hopsToRemove.has(index));
+  if (hopsWithLastIP.length <= 1) {
+    return hops;
+  }
+
+  hopsWithLastIP.pop();
+  return hops.filter((_, index) => !hopsWithLastIP.includes(index));
 }
