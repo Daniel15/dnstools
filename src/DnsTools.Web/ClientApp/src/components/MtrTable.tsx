@@ -81,8 +81,7 @@ function createRow(
         value: data.transmits.length,
       },
       {
-        // TODO: `lastPing?.rtt` once TypeScript + Babel are updated
-        sortValue: lastPing ? lastPing.rtt : null,
+        sortValue: lastPing?.rtt,
         value: lastPing ? milliseconds(lastPing.rtt) : null,
       },
       {

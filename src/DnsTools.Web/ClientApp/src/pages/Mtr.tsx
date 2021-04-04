@@ -62,10 +62,7 @@ export default function Mtr(props: Props) {
 
   // Show the form at the bottom once we have more than 2 responses for the first hop
   // (don't show it while the hops are still populating)
-  // TODO: Use ?. once Babel is upgraded
-  //const showForm = data.hops[0]?.responses?.length > 2;
-  const showForm =
-    data.hops[0] && data.hops[0].transmits && data.hops[0].transmits.length > 1;
+  const showForm = data.hops[0]?.transmits?.length > 1 || rawData.stop == null;
 
   return (
     <>
@@ -93,7 +90,6 @@ export default function Mtr(props: Props) {
           {error.message}
         </div>
       ))}
-      {/* TODO: Stop button */}
       {showForm && (
         <MainForm
           initialInput={{

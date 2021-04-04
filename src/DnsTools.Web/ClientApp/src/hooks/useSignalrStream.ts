@@ -146,8 +146,7 @@ export function useSignalrStream<T>(
   }, [methodName, args, isConnected]);
 
   const stop = useCallback(() => {
-    // TODO: subscription?.dispose() after Babel upgrade
-    subscription && subscription.dispose();
+    subscription?.dispose();
     setSubscription(null);
   }, [subscription]);
 

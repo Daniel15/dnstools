@@ -22,7 +22,10 @@ export default function useDimensions<T extends HTMLElement>(): Return<T> {
     width: 0,
   });
   const observer = useLazyRef(
-    () => new ResizeObserver(data => setDimensions(data[0].contentRect)),
+    () =>
+      new ResizeObserver((data: ResizeObserverEntry[]) =>
+        setDimensions(data[0].contentRect),
+      ),
   );
   useLayoutEffect(() => {
     if (node) {
