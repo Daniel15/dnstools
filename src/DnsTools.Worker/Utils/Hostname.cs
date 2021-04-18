@@ -59,6 +59,7 @@ namespace DnsTools.Worker.Utils
 			};
 			if (ip != null)
 			{
+				AssertValidIp(ip);
 				return ip;
 			}
 
