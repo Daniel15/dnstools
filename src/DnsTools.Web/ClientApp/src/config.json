@@ -123,6 +123,19 @@
       "networkAsn": 24940
     },
     {
+      "id": "hk",
+      "city": "Hong Kong",
+      "region": "Hong Kong",
+      "country": "HK",
+      "locationDisplay": "Hong Kong",
+      "latitude": 22.36231425,
+      "longitude": 114.1191968,
+      "providerName": "WebHorizon",
+      "providerUrl": "https://webhorizon.in/",
+      "dataCenterName": "Equinix HK2",
+      "networkAsn": 63473
+    },
+    {
       "id": "in",
       "city": "Mumbai",
       "region": "Maharashtra",
