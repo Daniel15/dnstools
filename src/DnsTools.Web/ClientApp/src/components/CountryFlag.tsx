@@ -44,7 +44,6 @@ const commonFlags: Record<
   ch,
   de,
   ee,
-  es,
   fi,
   fr,
   gb,
@@ -70,7 +69,7 @@ const commonFlags: Record<
 const otherFlagsContext = require.context(
   'flag-icon-css/flags/4x3/',
   false,
-  /^\.\/(?!at|au|be|bg|ca|ch|de|ee|es|fi|fr|gb|hk|in|it|jp|lu|no|nl|nz|pl|ro|ru|se|sg|tw|us|vn|za).+\.svg$/,
+  /^\.\/(?!at|au|be|bg|ca|ch|de|ee|fi|fr|gb|hk|in|it|jp|lu|no|nl|nz|pl|ro|ru|se|sg|tw|us|vn|za).+\.svg$/,
 );
 
 type Props = {
