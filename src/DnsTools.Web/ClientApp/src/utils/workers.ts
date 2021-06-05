@@ -2,6 +2,9 @@ import {WorkerResponse} from '../types/generated';
 import Config from '../config.json';
 
 export type WorkerConfig = Readonly<typeof Config['workers'][0]>;
+export type GroupedResponses<T> = ReadonlyArray<
+  Readonly<{worker: WorkerConfig; responses: ReadonlyArray<T>}>
+>;
 
 /**
  * Returns `null` if the specified set of workers contains all the workers, otherwise
@@ -19,9 +22,7 @@ export function serializeWorkers(
 export function groupResponsesByWorker<T>(
   selectedWorkers: ReadonlySet<string>,
   results: ReadonlyArray<WorkerResponse<T>>,
-): ReadonlyArray<
-  Readonly<{worker: WorkerConfig; responses: ReadonlyArray<T>}>
-> {
+): GroupedResponses<T> {
   const responsesByWorker: Map<string, Array<T>> = new Map();
   results.forEach(result => {
     let workerResults = responsesByWorker.get(result.workerId);

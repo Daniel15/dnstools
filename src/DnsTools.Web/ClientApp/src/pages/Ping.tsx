@@ -20,12 +20,18 @@ import Table from '../components/Table';
 import Spinner from '../components/Spinner';
 import useQueryString from '../hooks/useQueryString';
 import {getProtocol, getWorkers} from '../utils/queryString';
-import {serializeWorkers, groupResponsesByWorker} from '../utils/workers';
+import {
+  serializeWorkers,
+  groupResponsesByWorker,
+  GroupedResponses,
+} from '../utils/workers';
 import MainForm, {getDefaultInput, Tool} from '../components/MainForm';
 import {useSignalrStreamCache} from '../hooks/CachedSignalrStream';
 import {defaultWorker} from '../config';
 import {buildToolURI} from '../utils/url';
 import WorkerLocation from '../components/WorkerLocation';
+import {average} from '../utils/math';
+import {milliseconds} from '../utils/format';
 
 type Props = RouteComponentProps<{
   hosts: string;
@@ -50,9 +56,8 @@ export default function Ping(props: Props) {
     [props.isSingleWorker, props.match.params.worker, queryString],
   );
 
-  const tracerouteCache = useSignalrStreamCache<
-    WorkerResponse<TracerouteResponse>
-  >();
+  const tracerouteCache =
+    useSignalrStreamCache<WorkerResponse<TracerouteResponse>>();
 
   const requests = useMemo(
     () =>
@@ -67,9 +72,8 @@ export default function Ping(props: Props) {
     [hosts, protocol, workers],
   );
 
-  const data = useMultipleSignalrStreams<WorkerResponse<PingResponse>>(
-    requests,
-  );
+  const data =
+    useMultipleSignalrStreams<WorkerResponse<PingResponse>>(requests);
 
   const workerResponses = data.flatMap(streamResult =>
     groupResponsesByWorker(workers, streamResult.results),
@@ -108,23 +112,47 @@ export default function Ping(props: Props) {
     workers,
   };
 
+  const isLoading = !data.every(x => x.isComplete);
+  const subtitlePieces = [];
+  if (onlyIP && onlyIP !== props.match.params.hosts) {
+    // If it resolved to one IP for all workers, show the IP in the header
+    subtitlePieces.push(onlyIP);
+  }
+  if (!isLoading) {
+    const averagePingTime = getAveragePingTime(workerResponses);
+    if (averagePingTime) {
+      subtitlePieces.push(`${milliseconds(averagePingTime)} avg`);
+    }
+  }
+
   return (
     <>
       <Helmet>
         <title>{title}</title>
       </Helmet>
-      <h1 className="main-header">
-        {props.isSingleWorker ? (
-          <>
-            Ping from{' '}
-            <WorkerLocation flagSize={30} worker={workerResponses[0].worker} />
-          </>
-        ) : (
-          title
-        )}{' '}
-        {onlyIP && onlyIP !== props.match.params.hosts && <>({onlyIP})</>}{' '}
-        {!data.every(x => x.isComplete) && <Spinner />}
-      </h1>
+      <div className="d-flex flex-row flex-wrap align-items-center">
+        <h1 className="main-header mr-3">
+          {props.isSingleWorker ? (
+            <>
+              Ping from{' '}
+              <WorkerLocation
+                flagSize={30}
+                worker={workerResponses[0].worker}
+              />
+            </>
+          ) : (
+            title
+          )}{' '}
+        </h1>
+        {subtitlePieces.length > 0 && (
+          <p className="h5 mr-3">{subtitlePieces.join(', ')} </p>
+        )}
+        {isLoading && (
+          <div className="mb-1">
+            <Spinner />
+          </div>
+        )}
+      </div>
       <Table
         areRowsExpandable={true}
         defaultSortColumn={props.isSingleWorker ? 'Host' : 'Location'}
@@ -205,9 +233,7 @@ export default function Ping(props: Props) {
  * for example when a host uses GeoIP), or if the IP address is the same across all
  * workers.
  */
-function summarizeIPs(
-  results: ReadonlyArray<WorkerResponse<PingResponse>>,
-): {
+function summarizeIPs(results: ReadonlyArray<WorkerResponse<PingResponse>>): {
   showIPs: boolean;
   onlyIP: string | null;
 } {
@@ -263,4 +289,18 @@ function summarizeIPs(
     showIPs: false,
     onlyIP: null,
   };
+}
+
+function getAveragePingTime(
+  workerResponses: GroupedResponses<PingResponse>,
+): number | null {
+  const pingTimes: Array<number> = [];
+  workerResponses.forEach(workerResponse => {
+    workerResponse.responses.forEach(response => {
+      if (response.responseCase === PingResponseType.Reply) {
+        pingTimes.push(response.reply.rtt);
+      }
+    });
+  });
+  return pingTimes.length === 0 ? null : average(pingTimes);
 }
