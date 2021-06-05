@@ -9,6 +9,7 @@ import {ReactComponent as bg} from 'flag-icon-css/flags/4x3/bg.svg';
 import {ReactComponent as ca} from 'flag-icon-css/flags/4x3/ca.svg';
 import {ReactComponent as ch} from 'flag-icon-css/flags/4x3/ch.svg';
 import {ReactComponent as de} from 'flag-icon-css/flags/4x3/de.svg';
+import {ReactComponent as es} from 'flag-icon-css/flags/4x3/es.svg';
 import {ReactComponent as fi} from 'flag-icon-css/flags/4x3/fi.svg';
 import {ReactComponent as fr} from 'flag-icon-css/flags/4x3/fr.svg';
 import {ReactComponent as gb} from 'flag-icon-css/flags/4x3/gb.svg';
@@ -41,6 +42,7 @@ const commonFlags: Record<
   ca,
   ch,
   de,
+  es,
   fi,
   fr,
   gb,
@@ -66,7 +68,7 @@ const commonFlags: Record<
 const otherFlagsContext = require.context(
   'flag-icon-css/flags/4x3/',
   false,
-  /^\.\/(?!at|au|be|bg|ca|ch|de|fi|fr|gb|hk|in|it|jp|lu|no|nl|nz|pl|ro|ru|se|sg|tw|us|vn|za).+\.svg$/,
+  /^\.\/(?!at|au|be|bg|ca|ch|de|es|fi|fr|gb|hk|in|it|jp|lu|no|nl|nz|pl|ro|ru|se|sg|tw|us|vn|za).+\.svg$/,
 );
 
 type Props = {
