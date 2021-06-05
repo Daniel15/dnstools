@@ -10,7 +10,6 @@ import {ReactComponent as ca} from 'flag-icon-css/flags/4x3/ca.svg';
 import {ReactComponent as ch} from 'flag-icon-css/flags/4x3/ch.svg';
 import {ReactComponent as de} from 'flag-icon-css/flags/4x3/de.svg';
 import {ReactComponent as ee} from 'flag-icon-css/flags/4x3/ee.svg';
-import {ReactComponent as es} from 'flag-icon-css/flags/4x3/es.svg';
 import {ReactComponent as fi} from 'flag-icon-css/flags/4x3/fi.svg';
 import {ReactComponent as fr} from 'flag-icon-css/flags/4x3/fr.svg';
 import {ReactComponent as gb} from 'flag-icon-css/flags/4x3/gb.svg';
@@ -90,7 +89,7 @@ export default function CountryFlag(props: Props) {
 
   // Try to find the image
   try {
-    const flag = otherFlagsContext(`./${country}.svg`);
+    const flag = otherFlagsContext(`./${country}.svg`).default;
     return (
       <img
         alt={`${props.country} flag`}
