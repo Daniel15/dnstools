@@ -32,6 +32,12 @@ const providers = [
     url: 'https://webhorizon.in/',
   },
   {
+    name: 'xTom',
+    tooltip:
+      'Simple, affordable, accessible cloud computing, in 10 data centers worldwide',
+    url: 'https://v.ps/',
+  },
+  {
     name: 'Zappie Host',
     tooltip: 'VPS hosting in New Zealand and South Africa',
     url: 'https://zappiehost.com/',

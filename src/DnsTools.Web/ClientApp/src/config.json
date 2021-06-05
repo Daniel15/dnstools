@@ -84,6 +84,19 @@
       "networkAsn": 16276
     },
     {
+      "id": "ee",
+      "city": "Tallinn",
+      "region": "Harjumaa",
+      "country": "EE",
+      "locationDisplay": "Estonia",
+      "latitude": 59.4291300,
+      "longitude": 24.7314525,
+      "providerName": "xTom GmbH",
+      "providerUrl": "https://v.ps",
+      "dataCenterName": "WaveCom AS",
+      "networkAsn": 3214
+    },
+    {
       "id": "fi",
       "city": "Tuusula",
       "region": "Uusimaa",
