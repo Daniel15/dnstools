@@ -96,7 +96,7 @@ export default function CountryFlag(props: Props) {
         className="mr-1"
         height={height}
         src={flag}
-        width={(width * 4) / 3}
+        width={width}
       />
     );
   } catch (ex) {
