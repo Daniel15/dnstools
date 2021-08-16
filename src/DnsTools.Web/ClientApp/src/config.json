@@ -260,10 +260,10 @@
       "locationDisplay": "Poland",
       "latitude": 52.22773771,
       "longitude": 21.00500235,
-      "providerName": "HostHatch",
-      "providerUrl": "https://hosthatch.com/",
-      "dataCenterName": "Equinix WA2",
-      "networkAsn": 63473
+      "providerName": "WebHorizon",
+      "providerUrl": "https://webhorizon.in/",
+      "dataCenterName": "Mevspace",
+      "networkAsn": 201814
     },
     {
       "id": "ro",
@@ -407,19 +407,6 @@
       "providerUrl": "https://www.hostnamaste.com/",
       "dataCenterName": "QuadraNet",
       "networkAsn": 8100
-    },
-    {
-      "id": "vn",
-      "city": "Hanoi",
-      "region": "‎Hanoi",
-      "country": "VN",
-      "locationDisplay": "Vietnam",
-      "latitude": 21.002191,
-      "longitude": 105.805823,
-      "providerName": "GreenCloudVPS",
-      "providerUrl": "https://greencloudvps.com/",
-      "dataCenterName": "Viettel IDC",
-      "networkAsn": 63734
     }
   ]
 }
