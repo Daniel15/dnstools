@@ -4,6 +4,7 @@ using DnsTools.Worker.Models;
 using DnsTools.Worker.Tools;
 using Grpc.Core;
 using Microsoft.Extensions.DependencyInjection;
+using Sentry;
 
 namespace DnsTools.Worker.Services
 {
@@ -82,6 +83,7 @@ namespace DnsTools.Worker.Services
 						Message = ex.Message,
 					}
 				});
+				SentrySdk.CaptureException(ex);
 			}
 		}
 	}

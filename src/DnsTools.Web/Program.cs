@@ -38,6 +38,10 @@ namespace DnsTools.Web
 					// Config shared between client-side and server-side
 					config.AddJsonFile("ClientApp/src/config.json");
 				})
-				.UseStartup<Startup>();
+				.UseStartup<Startup>()
+				.UseSentry(options =>
+				{
+					options.Release = ThisAssembly.Git.Sha;
+				});
 	}
 }

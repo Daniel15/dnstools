@@ -1,5 +1,7 @@
-using Microsoft.AspNetCore.Hosting;
+﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
+using Sentry.AspNetCore;
+using Sentry.AspNetCore.Grpc;
 
 namespace DnsTools.Worker
 {
@@ -14,7 +16,16 @@ namespace DnsTools.Worker
 			Host.CreateDefaultBuilder(args)
 				.ConfigureWebHostDefaults(webBuilder =>
 				{
-					webBuilder.UseStartup<Startup>();
+					webBuilder
+						.UseStartup<Startup>()
+						.UseSentry(builder =>
+						{
+							builder.AddGrpc();
+							builder.AddSentryOptions(options =>
+							{
+								options.Release = ThisAssembly.Git.Sha;
+							});
+						});
 				});
 	}
 }
