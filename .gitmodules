@@ -1,0 +1,4 @@
+[submodule "src/DnsTools.Web/ClientApp/src/LazySentry"]
+	path = src/DnsTools.Web/ClientApp/src/LazySentry
+	url = https://github.com/Daniel15/LazySentry.git
+	branch = main

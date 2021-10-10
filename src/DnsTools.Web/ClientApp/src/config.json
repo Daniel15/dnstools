@@ -4,6 +4,9 @@
   "ReCaptcha": {
     "siteKey": "CHANGEME"
   },
+  "sentryJS": {
+    "dsn": "CHANGEME"
+  },
   "workers": [
     {
       "id": "au-per",

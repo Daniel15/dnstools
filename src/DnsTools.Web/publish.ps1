@@ -9,6 +9,7 @@ function Assert-LastExitCode {
 
 cd ClientApp
 yarn install --frozen-lockfile; Assert-LastExitCode
+$Env:SENTRY_RELEASE = .\node_modules\.bin\sentry-cli releases propose-version; Assert-LastExitCode
 yarn run build; Assert-LastExitCode
 yarn run generate-cshtml; Assert-LastExitCode
 cd ..

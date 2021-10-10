@@ -1,6 +1,12 @@
-import {defaultWorker, googleMapsKey, ReCaptcha, workers} from './config.json';
+import {
+  defaultWorker,
+  googleMapsKey,
+  ReCaptcha,
+  sentryJS,
+  workers,
+} from './config.json';
 
-export {defaultWorker, googleMapsKey, ReCaptcha, workers};
+export {defaultWorker, googleMapsKey, ReCaptcha, sentryJS, workers};
 
 export const apiUrl = /^(localhost|dnstools.test)/.test(
   window.location.hostname,
