@@ -37,17 +37,11 @@ The worker requires a few Linux utilities (like `ping` and `traceroute`) to be a
 
 ## Website
 
-Build the site using the `publish` script:
+Build and deploy the site using the `publish` script:
 
 ```sh
 cd src/DnsTools.web
-./publish
-```
-
-`rsync` it to prod:
-
-```sh
-rsync -avz --progress src/DnsTools.Web/bin/release/netcoreapp3.1/linux-x64/publish/ dnstools-deploy@dnstools.ws:/var/www/dnstools/
+./publish.ps1
 ```
 
 ## Workers

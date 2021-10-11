@@ -19,3 +19,13 @@ composer install --apcu-autoloader; Assert-LastExitCode
 cd ..
 
 dotnet publish --no-self-contained -r linux-x64 -c Release; Assert-LastExitCode
+
+$choices = '&No', '&Staging', '&Prod';
+$choice = $Host.UI.PromptForChoice('Deploy?', '', $choices, 0)
+switch ($choice) {
+	0 { Exit }
+	1 { $remoteDir = "dnstools-staging" }
+	2 { $remoteDir = "dnstools" }
+}
+
+wsl.exe rsync -av --progress ./bin/Release/net5.0/linux-x64/publish/ dnstools-deploy@d.sb:/var/www/$remoteDir/
