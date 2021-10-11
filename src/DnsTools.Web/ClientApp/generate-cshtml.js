@@ -31,6 +31,7 @@ function convertPage(inputFile, outputFile) {
 if (fs.existsSync(`${__dirname}/build`)) {
   console.log('*** PROD build');
   convertPage('build/200', '200');
+  convertPage('build/404', '404');
   convertPage('build/index', 'Index');
   convertPage('build/locations/index', 'Locations');
 } else {

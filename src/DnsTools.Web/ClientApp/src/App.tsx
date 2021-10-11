@@ -10,6 +10,7 @@ import {isPrerendering} from './utils/prerendering';
 
 import DnsLookup from './pages/DnsLookup';
 import DnsTraversal from './pages/DnsTraversal';
+import FileNotFound from './pages/404';
 import Index from './pages/Index';
 import Locations from './pages/Locations';
 import Mtr from './pages/Mtr';
@@ -78,6 +79,8 @@ export default function App() {
 
             {/* Dummy route for navigateWithReload() */}
             <Route path="/blank" render={() => null} />
+
+            <FileNotFound />
           </Switch>
         </div>
       </Router>
