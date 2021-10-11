@@ -33,11 +33,13 @@ if (rootElement.hasChildNodes()) {
   ReactDOM.render(appWithErrorBoundary, rootElement);
 }
 
-window.setTimeout(() => {
-  lazySentryInit({
-    dsn: SentryConfig.dsn,
-    debug: __DEV__,
-    environment: __DEV__ ? 'development' : 'production',
-    tracesSampleRate: 1.0,
-  });
-}, 0);
+if (!__DEV__) {
+  window.setTimeout(() => {
+    lazySentryInit({
+      dsn: SentryConfig.dsn,
+      debug: __DEV__,
+      environment: __DEV__ ? 'development' : 'production',
+      tracesSampleRate: 1.0,
+    });
+  }, 0);
+}
