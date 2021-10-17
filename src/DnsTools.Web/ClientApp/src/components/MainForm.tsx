@@ -12,7 +12,7 @@ import {navigateWithReload} from '../utils/routing';
 import CountryFlag from './CountryFlag';
 import ToolSelector from './ToolSelector';
 import PromotedServerProviders from './PromotedServerProviders';
-import WithHovercard, {HovercardLocation} from './WithHovercard';
+import WithHovercard from './WithHovercard';
 import {buildToolURI} from '../utils/url';
 
 type Props = {
@@ -225,7 +225,7 @@ function HostInput(
           />
           {shouldAllowMultipleHosts && (
             <WithHovercard
-              location={HovercardLocation.Top}
+              location="top"
               tooltipBody={
                 <>
                   New: Ping multiple different hosts from one location. Enter

@@ -2,7 +2,7 @@ import React from 'react';
 
 import {WorkerConfig} from '../utils/workers';
 import CountryFlag from './CountryFlag';
-import WithHovercard, {HovercardLocation} from './WithHovercard';
+import WithHovercard from './WithHovercard';
 
 type Props = Readonly<{
   flagSize?: number;
@@ -16,16 +16,15 @@ export default function WorkerLocation({flagSize, worker}: Props) {
     'utm_source=dnstools&utm_medium=worker-location-link&utm_campaign=dnstools-worker-location-link';
   return (
     <WithHovercard
-      location={HovercardLocation.Right}
+      location="right"
       tooltipBody={
         <>
           {worker.city}, {worker.region}, {worker.country}
           <br />
-          Provider:{' '}
+          Provider: {/* eslint-disable-next-line react/jsx-no-target-blank */}
           <a
             className="alert-link"
             href={url}
-            /* eslint-disable-next-line react/jsx-no-target-blank */
             target="_blank"
             rel="nofollow noopener"
             onClick={() => {

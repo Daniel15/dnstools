@@ -127,6 +127,9 @@ $popover-colors: 'primary' $primary, 'success' $success;
 		&.bs-popover-top > .arrow:after {
 			border-top-color: $color;
 		}
+		&.bs-popover-bottom > .arrow:after {
+			border-bottom-color: $color;
+		}
 		&.bs-popover-right > .arrow:after {
 			border-right-color: $color;
 		}

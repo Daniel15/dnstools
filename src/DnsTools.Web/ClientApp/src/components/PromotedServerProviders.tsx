@@ -1,7 +1,7 @@
 import React from 'react';
 
 import {commaSeparate} from '../utils/react';
-import WithHovercard, {HovercardLocation} from './WithHovercard';
+import WithHovercard from './WithHovercard';
 
 // Keep these in alphabetical order.
 const providers = [
@@ -51,7 +51,7 @@ export default function FooterHostingProviders() {
         providers.map(provider => (
           <WithHovercard
             key={provider.name}
-            location={HovercardLocation.Top}
+            location="top"
             tooltipBody={provider.tooltip}>
             <a
               href={`${provider.url}?utm_source=dnstools&utm_medium=footer&utm_campaign=dnstools-footer-links`}

@@ -1,37 +1,31 @@
-import React, {useEffect, useLayoutEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import ReactDOM from 'react-dom';
+import {Placement} from '@popperjs/core';
+
 import useMouseOver from '../hooks/useMouseOver';
-import useStateRef from '../hooks/useStateRef';
 import useLazyRef from '../hooks/useLazyRef';
-import {Dimensions, getDimensions, EMPTY_DIMENSIONS} from '../utils/dom';
-
-const ARROW_PADDING = 15;
-
-export enum HovercardLocation {
-  Top,
-  Right,
-}
+import {usePopper} from 'react-popper';
 
 type Props = Readonly<{
   children: React.ReactNode;
-  location: HovercardLocation;
+  location: Placement;
   tooltipBody: React.ReactNode;
 }>;
 export default function WithHovercard(props: Props) {
   const {onMouseEnter, onMouseLeave, isMouseOver} = useMouseOver();
-  const [contentRef, contentNode] = useStateRef<HTMLSpanElement>();
+  const [contentRef, setContentRef] = useState<HTMLSpanElement | null>(null);
 
   return (
     <>
       <span
-        ref={contentRef}
+        ref={setContentRef}
         onMouseEnter={onMouseEnter}
         onMouseLeave={onMouseLeave}>
         {props.children}
       </span>
       {isMouseOver && (
         <Hovercard
-          contentNode={contentNode}
+          contentNode={contentRef}
           location={props.location}
           tooltipBody={props.tooltipBody}
           onMouseEnter={onMouseEnter}
@@ -44,21 +38,26 @@ export default function WithHovercard(props: Props) {
 
 type HovercardProps = Readonly<{
   contentNode: HTMLSpanElement | null;
-  location: HovercardLocation;
+  location: Placement;
   tooltipBody: React.ReactNode;
   onMouseEnter: () => void;
   onMouseLeave: () => void;
 }>;
 function Hovercard(props: HovercardProps) {
+  const [popperElement, setPopperElement] = useState<HTMLDivElement | null>(
+    null,
+  );
+  const [arrowElement, setArrowElement] = useState<HTMLDivElement | null>(null);
+  const {styles, attributes} = usePopper(props.contentNode, popperElement, {
+    modifiers: [{name: 'arrow', options: {element: arrowElement}}],
+    placement: props.location,
+  });
+
   const hovercardNode = useLazyRef(() => {
     const el = document.createElement('div');
     document.body.appendChild(el);
     return el;
   });
-  const [contentPos, setContentPos] = useState<Dimensions>(EMPTY_DIMENSIONS);
-  const [hovercardPos, setHovercardPos] = useState<Dimensions>(
-    EMPTY_DIMENSIONS,
-  );
 
   // Remove DOM node on unmount
   useEffect(() => {
@@ -67,82 +66,33 @@ function Hovercard(props: HovercardProps) {
     };
   }, [hovercardNode]);
 
-  useLayoutEffect(() => {
-    setContentPos(getDimensions(props.contentNode));
-    setHovercardPos(getDimensions(hovercardNode.children[0]));
-  }, [hovercardNode, props.contentNode]);
-
   return ReactDOM.createPortal(
     <div
-      className={`popover fade show bg-success ${getClass(props.location)}`}
+      className={`popover fade show bg-success ${getClass(attributes.popper)}`}
+      ref={setPopperElement}
       role="tooltip"
-      style={computeHovercardPosition(props.location, contentPos, hovercardPos)}
+      style={styles.popper}
       onMouseEnter={props.onMouseEnter}
-      onMouseLeave={props.onMouseLeave}>
-      <div
-        className="arrow"
-        style={computeArrowPosition(props.location, hovercardPos)}></div>
+      onMouseLeave={props.onMouseLeave}
+      {...attributes.popper}>
+      <div className="arrow" ref={setArrowElement} style={styles.arrow}></div>
       <div className="popover-body">{props.tooltipBody}</div>
     </div>,
     hovercardNode,
   );
 }
 
-function getClass(location: HovercardLocation): string {
-  switch (location) {
-    case HovercardLocation.Right:
+function getClass(attributes: {[key: string]: string} | undefined): string {
+  switch (attributes?.['data-popper-placement']) {
+    case 'bottom':
+      return 'bs-popover-bottom';
+    case 'left':
+      return 'bs-popover-left';
+    case 'right':
       return 'bs-popover-right';
-    case HovercardLocation.Top:
+    case 'top':
       return 'bs-popover-top';
-  }
-}
-
-function computeHovercardPosition(
-  location: HovercardLocation,
-  contentPos: Dimensions,
-  hovercardPos: Dimensions,
-): Readonly<{
-  left: number;
-  top: number;
-}> {
-  if (!contentPos.absoluteLeft || !hovercardPos.absoluteTop) {
-    // Render off-screen until dimensions are measured
-    return {
-      left: -1000,
-      top: -1000,
-    };
-  }
-
-  switch (location) {
-    case HovercardLocation.Top:
-      return {
-        left:
-          contentPos.absoluteLeft -
-          hovercardPos.width / 2 +
-          contentPos.width / 2,
-        top: contentPos.absoluteTop - hovercardPos.height - ARROW_PADDING,
-      };
-
-    case HovercardLocation.Right:
-      return {
-        left: contentPos.absoluteLeft + contentPos.width + ARROW_PADDING,
-        top:
-          contentPos.absoluteTop -
-          hovercardPos.height / 2 +
-          contentPos.height / 2,
-      };
-  }
-}
-
-function computeArrowPosition(
-  location: HovercardLocation,
-  hovercardPos: Dimensions,
-): Readonly<{left?: number; top?: number}> {
-  switch (location) {
-    case HovercardLocation.Top:
-      return {left: hovercardPos.width / 2 - ARROW_PADDING};
-
-    case HovercardLocation.Right:
-      return {top: hovercardPos.height / 2 - ARROW_PADDING};
+    default:
+      return '';
   }
 }
