@@ -1,21 +1,24 @@
 import React from 'react';
 import {DnsRecord} from '../types/protobuf';
-import {DnsRecordType, DnsLookupType} from '../types/generated';
+import {DnsRecordType, DnsLookupType, IDnsNSRecord} from '../types/generated';
 import {Link} from 'react-router-dom';
+
 import {duration as formatDuration} from '../utils/format';
+import IPAddress from './IPAddress';
 
 type Props = {
   lookupType: DnsLookupType;
   record: DnsRecord;
+  getNSLink?: (record: IDnsNSRecord) => string;
 };
 export default function DnsRecordValue(props: Props) {
   const {record} = props;
   switch (record.recordCase) {
     case DnsRecordType.A:
-      return <>{record.a.address}</>;
+      return <IPAddress address={record.a.address} />;
 
     case DnsRecordType.Aaaa:
-      return <>{record.aaaa.address}</>;
+      return <IPAddress address={record.aaaa.address} />;
 
     case DnsRecordType.Caa:
       return <>{record.caa.value}</>;
