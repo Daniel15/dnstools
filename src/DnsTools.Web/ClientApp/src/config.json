@@ -1,11 +1,11 @@
 {
   "defaultWorker": "us-lv",
-  "googleMapsKey": "CHANGEME",
+  "googleMapsKey": "AIzaSyDIe9MSxeVNyKNV73bDHpwkRmgpff81Axw",
   "ReCaptcha": {
-    "siteKey": "CHANGEME"
+    "siteKey": "6LfAO8wUAAAAALOiMI69Y9KA8ueozzGoWqPcWHmy"
   },
   "sentryJS": {
-    "dsn": "CHANGEME"
+    "dsn": "https://3704e6fed3bb4e6398dd8e918f8f5fca@errors.d.sb/5"
   },
   "workers": [
     {
@@ -86,6 +86,20 @@
       "dataCenterName": "OVH",
       "networkAsn": 16276
     },
+    {
+      "id": "cl",
+      "city": "Valdivia",
+      "region": "Los Ríos",
+      "country": "CL",
+      "locationDisplay": "Chile",
+      "latitude": -39.8492991,
+      "longitude": -73.2229932,
+      "providerName": "Zappie Host",
+      "providerUrl": "https://zappiehost.com/",
+      "dataCenterName": "InfoFractal",
+      "networkAsn": 61138
+    },
+
     {
       "id": "ee",
       "city": "Tallinn",
