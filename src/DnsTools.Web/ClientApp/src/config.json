@@ -48,19 +48,6 @@
       "networkAsn": 63473
     },
     {
-      "id": "be",
-      "city": "Antwerp",
-      "region": "Flanders",
-      "country": "BE",
-      "locationDisplay": "Belgium",
-      "latitude": 51.2224088820,
-      "longitude": 4.38512852455,
-      "providerName": "NOVOS",
-      "providerUrl": "https://novos.be/",
-      "dataCenterName": "LCP NV",
-      "networkAsn": 42160
-    },
-    {
       "id": "bg",
       "city": "Sofia",
       "region": "Sofia City",
