@@ -270,19 +270,6 @@
       "networkAsn": 201814
     },
     {
-      "id": "ro",
-      "city": "Oradea",
-      "region": "Bihor",
-      "country": "RO",
-      "locationDisplay": "Romania",
-      "latitude": 47.064327,
-      "longitude": 21.937648,
-      "providerName": "HostSolutions",
-      "providerUrl": "https://hostsolutions.ro/",
-      "dataCenterName": "HostSolutions",
-      "networkAsn": 4220
-    },
-    {
       "id": "ru",
       "city": "Moscow",
       "region": "Moscow",
