@@ -1,11 +1,11 @@
 {
   "defaultWorker": "us-lv",
-  "googleMapsKey": "AIzaSyDIe9MSxeVNyKNV73bDHpwkRmgpff81Axw",
+  "googleMapsKey": "CHANGEME",
   "ReCaptcha": {
-    "siteKey": "6LfAO8wUAAAAALOiMI69Y9KA8ueozzGoWqPcWHmy"
+    "siteKey": "CHANGEME"
   },
   "sentryJS": {
-    "dsn": "https://3704e6fed3bb4e6398dd8e918f8f5fca@errors.d.sb/5"
+    "dsn": "CHANGEME"
   },
   "workers": [
     {
