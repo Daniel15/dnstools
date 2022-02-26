@@ -205,19 +205,6 @@
       "networkAsn": 62240
     },
     {
-      "id": "lu",
-      "city": "Bertrange",
-      "region": "Luxembourg",
-      "country": "LU",
-      "locationDisplay": "Luxembourg",
-      "latitude": 50.099657,
-      "longitude": 5.982559,
-      "providerName": "BuyVM",
-      "providerUrl": "https://buyvm.net/",
-      "dataCenterName": "root.lu",
-      "networkAsn": 53667
-    },
-    {
       "id": "no",
       "city": "Sandefjord",
       "region": "Vestfold",
