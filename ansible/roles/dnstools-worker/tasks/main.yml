@@ -12,11 +12,23 @@
   apt_key:
     url: https://packages.microsoft.com/keys/microsoft.asc
 
+- name: .NET Core repository (bullseye)
+  apt_repository:
+    repo: deb [arch=amd64,arm64,armhf] https://packages.microsoft.com/debian/11/prod bullseye main
+    state: present
+  when: ansible_distribution_release == "bullseye"
+
+- name: Remove Buster .NET Core repository from Bullseye
+  apt_repository:
+    repo: deb [arch=amd64,arm64,armhf] https://packages.microsoft.com/debian/10/prod buster main
+    state: absent
+  when: ansible_distribution_release == "bullseye"
+
 - name: .NET Core repository (buster)
   apt_repository:
     repo: deb [arch=amd64,arm64,armhf] https://packages.microsoft.com/debian/10/prod buster main
     state: present
-  when: ansible_distribution_release == "buster" or ansible_distribution_release == "bullseye"
+  when: ansible_distribution_release == "buster"
 
 - name: .NET Core repository (stretch)
   apt_repository:
