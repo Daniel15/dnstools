@@ -375,16 +375,16 @@
     },
     {
       "id": "us-ny",
-      "city": "Staten Island",
-      "region": "New York",
+      "city": "Secaucus",
+      "region": "New Jersey",
       "country": "US",
       "locationDisplay": "New York, USA",
-      "latitude": 40.606645,
-      "longitude": -74.175075,
-      "providerName": "BuyVM",
-      "providerUrl": "https://buyvm.net/",
-      "dataCenterName": "Telehouse",
-      "networkAsn": 53667
+      "latitude": 40.7768121,
+      "longitude": -74.075604,
+      "providerName": "HostHatch",
+      "providerUrl": "https://hosthatch.com/",
+      "dataCenterName": "Equinix NY3",
+      "networkAsn": 63473
     },
     {
       "id": "us-dal",
