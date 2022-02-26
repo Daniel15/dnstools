@@ -72,6 +72,13 @@
     path: /etc/resolv.conf
     line: search .
 
+# In theory, `net.ipv4.ping_group_range` should work instead, but I couldn't get that
+# working across all servers, so we'll just rely on setuid for now.
+- name: Ensure ping is setuid
+  file:
+    path: /bin/ping
+    mode: 04755
+
 #################################################
 # Certbot
 
