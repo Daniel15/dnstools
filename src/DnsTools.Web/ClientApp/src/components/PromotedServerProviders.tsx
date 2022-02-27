@@ -22,11 +22,6 @@ const providers = [
     url: 'https://mrvm.net/natvps/',
   },
   {
-    name: 'NOVOS',
-    tooltip: 'AMD Ryzen and EPYC VPS hosting in Belgium',
-    url: 'https://novos.be/',
-  },
-  {
     name: 'Terrahost',
     tooltip: 'VPSes and dedicated servers in secure bunker datacenters',
     url: 'https://terrahost.com/',
