@@ -244,6 +244,19 @@
       "networkAsn": 61138
     },
     {
+      "id": "ng",
+      "city": "Lagos",
+      "region": "Lagos",
+      "country": "NG",
+      "locationDisplay": "Nigeria",
+      "latitude": 6.4130973,
+      "longitude": 3.40756437,
+      "providerName": "Terrahost",
+      "providerUrl": "https://terrahost.com/",
+      "dataCenterName": "?",
+      "networkAsn": 56655
+    },
+    {
       "id": "pl",
       "city": "Warsaw",
       "region": "Mazovia",
@@ -346,6 +359,19 @@
       "providerUrl": "https://softshellweb.com/",
       "dataCenterName": "HostingInside Ltd",
       "networkAsn": 9678
+    },
+    {
+      "id": "us-kc",
+      "city": "Kansas City",
+      "region": "Missouri",
+      "country": "US",
+      "locationDisplay": "Kansas City, USA",
+      "latitude": 39.0101512,
+      "longitude": -94.504120,
+      "providerName": "Terrahost",
+      "providerUrl": "https://terrahost.com/",
+      "dataCenterName": "?",
+      "networkAsn": 56655
     },
     {
       "id": "us-lv",

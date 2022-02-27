@@ -6,15 +6,15 @@ import WithHovercard from './WithHovercard';
 // Keep these in alphabetical order.
 const providers = [
   {
+    name: "Gullo's Hosting",
+    tooltip: 'VPS hosting starting from $3.50 per year',
+    url: 'https://hosting.gullo.me/',
+  },
+  {
     name: 'HostNamaste',
     tooltip:
       'VPS hosting in several countries around the world, starting at $10/year',
     url: 'https://www.hostnamaste.com/',
-  },
-  {
-    name: "Gullo's Hosting",
-    tooltip: 'VPS hosting starting from $3.50 per year',
-    url: 'https://hosting.gullo.me/',
   },
   {
     name: 'MrVM',
@@ -25,6 +25,11 @@ const providers = [
     name: 'NOVOS',
     tooltip: 'AMD Ryzen and EPYC VPS hosting in Belgium',
     url: 'https://novos.be/',
+  },
+  {
+    name: 'Terrahost',
+    tooltip: 'VPSes and dedicated servers in secure bunker datacenters',
+    url: 'https://terrahost.com/',
   },
   {
     name: 'WebHorizon',

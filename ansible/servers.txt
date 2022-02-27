@@ -20,6 +20,7 @@ in.worker.dns.tg
 it.worker.dns.tg
 jp.worker.dns.tg
 lon.worker.dns.tg
+ng.worker.dns.tg
 nl.worker.dns.tg
 no.worker.dns.tg
 nz.worker.dns.tg
@@ -29,6 +30,7 @@ se.worker.dns.tg
 sg.worker.dns.tg
 tw.worker.dns.tg
 us-dal.worker.dns.tg
+us-kc.worker.dns.tg
 us-lv.worker.dns.tg   clean_old_dotnet=false
 us-ny.worker.dns.tg
 vn.worker.dns.tg
