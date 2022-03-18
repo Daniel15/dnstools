@@ -115,16 +115,16 @@
     },
     {
       "id": "fr",
-      "city": "Reims",
-      "region": "Grand-Est",
+      "city": "Gravelines",
+      "region": "Hauts-de-France",
       "country": "FR",
       "locationDisplay": "France",
-      "latitude": 48.835725,
-      "longitude": 2.238394,
-      "providerName": "MrVM",
-      "providerUrl": "https://mrvm.net/natvps/",
-      "dataCenterName": "Ikoula Net SAS",
-      "networkAsn": 21409
+      "latitude": 51.0166571,
+      "longitude": 2.15506660,
+      "providerName": "Gullo's Hosting",
+      "providerUrl": "https://hosting.gullo.me/",
+      "dataCenterName": "OVH",
+      "networkAsn": 16276
     },
     {
       "id": "de",
