@@ -63,6 +63,7 @@
       - rsync
       - rsyslog
       - traceroute
+      - unattended-upgrades
     state: present
     install_recommends: false
     update_cache: yes
