@@ -3,7 +3,11 @@ import Helmet from 'react-helmet';
 import {RouteComponentProps} from 'react-router';
 import {Link} from 'react-router-dom';
 
-import {DnsLookupRequest, WorkerResponse} from '../types/generated';
+import {
+  DnsLookupRequest,
+  DnsLookupResponseType,
+  WorkerResponse,
+} from '../types/generated';
 import {DnsLookupResponse} from '../types/protobuf';
 import MainForm, {Tool, getDefaultInput} from '../components/MainForm';
 import {getWorkers, getLookupType} from '../utils/queryString';
@@ -19,12 +23,6 @@ type Props = RouteComponentProps<{
   host: string;
   type: string;
 }>;
-
-const headers: ReadonlyArray<Header> = [
-  {label: 'Location'},
-  {label: 'Result', width: '40%'},
-  {label: 'Server', onlyShowForLarge: true, width: '40%'},
-];
 
 export default function DnsLookup(props: Props) {
   const {host, type: rawType} = props.match.params;
@@ -42,6 +40,25 @@ export default function DnsLookup(props: Props) {
     request,
   );
   const workerResponses = groupResponsesByWorker(workers, data.results);
+  const hasRetry = data.results.some(
+    result => result.response.responseCase === DnsLookupResponseType.Retry,
+  );
+  const headers: ReadonlyArray<Header> = useMemo(() => {
+    const headers: Array<Header> = [
+      {label: 'Location'},
+      {label: 'Result', width: '40%'},
+      {label: 'Server', onlyShowForLarge: true, width: '40%'},
+    ];
+    if (hasRetry) {
+      headers.push({
+        label: '',
+        onlyShowForLarge: true,
+        width: '20',
+        isSortable: false,
+      });
+    }
+    return headers;
+  }, [hasRetry]);
 
   return (
     <>
@@ -68,6 +85,7 @@ export default function DnsLookup(props: Props) {
             {
               rows: workerResponses.map((worker, index) =>
                 createRow({
+                  anyRowHasRetry: hasRetry,
                   host,
                   index,
                   lookupType: type,

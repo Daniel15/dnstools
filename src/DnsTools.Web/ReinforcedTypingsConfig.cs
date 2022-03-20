@@ -1,7 +1,5 @@
 ﻿using DnsTools.Web.Extensions;
 using DnsTools.Worker;
-using Google.Protobuf.Collections;
-using Reinforced.Typings.Ast.TypeNames;
 using Reinforced.Typings.Attributes;
 using Reinforced.Typings.Fluent;
 
@@ -28,6 +26,7 @@ namespace DnsTools.Web
 			builder.ExportAsInterface<TracerouteReply>().WithPublicInstanceProperties();
 
 			builder.ExportAsInterface<DnsLookupReferral>().WithPublicInstanceProperties();
+			builder.ExportAsInterface<DnsLookupRetry>().WithPublicInstanceProperties().AutoI(false);
 			builder.ExportAsInterface<DnsARecord>().WithPublicInstanceProperties();
 			builder.ExportAsInterface<DnsAAAARecord>().WithPublicInstanceProperties();
 			builder.ExportAsInterface<DnsCAARecord>().WithPublicInstanceProperties();

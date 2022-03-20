@@ -122,6 +122,7 @@ message DnsLookupResponse {
     DnsLookupReply reply = 2;
     Error error = 3;
     DnsLookupReferral referral = 4;
+    DnsLookupRetry retry = 5;
   }
 }
 
@@ -138,6 +139,13 @@ message DnsLookupReply {
   repeated DnsRecord answers = 2;
   repeated DnsRecord authorities = 3;
   repeated DnsRecord additionals = 4;
+}
+
+message DnsLookupRetry {
+  string prev_server_name = 1;
+  string next_server_name = 2;
+  repeated string next_server_ips = 3;
+  Error error = 4;
 }
 
 message DnsTraversalResponse {

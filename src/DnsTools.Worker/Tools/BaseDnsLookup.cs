@@ -17,7 +17,7 @@ namespace DnsTools.Worker.Tools
 		/// <summary>
 		/// The timeout for DNS lookups.
 		/// </summary>
-		protected static readonly TimeSpan _timeout = TimeSpan.FromSeconds(10);
+		protected static readonly TimeSpan _timeout = TimeSpan.FromSeconds(5);
 
 		/// <summary>
 		/// The root DNS servers.

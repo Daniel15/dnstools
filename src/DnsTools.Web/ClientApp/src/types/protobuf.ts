@@ -8,6 +8,7 @@ import {
   TracerouteResponseType,
   ITracerouteReply,
   IHostLookupResult,
+  DnsLookupRetry,
   DnsRecordType,
   IDnsARecord,
   IDnsAAAARecord,
@@ -147,10 +148,16 @@ export type DnsLookupReferralResponse = DnsLookupResponseSharedFields & {
   referral: DnsLookupReferral;
 };
 
+export type DnsLookupRetryResponse = DnsLookupResponseSharedFields & {
+  responseCase: DnsLookupResponseType.Retry;
+  retry: DnsLookupRetry;
+};
+
 export type DnsLookupResponse =
   | DnsLookupReplyResponse
   | DnsLookupErrorResponse
-  | DnsLookupReferralResponse;
+  | DnsLookupReferralResponse
+  | DnsLookupRetryResponse;
 
 type DnsTraversalResponseSharedFields = {
   from: string;

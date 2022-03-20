@@ -10,7 +10,7 @@ namespace DnsTools.Worker.Extensions
 	/// </summary>
 	public static class EnumerableExtensions
 	{
-		private static readonly ThreadLocal<Random> _random = new ThreadLocal<Random>(() => new Random());
+		private static readonly ThreadLocal<Random> _random = new(() => new Random());
 
 		/// <summary>
 		/// Selects a random item from the list
@@ -21,6 +21,14 @@ namespace DnsTools.Worker.Extensions
 		public static T Random<T>(this IEnumerable<T> list)
 		{
 			return list.ElementAt(_random.Value.Next(list.Count()));
+		}
+
+		/// <summary>
+		/// Shuffle. Not perfect, but something basic is fine for our use cases.
+		/// </summary>
+		public static IEnumerable<T> Shuffle<T>(this IEnumerable<T> input)
+		{
+			return input.OrderBy(_ => _random.Value.Next());
 		}
 	}
 }

@@ -1,4 +1,5 @@
 import * as React from 'react';
+import {AlertFillIcon} from '@primer/octicons-react';
 
 import {
   DnsLookupResponse,
@@ -14,9 +15,11 @@ import {findLast} from '../utils/arrays';
 import {commaSeparate} from '../utils/react';
 import DnsRecordValue, {getSortValue} from './DnsRecordValue';
 import DnsLookupResults from './DnsLookupResults';
-import {Row} from './Table';
+import {Column, Row} from './Table';
+import WithHovercard from './WithHovercard';
 
 type Props = Readonly<{
+  anyRowHasRetry: boolean;
   host: string;
   index: number;
   lookupType: DnsLookupType;
@@ -40,11 +43,14 @@ export function createRow(props: Props): Row {
     (response): response is DnsLookupReferralResponse =>
       response.responseCase === DnsLookupResponseType.Referral,
   );
+  const hasRetry = props.responses.some(
+    response => response.responseCase === DnsLookupResponseType.Retry,
+  );
 
   let value;
   let sortValue = null;
   if (lastError) {
-    value = 'ERROR: ' + lastError.error.message;
+    value = 'ERROR: ' + lastError.error.title;
     // Always sort errors to the bottom
     sortValue = null;
   } else if (lastReply) {
@@ -64,26 +70,43 @@ export function createRow(props: Props): Row {
     value = <ShimmerBar />;
   }
 
+  const columns: Array<Column> = [
+    {
+      expandOnClick: true,
+      // Assume results are already sorted by server, and preserve their
+      // original sort order.
+      sortValue: props.index,
+      value: <WorkerLocation worker={props.worker} />,
+    },
+    {
+      sortValue,
+      value,
+    },
+    {
+      onlyShowForLarge: true,
+      sortValue: lastReferral && lastReferral.referral.nextServerName,
+      value: lastReferral && lastReferral.referral.nextServerName,
+    },
+  ];
+
+  if (props.anyRowHasRetry) {
+    columns.push({
+      expandOnClick: true,
+      onlyShowForLarge: true,
+      sortValue: hasRetry ? 1 : 2,
+      value: hasRetry ? (
+        <WithHovercard tooltipBody="This lookup hit an error and was retried on a different server. Click to view details.">
+          <AlertFillIcon fill="#f39c12" size={16} />
+        </WithHovercard>
+      ) : (
+        ''
+      ),
+    });
+  }
+
   return {
     id: props.worker.id,
-    columns: [
-      {
-        expandOnClick: true,
-        // Assume results are already sorted by server, and preserve their
-        // original sort order.
-        sortValue: props.index,
-        value: <WorkerLocation worker={props.worker} />,
-      },
-      {
-        sortValue,
-        value,
-      },
-      {
-        onlyShowForLarge: true,
-        sortValue: lastReferral && lastReferral.referral.nextServerName,
-        value: lastReferral && lastReferral.referral.nextServerName,
-      },
-    ],
+    columns,
     getExpandedContent: () => (
       <div style={{paddingBottom: '0.75rem'}}>
         <DnsLookupResults

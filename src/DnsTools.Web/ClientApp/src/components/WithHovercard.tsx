@@ -8,7 +8,7 @@ import {usePopper} from 'react-popper';
 
 type Props = Readonly<{
   children: React.ReactNode;
-  location: Placement;
+  location?: Placement;
   tooltipBody: React.ReactNode;
 }>;
 export default function WithHovercard(props: Props) {
@@ -38,7 +38,7 @@ export default function WithHovercard(props: Props) {
 
 type HovercardProps = Readonly<{
   contentNode: HTMLSpanElement | null;
-  location: Placement;
+  location?: Placement;
   tooltipBody: React.ReactNode;
   onMouseEnter: () => void;
   onMouseLeave: () => void;

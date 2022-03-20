@@ -68,6 +68,13 @@ export interface IDnsLookupReferral
 	prevServerName: string;
 	reply: any;
 }
+export interface DnsLookupRetry
+{
+	error: IError;
+	nextServerIps: string[];
+	nextServerName: string;
+	prevServerName: string;
+}
 export interface IDnsARecord
 {
 	address: string;
@@ -148,7 +155,8 @@ export enum DnsLookupResponseType {
 	None = 0, 
 	Reply = 2, 
 	Error = 3, 
-	Referral = 4
+	Referral = 4, 
+	Retry = 5
 }
 export enum DnsTraversalResponseType { 
 	None = 0, 

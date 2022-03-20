@@ -8,6 +8,14 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <LangVersion>10</LangVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <LangVersion>10</LangVersion>
+  </PropertyGroup>
+
   <ItemGroup>
     <Protobuf Include="..\Proto\dnstools.proto" GrpcServices="Server" Link="Protos\dnstools.proto" />
   </ItemGroup>

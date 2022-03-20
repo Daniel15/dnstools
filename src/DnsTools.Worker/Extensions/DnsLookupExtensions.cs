@@ -203,5 +203,25 @@ namespace DnsTools.Worker.Extensions
 				From = response.NameServer.Address,
 			};
 		}
+
+		public static Error ToError(this IDnsQueryResponse response, string serverName)
+		{
+			var errorMessage = response.ErrorMessage;
+			var details = $"There is a problem with the DNS server at {serverName}";
+
+			switch (response.Header.ResponseCode)
+			{
+				case DnsHeaderResponseCode.NotExistentDomain:
+					errorMessage = "No results";
+					details = "This DNS record does not exist";
+					break;
+			}
+
+			return new Error
+			{
+				Title = $"Failed: {errorMessage}",
+				Message = details,
+			};
+		}
 	}
 }

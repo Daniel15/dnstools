@@ -30,10 +30,21 @@ export default function DnsLookupResults(props: Props) {
                     />
                   </>
                 )}
-                Searching for {props.host} at {response.referral.nextServerName}
-                :{' '}
+                Querying {response.referral.nextServerName}:{' '}
               </React.Fragment>
             );
+
+          case DnsLookupResponseType.Retry: {
+            return (
+              <React.Fragment key={index}>
+                <strong className="text-danger">
+                  {response.retry.error.title}
+                </strong>
+                <br />
+                Retrying at {response.retry.nextServerName}:{' '}
+              </React.Fragment>
+            );
+          }
 
           case DnsLookupResponseType.Error:
             return (

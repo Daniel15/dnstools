@@ -6,6 +6,7 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using DnsClient;
+using DnsTools.Worker.Exceptions;
 using DnsTools.Worker.Extensions;
 using Grpc.Core;
 
@@ -26,23 +27,104 @@ namespace DnsTools.Worker.Tools
 		)
 		{
 			request.Host = ConvertToArpaNameIfRequired(request);
-
-			// Start at a random root server
-			var serverName = string.IsNullOrWhiteSpace(request.Server)
-				? _rootServers.Random()
-				: request.Server;
-			var serverIps = await Dns.GetHostAddressesAsync(serverName);
-			await responseStream.WriteAsync(new DnsLookupResponse
-			{
-				Referral = new DnsLookupReferral
-				{
-					NextServerName = serverName,
-					NextServerIps = {serverIps.Select(x => x.ToString())},
-				}
-			});
-			await DoLookup(request, responseStream, cancellationToken, serverName, serverIps);
+			await RecurseWithRetries(
+				request,
+				responseStream,
+				cancellationToken,
+				prevServerName: null,
+				response: null,
+				newServers: _rootServers
+			);
 		}
 
+		/// <summary>
+		/// Iterate through all the next DNS servers for a given query. If an exception is thrown,
+		/// retries with a different server, until there are no servers left to retry.
+		/// </summary>
+		/// <returns></returns>
+		private async Task RecurseWithRetries(
+			DnsLookupRequest request,
+			IServerStreamWriter<DnsLookupResponse> responseStream,
+			CancellationToken cancellationToken,
+			string? prevServerName,
+			IDnsQueryResponse? response,
+			IEnumerable<string> newServers
+		)
+		{
+			var stopwatch = new Stopwatch();
+			var isRetry = false;
+			DnsLookupReferral? prevReferral = null;
+			DnsLookupRetryableException? prevException = null;
+			foreach (var newServer in newServers.Shuffle())
+			{
+				stopwatch.Restart();
+				var newServerIps = await GetDnsServerIPs(newServer, response);
+
+				var referral = new DnsLookupReferral
+				{
+					PrevServerName = prevServerName ?? string.Empty,
+					PrevServerIp = response?.NameServer?.Address ?? string.Empty,
+					NextServerName = newServer.TrimEnd('.'),
+					NextServerIps = { newServerIps.Select(x => x.ToString()) },
+					Reply = response?.ToReply(),
+				};
+
+				if (isRetry)
+				{
+					await responseStream.WriteAsync(new DnsLookupResponse
+					{
+						Duration = (uint)stopwatch.ElapsedMilliseconds,
+						Retry = new DnsLookupRetry
+						{
+							PrevServerName = prevReferral?.NextServerName ?? string.Empty,
+							NextServerName = referral.NextServerName,
+							NextServerIps = { referral.NextServerIps },
+							Error = prevException?.ToError(),
+						}
+					});
+				}
+				else
+				{
+					await responseStream.WriteAsync(new DnsLookupResponse
+					{
+						Duration = (uint)stopwatch.ElapsedMilliseconds,
+						Referral = referral
+					});
+				}
+
+				try
+				{
+					await DoLookup(
+						request,
+						responseStream,
+						cancellationToken,
+						newServer,
+						newServerIps
+					);
+					return;
+				}
+				catch (DnsLookupRetryableException ex)
+				{
+					isRetry = true;
+					prevException = ex;
+					prevReferral = referral;
+				}
+			}
+
+			await responseStream.WriteAsync(new DnsLookupResponse
+			{
+				Error = new Error
+				{
+					Title = "No More Servers",
+					Message = "Ran out of servers to try!",
+				}
+			});
+		}
+
+		/// <summary>
+		/// Performs a DNS lookup and handles authoritative results.
+		/// Recursing is handled by <see cref="RecurseWithRetries"/>
+		/// </summary>
 		private async Task DoLookup(
 			DnsLookupRequest request,
 			IServerStreamWriter<DnsLookupResponse> responseStream,
@@ -54,7 +136,7 @@ namespace DnsTools.Worker.Tools
 			var client = new LookupClient(new LookupClientOptions(serverIps.ToArray())
 			{
 				UseCache = false,
-				ThrowDnsErrors = true,
+				ThrowDnsErrors = false,
 				Retries = 0,
 				Timeout = _timeout,
 			});
@@ -73,62 +155,69 @@ namespace DnsTools.Worker.Tools
 			catch (Exception ex)
 			{
 				stopwatch.Stop();
-				await responseStream.WriteAsync(new DnsLookupResponse
-				{
-					Duration = (uint)stopwatch.ElapsedMilliseconds,
-					Error = new Error
-					{
-						Title = $"Failed: {ex.Message}",
-						Message = $"There is a problem with the DNS server at {serverName}",
-					},
-				});
-				return;
+				throw new DnsLookupRetryableException(
+					elapsedMilliseconds: stopwatch.ElapsedMilliseconds,
+					serverName: serverName,
+					innerException: ex
+				);
 			}
 
-			// DNS server was authoritive and no results exist
-			if (response.Header.HasAuthorityAnswer && response.Answers.Count == 0)
+			// If we get here, the query worked, but the DNS server might have returned an
+			// error response.
+			if (response.HasError)
 			{
 				await responseStream.WriteAsync(new DnsLookupResponse
 				{
 					Duration = (uint)stopwatch.ElapsedMilliseconds,
-					Error = new Error
-					{
-						Title = "Failed: No results",
-						Message = "This DNS record does not exist",
-					},
+					Error = response.ToError(serverName)
 				});
 				return;
 			}
 
-			// Was this server non-authoritive?
-			if (response.Answers.Count == 0)
+			if (response.Answers.Count > 0)
 			{
-				// Let's check who's in charge.
-				// Randomly pick one of the authoritive servers
-				var newServer = response.Authorities.NsRecords().Random();
-				var newServerIps = await GetDnsServerIPs(newServer.NSDName.Value, response);
+				// It *was* authoritive.
 				await responseStream.WriteAsync(new DnsLookupResponse
 				{
 					Duration = (uint)stopwatch.ElapsedMilliseconds,
-					Referral = new DnsLookupReferral
-					{
-						PrevServerName = serverName,
-						PrevServerIp = response.NameServer.Address,
-						NextServerName = newServer.NSDName.Value.TrimEnd('.'),
-						NextServerIps = {newServerIps.Select(x => x.ToString())},
-						Reply = response.ToReply(),
-					}
+					Reply = response.ToReply()
 				});
-				await DoLookup(request, responseStream, cancellationToken, newServer.NSDName.Value, newServerIps);
 				return;
 			}
 
-			// It *was* authoritive.
-			await responseStream.WriteAsync(new DnsLookupResponse
-			{
-				Duration = (uint)stopwatch.ElapsedMilliseconds,
-				Reply = response.ToReply()
-			});
+			await RecurseWithRetries(
+				request,
+				responseStream,
+				cancellationToken,
+				serverName,
+				response,
+				newServers: response.Authorities.NsRecords().Select(record => record.NSDName.Value)
+			);
 		}
 	}
 }
+
+
+
+/*try
+{
+	var soaResponse = await client.QueryAsync(
+		request.Host,
+		QueryType.SOA,
+		cancellationToken: cancellationToken
+	);
+	var soa = soaResponse.Answers.SoaRecords().First();
+
+}
+catch (Exception ex)
+{
+	await responseStream.WriteAsync(new DnsLookupResponse
+	{
+		Duration = 0,
+		Error = new Error
+		{
+			Title = "Unable to get SOA record",
+			Message = ex.Message,
+		},
+	});
+}*/
