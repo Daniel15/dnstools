@@ -374,17 +374,17 @@
       "networkAsn": 56655
     },
     {
-      "id": "us-lv",
-      "city": "Las Vegas",
-      "region": "Nevada",
+      "id": "us-la",
+      "city": "Los Angeles",
+      "region": "California",
       "country": "US",
-      "locationDisplay": "Las Vegas, USA",
-      "latitude": 36.066088,
-      "longitude": -115.138318,
-      "providerName": "BuyVM",
-      "providerUrl": "https://buyvm.net/",
-      "dataCenterName": "Fiberhub",
-      "networkAsn": 53667
+      "locationDisplay": "Los Angeles, USA",
+      "latitude": 34.0483206085,
+      "longitude": -118.25628139,
+      "providerName": "HostHatch",
+      "providerUrl": "https://hosthatch.com/",
+      "dataCenterName": "Psychz Networks",
+      "networkAsn": 63473
     },
     {
       "id": "us-ny",
