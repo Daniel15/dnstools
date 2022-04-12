@@ -50,7 +50,11 @@ export function createRow(props: Props): Row {
   let value;
   let sortValue = null;
   if (lastError) {
-    value = 'ERROR: ' + lastError.error.title;
+    value =
+      'ERROR: ' +
+      (lastError.error.title == null || lastError.error.title === ''
+        ? lastError.error.message
+        : lastError.error.title);
     // Always sort errors to the bottom
     sortValue = null;
   } else if (lastReply) {
