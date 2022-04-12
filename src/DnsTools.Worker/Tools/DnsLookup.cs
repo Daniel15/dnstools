@@ -185,14 +185,31 @@ namespace DnsTools.Worker.Tools
 				return;
 			}
 
-			await RecurseWithRetries(
-				request,
-				responseStream,
-				cancellationToken,
-				serverName,
-				response,
-				newServers: response.Authorities.NsRecords().Select(record => record.NSDName.Value)
-			);
+			var authoritativeServers = response.Authorities.NsRecords().Select(record => record.NSDName.Value).ToList();
+			if (authoritativeServers.Count > 0)
+			{
+				await RecurseWithRetries(
+					request,
+					responseStream,
+					cancellationToken,
+					serverName,
+					response,
+					newServers: authoritativeServers
+				);
+				return;
+			}
+
+			// If we got here, it must be NOERROR status with 0 answers and 0 authorities
+			// This means the domain exists, but this particular record type does not
+			await responseStream.WriteAsync(new DnsLookupResponse
+			{
+				Duration = (uint) stopwatch.ElapsedMilliseconds,
+				Error = new Error
+				{
+					Title = "Failed: No records",
+					Message = "This domain exists, but a record of this type was not found.",
+				}
+			});
 		}
 	}
 }
