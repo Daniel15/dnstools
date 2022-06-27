@@ -84,14 +84,15 @@ namespace DnsTools.Web.Services
 				return null;
 			}
 
+			IpData? ipData = null;
 			foreach (var dataLoader in _dataLoaders)
 			{
 				try
 				{
-					var data = await dataLoader.LoadIpData(ip);
-					if (data != null)
+					ipData = await dataLoader.LoadIpData(ip);
+					if (ipData != null)
 					{
-						return data;
+						break;
 					}
 				}
 				catch (Exception ex)
@@ -100,8 +101,23 @@ namespace DnsTools.Web.Services
 				}
 			}
 
-			_logger.LogError($"Ran out of IP data loaders for {ip}!");
-			return null;
+			if (ipData == null)
+			{
+				return null;
+			}
+
+			if (ipData.Asn == null || ipData.AsnName == null)
+			{
+				// If the data loader didn't return ASN, get it from Maxmind
+				// TODO: This is UGLY, but .NET doesn't let us register one class for multiple interfaces
+				// https://andrewlock.net/how-to-register-a-service-with-multiple-interfaces-for-in-asp-net-core-di/
+				var maxmind = _dataLoaders.First(x => x is MaxMindIpDataLoader) as MaxMindIpDataLoader;
+				var maxmindResult = maxmind.LoadIpData(ip).Result;
+				ipData.Asn = maxmindResult.Asn;
+				ipData.AsnName = maxmindResult.AsnName;
+			}
+
+			return ipData;
 		}
 
 		private async Task<IpData?> LoadReverseDns(IPAddress ip, CancellationToken cancellationToken)
