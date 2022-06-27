@@ -19,6 +19,7 @@
     <PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="6.0.4" />
     <PackageReference Include="DnsClient" Version="1.6.1" />
     <PackageReference Include="GitInfo" Version="2.2.0" />
+    <PackageReference Include="IPinfo" Version="2.0.0" />
     <PackageReference Include="MaxMind.GeoIP2" Version="5.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="6.0.6" />
     <PackageReference Include="Google.Protobuf" Version="3.21.1" />
@@ -40,6 +41,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Include="..\DnsTools.Worker\Extensions\IpExtensions.cs" Link="Extensions\IpExtensions.cs" />
     <Compile Include="..\DnsTools.Worker\Models\IDnsLookupRequest.cs" Link="Models\IDnsLookupRequest.cs" />
     <Compile Include="..\DnsTools.Worker\Models\IHasError.cs" Link="Models\IHasError.cs" />
     <Compile Include="..\DnsTools.Worker\Models\ProtobufModelExtensions.cs" Link="Models\ProtobufModelExtensions.cs" />

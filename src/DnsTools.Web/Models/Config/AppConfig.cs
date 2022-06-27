@@ -18,6 +18,8 @@ namespace DnsTools.Web.Models.Config
 
 		public string MaxMindAsnPath { get; set; } = default!;
 
+		public string IpInfoAccessToken { get; set; } = default!;
+
 		public ReCaptchaConfig ReCaptcha { get; set; } = default!;
 
 		public class ReCaptchaConfig

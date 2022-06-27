@@ -44,9 +44,11 @@ namespace DnsTools.Web
 			services.Configure<AppConfig>(Configuration);
 			services.AddSingleton<IHttp2PushManifestHandler, Http2PushManifestHandler>();
 			services.AddSingleton<IWorkerProvider, WorkerProvider>();
-			services.AddSingleton<IMaxMind, Services.MaxMind>();
 			services.AddSingleton<IIpDataProvider, IpDataProvider>();
 			services.AddScoped<ICaptcha, Captcha>();
+
+			services.AddSingleton<IIpDataLoader, IpInfoIpDataLoader>();
+			services.AddSingleton<IIpDataLoader, MaxMindIpDataLoader>();
 
 			services.AddSingleton<TracerouteRunner>();
 			services.AddTransient<MtrRunner>();

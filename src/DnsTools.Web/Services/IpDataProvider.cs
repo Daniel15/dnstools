@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading;
@@ -6,6 +7,7 @@ using System.Threading.Tasks;
 using DnsClient;
 using DnsTools.Web.Hubs;
 using DnsTools.Web.Models;
+using DnsTools.Worker.Extensions;
 using Microsoft.Extensions.Logging;
 
 namespace DnsTools.Web.Services
@@ -15,13 +17,13 @@ namespace DnsTools.Web.Services
 	/// </summary>
 	public class IpDataProvider : IIpDataProvider
 	{
-		private readonly IMaxMind _maxMind;
+		private readonly IEnumerable<IIpDataLoader> _dataLoaders;
 		private readonly ILookupClient _dns;
 		private readonly ILogger<IpDataProvider> _logger;
 
-		public IpDataProvider(IMaxMind maxMind, ILookupClient dns, ILogger<IpDataProvider> logger)
+		public IpDataProvider(IEnumerable<IIpDataLoader> dataLoaders, ILookupClient dns, ILogger<IpDataProvider> logger)
 		{
-			_maxMind = maxMind;
+			_dataLoaders = dataLoaders;
 			_dns = dns;
 			_logger = logger;
 		}
@@ -44,7 +46,7 @@ namespace DnsTools.Web.Services
 		{
 			var subTasks = new[]
 			{
-				LoadMaxmind(ip),
+				LoadIpData(ip),
 				LoadReverseDns(ip, cancellationToken),
 			}.Select(async task =>
 			{
@@ -75,32 +77,31 @@ namespace DnsTools.Web.Services
 			}
 		}
 
-		private Task<IpData?> LoadMaxmind(IPAddress ip)
+		private async Task<IpData?> LoadIpData(IPAddress ip)
 		{
-			IpData? data = null;
-
-			try
+			if (ip.IsPrivate())
 			{
-				var city = _maxMind.City(ip);
-				var asn = _maxMind.Asn(ip);
-				if (city != null || asn != null)
+				return null;
+			}
+
+			foreach (var dataLoader in _dataLoaders)
+			{
+				try
 				{
-					data = new IpData
+					var data = await dataLoader.LoadIpData(ip);
+					if (data != null)
 					{
-						Asn = asn?.AutonomousSystemNumber,
-						AsnName = asn?.AutonomousSystemOrganization,
-						City = city?.City?.Name,
-						Country = city?.Country?.Name,
-						CountryIso = city?.Country?.IsoCode,
-					};
+						return data;
+					}
+				}
+				catch (Exception ex)
+				{
+					_logger.LogError(ex, $"Could not load {dataLoader.GetType().Name} data for {ip}: {ex.Message}");
 				}
 			}
-			catch (Exception ex)
-			{
-				_logger.LogError(ex, $"Could not load MaxMind data for {ip}: {ex.Message}");
-			}
 
-			return Task.FromResult(data);
+			_logger.LogError($"Ran out of IP data loaders for {ip}!");
+			return null;
 		}
 
 		private async Task<IpData?> LoadReverseDns(IPAddress ip, CancellationToken cancellationToken)
