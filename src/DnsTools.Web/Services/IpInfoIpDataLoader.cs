@@ -27,13 +27,16 @@ namespace DnsTools.Web.Services
 		public async ValueTask<IpData?> LoadIpData(IPAddress ip)
 		{
 			var response = await _client.IPApi.GetDetailsAsync(ip.ToString());
-			var asnMatch = _asnRegex.Match(response.Org);
 			long? asnNumber = null;
 			string? asnName = null;
-			if (asnMatch.Success)
+			if (response.Org != null)
 			{
-				asnNumber = long.Parse(asnMatch.Groups["number"].ToString());
-				asnName = asnMatch.Groups["name"].ToString();
+				var asnMatch = _asnRegex.Match(response.Org);
+				if (asnMatch.Success)
+				{
+					asnNumber = long.Parse(asnMatch.Groups["number"].ToString());
+					asnName = asnMatch.Groups["name"].ToString();
+				}
 			}
 
 			return new IpData
