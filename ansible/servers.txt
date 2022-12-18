@@ -5,7 +5,6 @@ control ansible_connection=local
 at.worker.dns.tg
 au-syd.worker.dns.tg  clean_old_dotnet=false
 au-per.worker.dns.tg
-be.worker.dns.tg
 bg.worker.dns.tg
 ca.worker.dns.tg
 ch.worker.dns.tg
@@ -33,7 +32,6 @@ us-dal.worker.dns.tg
 us-kc.worker.dns.tg
 us-la.worker.dns.tg    clean_old_dotnet=false
 us-ny.worker.dns.tg
-vn.worker.dns.tg
 za.worker.dns.tg
 
 [workers:vars]
