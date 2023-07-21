@@ -70,7 +70,7 @@ const commonFlags: Record<
 const otherFlagsContext = require.context(
   'flag-icon-css/flags/4x3/',
   false,
-  /^\.\/(?!at|au|be|bg|ca|ch|cl|de|ee|fi|fr|gb|hk|in|it|jp|ng|no|nl|nz|pl|ro|ru|se|sg|tw|us|vn|za).+\.svg$/,
+  /^\.\/(?!at|au|be|bg|ca|ch|cl|de|ee|fi|fr|gb|hk|in|it|jp|no|nl|nz|pl|ro|ru|se|sg|tw|us|vn|za).+\.svg$/,
 );
 
 type Props = {

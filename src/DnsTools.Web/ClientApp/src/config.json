@@ -244,19 +244,6 @@
       "networkAsn": 61138
     },
     {
-      "id": "ng",
-      "city": "Lagos",
-      "region": "Lagos",
-      "country": "NG",
-      "locationDisplay": "Nigeria",
-      "latitude": 6.4130973,
-      "longitude": 3.40756437,
-      "providerName": "Terrahost",
-      "providerUrl": "https://terrahost.com/",
-      "dataCenterName": "?",
-      "networkAsn": 56655
-    },
-    {
       "id": "pl",
       "city": "Warsaw",
       "region": "Mazovia",
