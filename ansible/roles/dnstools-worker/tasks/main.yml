@@ -12,11 +12,23 @@
   apt_key:
     url: https://packages.microsoft.com/keys/microsoft.asc
 
+- name: .NET Core repository (bookworm)
+  apt_repository:
+    repo: deb [arch=amd64,arm64,armhf] https://packages.microsoft.com/debian/12/prod bookworm main
+    state: present
+  when: ansible_distribution_release == "bookworm"
+
 - name: .NET Core repository (bullseye)
   apt_repository:
     repo: deb [arch=amd64,arm64,armhf] https://packages.microsoft.com/debian/11/prod bullseye main
     state: present
   when: ansible_distribution_release == "bullseye"
+
+- name: Remove Bullseye .NET Core repository from Bookworm
+  apt_repository:
+    repo: deb [arch=amd64,arm64,armhf] https://packages.microsoft.com/debian/11/prod buster main
+    state: absent
+  when: ansible_distribution_release == "bookworm"
 
 - name: Remove Buster .NET Core repository from Bullseye
   apt_repository:
@@ -47,15 +59,17 @@
     name:
       - aspnetcore-runtime-3.1
       - dotnet-runtime-3.1
+      - aspnetcore-runtime-5.0
+      - dotnet-runtime-5.0
     state: absent
   when: clean_old_dotnet|bool
 
 - name: Install packages
   apt:
     name:
-      - aspnetcore-runtime-5.0
+      - aspnetcore-runtime-7.0
       - certbot
-      - dotnet-runtime-5.0
+      - dotnet-runtime-7.0
       - htop
       - iputils-ping
       - mtr-tiny
@@ -116,7 +130,7 @@
 
 - name: Copy worker
   synchronize:
-    src: ../src/DnsTools.Worker/bin/Release/net5.0/linux-x64/publish/
+    src: ../src/DnsTools.Worker/bin/Release/net7.0/linux-x64/publish/
     dest: /opt/dnstools-worker/
     rsync_path: "/usr/bin/rsync" # Avoiding sudo for rsync
 
