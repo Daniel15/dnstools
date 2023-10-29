@@ -17,11 +17,6 @@ const providers = [
     url: 'https://www.hostnamaste.com/',
   },
   {
-    name: 'MrVM',
-    tooltip: 'VPS hosting starting from $4 per year',
-    url: 'https://mrvm.net/natvps/',
-  },
-  {
     name: 'Terrahost',
     tooltip: 'VPSes and dedicated servers in secure bunker datacenters',
     url: 'https://terrahost.com/',

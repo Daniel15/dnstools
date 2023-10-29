@@ -53,10 +53,10 @@
       "region": "Sofia City",
       "country": "BG",
       "locationDisplay": "Bulgaria",
-      "latitude": 42.702885,
-      "longitude": 23.306291,
-      "providerName": "MrVM",
-      "providerUrl": "https://mrvm.net/natvps/",
+      "latitude": 42.70273966,
+      "longitude": 23.30625866,
+      "providerName": "Gullo's Hosting",
+      "providerUrl": "https://hosting.gullo.me/",
       "dataCenterName": "Telepoint",
       "networkAsn": 203380
     },
@@ -134,8 +134,8 @@
       "locationDisplay": "Germany",
       "latitude": 49.449616,
       "longitude": 11.014187,
-      "providerName": "MrVM",
-      "providerUrl": "https://mrvm.net/natvps/",
+      "providerName": "Gullo's Hosting",
+      "providerUrl": "https://hosting.gullo.me/",
       "dataCenterName": "Hetzner",
       "networkAsn": 24940
     },
@@ -197,12 +197,12 @@
       "region": "England",
       "country": "GB",
       "locationDisplay": "London",
-      "latitude": 51.516559,
-      "longitude": -0.088902,
-      "providerName": "Inception Hosting",
-      "providerUrl": "https://inceptionhosting.com/",
-      "dataCenterName": "Clouvider",
-      "networkAsn": 62240
+      "latitude": 51.5267452,
+      "longitude": -0.6329158,
+      "providerName": "HostHatch",
+      "providerUrl": "https://hosthatch.com/",
+      "dataCenterName": "Iron Mountain LON1",
+      "networkAsn": 63473
     },
     {
       "id": "no",
@@ -275,12 +275,12 @@
       "region": "Singapore",
       "country": "SG",
       "locationDisplay": "Singapore",
-      "latitude": 1.29604,
-      "longitude": 103.790821,
-      "providerName": "MrVM",
-      "providerUrl": "https://mrvm.net/natvps/",
-      "dataCenterName": "Equinix SG3",
-      "networkAsn": 136557
+      "latitude": 1.317718359,
+      "longitude": 103.8939006,
+      "providerName": "Gullo's Hosting",
+      "providerUrl": "https://hosting.gullo.me/",
+      "dataCenterName": "OVH",
+      "networkAsn": 16276
     },
     {
       "id": "za",
