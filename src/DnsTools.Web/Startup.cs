@@ -42,6 +42,7 @@ namespace DnsTools.Web
 			}));
 
 			services.Configure<AppConfig>(Configuration);
+			services.AddSentryTunneling("errors.d.sb");
 			services.AddSingleton<IHttp2PushManifestHandler, Http2PushManifestHandler>();
 			services.AddSingleton<IWorkerProvider, WorkerProvider>();
 			services.AddSingleton<IIpDataProvider, IpDataProvider>();
@@ -130,6 +131,7 @@ namespace DnsTools.Web
 			});
 			app.UseStaticFiles();
 			app.UseSession();
+			app.UseSentryTunneling("/error");
 
 			app.UseRouting();
 			app.UseCors(env.IsDevelopment() ? CORS_DEV : CORS_PROD);

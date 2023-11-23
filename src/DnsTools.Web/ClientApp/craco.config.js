@@ -1,6 +1,6 @@
 const autoprefixer = require('autoprefixer');
 const purgecss = require('@fullhuman/postcss-purgecss');
-const SentryPlugin = require("@sentry/webpack-plugin");
+const {sentryWebpackPlugin} = require("@sentry/webpack-plugin");
 const {whenProd} = require('@craco/craco');
 
 module.exports = {
@@ -35,12 +35,12 @@ module.exports = {
       add: [
         ...whenProd(
           () => [
-            new SentryPlugin({
+            sentryWebpackPlugin({
               authToken: process.env.SENTRY_AUTH_TOKEN,
               org: 'sentry',
               project: 'dnstools-js',
               release: process.env.SENTRY_RELEASE,
-              url: 'https://errors.d.sb/',
+              url: 'https://errors.d.sb',
             })
           ],
           []

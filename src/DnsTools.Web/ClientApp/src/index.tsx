@@ -2,12 +2,14 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.scss';
 import App from './App';
-import {init as lazySentryInit} from './LazySentry/LazySentry';
-import {LazySentryErrorBoundary} from './LazySentry/LazySentryErrorBoundary';
+import {
+  init as sentryInit,
+  ErrorBoundary as SentryErrorBoundary,
+} from '@sentry/react';
 import {sentryJS as SentryConfig} from './config';
 
 const appWithErrorBoundary = (
-  <LazySentryErrorBoundary
+  <SentryErrorBoundary
     fallback={errorData => (
       <>
         <p>Sorry, an error occurred: {errorData.error?.message}.</p>
@@ -23,7 +25,7 @@ const appWithErrorBoundary = (
       </>
     )}>
     <App />
-  </LazySentryErrorBoundary>
+  </SentryErrorBoundary>
 );
 
 const rootElement = document.getElementById('root')!;
@@ -33,13 +35,12 @@ if (rootElement.hasChildNodes()) {
   ReactDOM.render(appWithErrorBoundary, rootElement);
 }
 
-if (!__DEV__) {
-  window.setTimeout(() => {
-    lazySentryInit({
-      dsn: SentryConfig.dsn,
-      debug: __DEV__,
-      environment: __DEV__ ? 'development' : 'production',
-      tracesSampleRate: 1.0,
-    });
-  }, 0);
+if (!__DEV__ || document.location.search.includes('enable_error_logging')) {
+  sentryInit({
+    dsn: SentryConfig.dsn,
+    debug: __DEV__,
+    environment: __DEV__ ? 'development' : 'production',
+    tracesSampleRate: 0.0,
+    tunnel: '/error',
+  });
 }
