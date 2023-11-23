@@ -6,7 +6,7 @@ import {
   init as sentryInit,
   ErrorBoundary as SentryErrorBoundary,
 } from '@sentry/react';
-import {sentryJS as SentryConfig} from './config';
+import {apiUrl, sentryJS as SentryConfig} from './config';
 
 const appWithErrorBoundary = (
   <SentryErrorBoundary
@@ -41,6 +41,6 @@ if (!__DEV__ || document.location.search.includes('enable_error_logging')) {
     debug: __DEV__,
     environment: __DEV__ ? 'development' : 'production',
     tracesSampleRate: 0.0,
-    tunnel: '/error',
+    tunnel: `${apiUrl}error/log`,
   });
 }

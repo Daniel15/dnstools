@@ -131,10 +131,10 @@ namespace DnsTools.Web
 			});
 			app.UseStaticFiles();
 			app.UseSession();
-			app.UseSentryTunneling("/error");
 
 			app.UseRouting();
 			app.UseCors(env.IsDevelopment() ? CORS_DEV : CORS_PROD);
+			app.UseSentryTunneling("/error/log");
 
 			app.UseHealthChecksPrometheusExporter("/health/prom", options =>
 			{
