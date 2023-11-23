@@ -1,12 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import {ErrorBoundary as SentryErrorBoundary} from '@sentry/react';
+
 import './index.scss';
+import './analytics';
 import App from './App';
-import {
-  init as sentryInit,
-  ErrorBoundary as SentryErrorBoundary,
-} from '@sentry/react';
-import {apiUrl, sentryJS as SentryConfig} from './config';
 
 const appWithErrorBoundary = (
   <SentryErrorBoundary
@@ -33,14 +31,4 @@ if (rootElement.hasChildNodes()) {
   ReactDOM.hydrate(appWithErrorBoundary, rootElement);
 } else {
   ReactDOM.render(appWithErrorBoundary, rootElement);
-}
-
-if (!__DEV__ || document.location.search.includes('enable_error_logging')) {
-  sentryInit({
-    dsn: SentryConfig.dsn,
-    debug: __DEV__,
-    environment: __DEV__ ? 'development' : 'production',
-    tracesSampleRate: 0.0,
-    tunnel: `${apiUrl}error/log`,
-  });
 }

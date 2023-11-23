@@ -36,7 +36,7 @@ export default function Whois(props: Props) {
         setResults(null);
         setError(null);
         setShowCaptcha(false);
-        const rawResponse = await fetch(`${apiUrl}data/whois/${host}/`, {
+        const rawResponse = await fetch(`${apiUrl}/data/whois/${host}/`, {
           credentials: 'include',
         });
         const response = await rawResponse.text();

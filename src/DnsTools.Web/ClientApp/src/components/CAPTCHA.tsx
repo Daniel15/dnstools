@@ -51,7 +51,7 @@ export default function CAPTCHA(props: Props) {
     async recaptchaResponse => {
       try {
         onVerifyStarted();
-        const rawResponse = await fetch(`${apiUrl}captcha`, {
+        const rawResponse = await fetch(`${apiUrl}/captcha`, {
           credentials: 'include',
           body: 'response=' + encodeURIComponent(recaptchaResponse),
           headers: {

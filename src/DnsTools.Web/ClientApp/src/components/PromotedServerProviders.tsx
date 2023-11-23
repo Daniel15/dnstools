@@ -2,6 +2,7 @@ import React from 'react';
 
 import {commaSeparate} from '../utils/react';
 import WithHovercard from './WithHovercard';
+import {trackEvent} from '../analytics';
 
 // Keep these in alphabetical order.
 const providers = [
@@ -50,15 +51,14 @@ export default function FooterHostingProviders() {
             tooltipBody={provider.tooltip}>
             <a
               href={`${provider.url}?utm_source=dnstools&utm_medium=footer&utm_campaign=dnstools-footer-links`}
-              target="blank"
+              rel="noreferrer"
+              target="_blank"
               onClick={() => {
-                ga(
-                  'send',
-                  'event',
-                  'Hosting Provider Link',
-                  'click',
-                  provider.name,
-                );
+                trackEvent('Hosting Provider Link', {
+                  props: {
+                    provider_name: provider.name,
+                  },
+                });
               }}>
               {provider.name}
             </a>

@@ -3,6 +3,7 @@ import React from 'react';
 import {WorkerConfig} from '../utils/workers';
 import CountryFlag from './CountryFlag';
 import WithHovercard from './WithHovercard';
+import {trackEvent} from '../analytics';
 
 type Props = Readonly<{
   flagSize?: number;
@@ -28,13 +29,11 @@ export default function WorkerLocation({flagSize, worker}: Props) {
             target="_blank"
             rel="nofollow noopener"
             onClick={() => {
-              ga(
-                'send',
-                'event',
-                'Hosting Provider Link (Location)',
-                'click',
-                worker.providerName,
-              );
+              trackEvent('Hosting Provider Link (Location)', {
+                props: {
+                  provider_name: worker.providerName,
+                },
+              });
             }}>
             {worker.providerName}
           </a>{' '}

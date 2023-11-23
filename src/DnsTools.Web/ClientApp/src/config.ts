@@ -8,8 +8,9 @@ import {
 
 export {defaultWorker, googleMapsKey, ReCaptcha, sentryJS, workers};
 
-export const apiUrl = /^(localhost|dnstools.test)/.test(
-  window.location.hostname,
-)
-  ? 'https://localhost:5011/'
-  : 'https://api.dnstools.ws/';
+export let apiUrl = 'https://api.dnstools.ws';
+if (/^(localhost|dnstools.test)/.test(window.location.hostname)) {
+  apiUrl = 'https://localhost:5011';
+} else if (window.location.hostname.includes('staging')) {
+  apiUrl = 'https://api.staging.dnstools.ws';
+}

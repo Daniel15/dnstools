@@ -19,7 +19,7 @@ import Traceroute from './pages/Traceroute';
 import Whois from './pages/Whois';
 
 const connection = new HubConnectionBuilder()
-  .withUrl(`${apiUrl}hub`)
+  .withUrl(`${apiUrl}/hub`)
   .withAutomaticReconnect()
   .build();
 
