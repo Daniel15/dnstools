@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS base
+FROM mcr.microsoft.com/dotnet/aspnet:8.0-bookworm-slim AS base
 WORKDIR /app
 EXPOSE 80
 EXPOSE 443
@@ -12,7 +12,11 @@ RUN apt-get -y update && \
   apt-get clean && \
   rm -rf /var/lib/apt/lists/*
 
-FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:8.0-bookworm-slim AS build
+# Install clang/zlib1g-dev dependencies for publishing to native
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+    clang zlib1g-dev
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["src/DnsTools.Worker/DnsTools.Worker.csproj", "src/DnsTools.Worker/"]
@@ -22,10 +26,9 @@ WORKDIR "/src/src/DnsTools.Worker"
 RUN dotnet build "DnsTools.Worker.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish
-ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "DnsTools.Worker.csproj" -c $BUILD_CONFIGURATION -o /app/publish
+RUN dotnet publish "DnsTools.Worker.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=true
 
-FROM base AS final
+FROM mcr.microsoft.com/dotnet/runtime-deps:8.0-bookworm-slim AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "DnsTools.Worker.dll"]
+ENTRYPOINT ["./DnsTools.Worker"]

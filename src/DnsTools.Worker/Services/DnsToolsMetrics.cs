@@ -1,6 +1,5 @@
-﻿using System;
-using System.IO;
-using System.Reflection;
+﻿using System.Reflection;
+using System.Runtime.CompilerServices;
 using Prometheus;
 
 namespace DnsTools.Worker.Services
@@ -11,12 +10,11 @@ namespace DnsTools.Worker.Services
 		{
 			var assembly = Assembly.GetExecutingAssembly();
 			var assemblyVersion = assembly.GetName().Version?.ToString();
-			var assemblyWriteTime = new DateTimeOffset(File.GetLastWriteTimeUtc(assembly.Location));
 
 			Metrics.CreateGauge(
-				"dnstools_deploy_time_seconds", 
-				"Last modified date of the DNSTools worker assembly"
-			).SetToTimeUtc(assemblyWriteTime);
+				"dnstools_is_aot", 
+				"Whether the worker is using AOT compilation"
+			).Set(RuntimeFeature.IsDynamicCodeSupported ? 0 : 1);
 
 			if (assemblyVersion != null)
 			{
