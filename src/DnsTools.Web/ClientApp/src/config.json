@@ -9,19 +9,6 @@
   },
   "workers": [
     {
-      "id": "au-per",
-      "city": "Perth",
-      "region": "Western Australia",
-      "country": "AU",
-      "locationDisplay": "Perth, Australia",
-      "latitude": -31.864358,
-      "longitude": 115.895998,
-      "providerName": "MrVM",
-      "providerUrl": "https://mrvm.net/natvps/",
-      "dataCenterName": "NextDC P1",
-      "networkAsn": 136557
-    },
-    {
       "id": "au-syd",
       "city": "Sydney",
       "region": "New South Wales",
@@ -115,29 +102,29 @@
     },
     {
       "id": "fr",
-      "city": "Gravelines",
-      "region": "Hauts-de-France",
+      "city": "Paris",
+      "region": "Ile-de-France",
       "country": "FR",
       "locationDisplay": "France",
-      "latitude": 51.0166571,
-      "longitude": 2.15506660,
-      "providerName": "Gullo's Hosting",
-      "providerUrl": "https://hosting.gullo.me/",
-      "dataCenterName": "OVH",
-      "networkAsn": 16276
+      "latitude": 48.928244495,
+      "longitude": 2.3520197059,
+      "providerName": "Hosteons",
+      "providerUrl": "https://hosteons.com/",
+      "dataCenterName": "Equinix PA2",
+      "networkAsn": 142036
     },
     {
       "id": "de",
-      "city": "Nuremberg",
-      "region": "Bayern",
+      "city": "Frankfurt",
+      "region": "Hessen",
       "country": "DE",
       "locationDisplay": "Germany",
-      "latitude": 49.449616,
-      "longitude": 11.014187,
-      "providerName": "Gullo's Hosting",
-      "providerUrl": "https://hosting.gullo.me/",
-      "dataCenterName": "Hetzner",
-      "networkAsn": 24940
+      "latitude": 50.11830166,
+      "longitude": 8.677964365,
+      "providerName": "Hosteons",
+      "providerUrl": "https://hosteons.com/",
+      "dataCenterName": "Equinix FR1",
+      "networkAsn": 142036
     },
     {
       "id": "hk",
@@ -164,19 +151,6 @@
       "providerUrl": "https://webhorizon.in/",
       "dataCenterName": "LeapSwitch Networks",
       "networkAsn": 132335
-    },
-    {
-      "id": "it",
-      "city": "Milan",
-      "region": "Lombardy",
-      "country": "IT",
-      "locationDisplay": "Italy",
-      "latitude": 45.4654219,
-      "longitude": 9.1859243,
-      "providerName": "MrVM",
-      "providerUrl": "https://mrvm.net/natvps/",
-      "dataCenterName": "Prometeus",
-      "networkAsn": 34971
     },
     {
       "id": "jp",
@@ -212,10 +186,10 @@
       "locationDisplay": "Norway",
       "latitude": 59.172173,
       "longitude": 10.208851,
-      "providerName": "MrVM",
-      "providerUrl": "https://mrvm.net/natvps/",
+      "providerName": "WebHorizon",
+      "providerUrl": "https://webhorizon.in/",
       "dataCenterName": "Terrahost",
-      "networkAsn": 56655
+      "networkAsn": 149020
     },
     {
       "id": "nl",
@@ -320,19 +294,6 @@
       "providerUrl": "https://webhorizon.in/",
       "dataCenterName": "M247",
       "networkAsn": 63473
-    },
-    {
-      "id": "tw",
-      "city": "Taipei",
-      "region": "Taiwan",
-      "country": "TW",
-      "locationDisplay": "Taiwan",
-      "latitude": 24.16272648,
-      "longitude": 120.6612263,
-      "providerName": "SoftShellWeb",
-      "providerUrl": "https://softshellweb.com/",
-      "dataCenterName": "HostingInside Ltd",
-      "networkAsn": 9678
     },
     {
       "id": "us-kc",

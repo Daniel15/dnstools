@@ -7,9 +7,26 @@ import {trackEvent} from '../analytics';
 // Keep these in alphabetical order.
 const providers = [
   {
+    name: 'Advin Servers',
+    tooltip:
+      'Fast VPSes with a large amount of RAM and storage, starting at $7.99/month',
+    url: 'https://advinservers.com/',
+  },
+  {
+    name: 'FreeVPS',
+    tooltip: 'Free VPS for active users of LowEndTalk and LowEndSpirit forums',
+    url: 'https://freevps.org/',
+  },
+  {
     name: "Gullo's Hosting",
     tooltip: 'VPS hosting starting from $3.50 per year',
     url: 'https://hosting.gullo.me/',
+  },
+  {
+    name: 'Hosteons',
+    tooltip:
+      'RYZEN NVME Premium VPS, Budget KVM SSD VPS and OpenVZ 7 VPS Hosting',
+    url: 'https://hosteons.com/',
   },
   {
     name: 'HostNamaste',
