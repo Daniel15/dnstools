@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/aspnet:5.0-buster-slim AS base
+FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS base
 WORKDIR /app
 EXPOSE 80
 EXPOSE 443
@@ -12,16 +12,18 @@ RUN apt-get -y update && \
   apt-get clean && \
   rm -rf /var/lib/apt/lists/*
 
-FROM mcr.microsoft.com/dotnet/sdk:5.0-buster-slim AS build
+FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
+ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["src/DnsTools.Worker/DnsTools.Worker.csproj", "src/DnsTools.Worker/"]
 RUN dotnet restore "src/DnsTools.Worker/DnsTools.Worker.csproj"
 COPY . .
 WORKDIR "/src/src/DnsTools.Worker"
-RUN dotnet build "DnsTools.Worker.csproj" -c Release -o /app/build
+RUN dotnet build "DnsTools.Worker.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "DnsTools.Worker.csproj" -c Release -o /app/publish
+ARG BUILD_CONFIGURATION=Release
+RUN dotnet publish "DnsTools.Worker.csproj" -c $BUILD_CONFIGURATION -o /app/publish
 
 FROM base AS final
 WORKDIR /app
