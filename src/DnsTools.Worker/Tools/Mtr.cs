@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices.JavaScript;
 using System.Threading.Tasks;
 using DnsTools.Worker.Utils;
 using Grpc.Core;
@@ -12,7 +13,9 @@ namespace DnsTools.Worker.Tools
 	public class Mtr : BaseCliTool<TracerouteRequest, MtrResponse>
 	{
 		private const float US_PER_MS = 1000;
-		
+
+		private readonly Dictionary<uint, HashSet<string>> _hostIPsAlreadySent = new();
+
 		protected override string GetCommand(TracerouteRequest request) => "mtr";
 
 		protected override async Task<IReadOnlyList<string>> GetArguments(
@@ -37,6 +40,21 @@ namespace DnsTools.Worker.Tools
 		{
 			// Reference: https://github.com/traviscross/mtr/blob/master/FORMATS
 			var pieces = data.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+			if (pieces[0] == "h")
+			{
+				var pos = uint.Parse(pieces[1]);
+				var ip = pieces[2];
+				return CheckIfHostIsDuplicate(pos, ip) ? null : new MtrResponse
+				{
+					Pos = uint.Parse(pieces[1]),
+					Host = new MtrHostLine
+					{
+						Ip = pieces[2],
+					}
+				};
+			}
+
 			return pieces[0] switch
 			{
 				"d" => new MtrResponse
@@ -47,16 +65,7 @@ namespace DnsTools.Worker.Tools
 						Hostname = pieces[2],
 					}
 				},
-				
-				"h" => new MtrResponse
-				{
-					Pos = uint.Parse(pieces[1]), 
-					Host = new MtrHostLine
-					{
-						Ip = pieces[2],
-					}
-				},
-				
+
 				"p" => new MtrResponse
 				{
 					Pos = uint.Parse(pieces[1]),
@@ -84,6 +93,24 @@ namespace DnsTools.Worker.Tools
 					}
 				}
 			};
+		}
+
+		/// <summary>
+		/// Checks if this host line has already been returned during this session, to avoid returning
+		/// duplicates to the client-side.
+		/// </summary>
+		/// <see>https://github.com/traviscross/mtr/issues/499</see>
+		/// <returns><c>true</c> if this host has already been returned, otherwise <c>false</c></returns>
+		private bool CheckIfHostIsDuplicate(uint pos, string ip)
+		{
+			var ipsAlreadySentForPos = _hostIPsAlreadySent.GetValueOrDefault(pos);
+			if (ipsAlreadySentForPos == null)
+			{
+				ipsAlreadySentForPos = new HashSet<string>();
+				_hostIPsAlreadySent.Add(pos, ipsAlreadySentForPos);
+			}
+
+			return !ipsAlreadySentForPos.Add(ip);
 		}
 	}
 }
