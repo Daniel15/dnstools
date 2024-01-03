@@ -108,7 +108,7 @@
       "locationDisplay": "France",
       "latitude": 48.928244495,
       "longitude": 2.3520197059,
-      "providerName": "Hosteons",
+      "providerName": "HostEONS",
       "providerUrl": "https://hosteons.com/",
       "dataCenterName": "Equinix PA2",
       "networkAsn": 142036
@@ -121,7 +121,7 @@
       "locationDisplay": "Germany",
       "latitude": 50.11830166,
       "longitude": 8.677964365,
-      "providerName": "Hosteons",
+      "providerName": "HostEONS",
       "providerUrl": "https://hosteons.com/",
       "dataCenterName": "Equinix FR1",
       "networkAsn": 142036
@@ -294,6 +294,19 @@
       "providerUrl": "https://webhorizon.in/",
       "dataCenterName": "M247",
       "networkAsn": 63473
+    },
+    {
+      "id": "us-fl",
+      "city": "Miami",
+      "region": "Florida",
+      "country": "US",
+      "locationDisplay": "Miami, USA",
+      "latitude": 25.7758199,
+      "longitude": -80.192780,
+      "providerName": "Advin Servers",
+      "providerUrl": "https://advinservers.com/",
+      "dataCenterName": "QuadraNet",
+      "networkAsn": 206216
     },
     {
       "id": "us-kc",

@@ -23,7 +23,7 @@ const providers = [
     url: 'https://hosting.gullo.me/',
   },
   {
-    name: 'Hosteons',
+    name: 'HostEONS',
     tooltip:
       'RYZEN NVME Premium VPS, Budget KVM SSD VPS and OpenVZ 7 VPS Hosting',
     url: 'https://hosteons.com/',
