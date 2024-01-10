@@ -231,6 +231,19 @@
       "networkAsn": 201814
     },
     {
+      "id": "ro",
+      "city": "Bucharest",
+      "region": "Bucuresti",
+      "country": "RO",
+      "locationDisplay": "Romania",
+      "latitude": 44.47838381,
+      "longitude": 26.11808027,
+      "providerName": "FreeVPS + Hosteroid",
+      "providerUrl": "https://www.hosteroid.uk/",
+      "dataCenterName": "M247",
+      "networkAsn": 9009
+    },
+    {
       "id": "ru",
       "city": "Moscow",
       "region": "Moscow",

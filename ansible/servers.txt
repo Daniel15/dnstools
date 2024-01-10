@@ -21,10 +21,12 @@ nl.worker.dns.tg
 no.worker.dns.tg
 nz.worker.dns.tg
 pl.worker.dns.tg
+ro.worker.dns.tg
 ru.worker.dns.tg
 se.worker.dns.tg
 sg.worker.dns.tg
 us-dal.worker.dns.tg
+us-fl.worker.dns.tg
 us-kc.worker.dns.tg
 us-la.worker.dns.tg    clean_old_dotnet=false
 us-ny.worker.dns.tg
