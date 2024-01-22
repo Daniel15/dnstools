@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using DnsTools.Worker.Models;
 using DnsTools.Worker.Tools;
@@ -55,7 +56,7 @@ namespace DnsTools.Worker.Services
 			await RunTool<TracerouteRequest, MtrResponse, Mtr>(request, responseStream, context);
 		}
 
-		private async Task RunTool<TRequest, TResponse, TTool>(
+		private async Task RunTool<TRequest, TResponse, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TTool>(
 			TRequest request,
 			IServerStreamWriter<TResponse> responseStream,
 			ServerCallContext context
