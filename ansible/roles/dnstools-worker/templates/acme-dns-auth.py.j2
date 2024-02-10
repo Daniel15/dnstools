@@ -15,7 +15,7 @@ STORAGE_PATH = "/etc/letsencrypt/acmedns.json"
 # Example: ALLOW_FROM = ["192.168.10.0/24", "::1/128"]
 ALLOW_FROM = [
     "::1/128", 
-    {% for ip in ansible_all_ipv6_addresses | ipaddr('public') %}
+    {% for ip in ansible_all_ipv6_addresses | ansible.utils.ipaddr('public') %}
         "{{ ip }}/128",
     {% endfor %}
 ]
