@@ -1,24 +1,11 @@
 ---
-# Only required temporarily, while moving towards AoT builds (to clean up old stuff)
-# This can be deleted eventually.
-- name: Remove old .NET versions
-  apt:
-    name:
-      - aspnetcore-runtime-3.1
-      - dotnet-runtime-3.1
-      - aspnetcore-runtime-5.0
-      - dotnet-runtime-5.0
-      - aspnetcore-runtime-7.0
-      - dotnet-runtime-7.0
-    state: absent
-  when: clean_old_dotnet|bool
-
 - name: Install packages
   apt:
     name:
       - certbot
       - htop
       - iputils-ping
+      - libcurl4
       - mtr-tiny
       - python3-requests
       - rsync
@@ -74,21 +61,6 @@
     state: directory
     owner: daniel-ansible
     mode: "0755"
-
-# Only required temporarily, while moving towards AoT builds (to clean up old stuff)
-# This can be deleted eventually.
-- name: Find old libraries
-  find:
-    path: /opt/dnstools-worker/
-    patterns: "*.dll,*.exe,*.so,*.pdb"
-  register: libraries_in_worker_dir
-
-- name: Delete old libraries
-  file:
-    path: "{{ item['path'] }}"
-    state: absent
-  with_items: "{{ libraries_in_worker_dir['files'] }}"
-
 
 - name: Copy worker
   synchronize:
