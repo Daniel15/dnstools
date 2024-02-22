@@ -8,11 +8,11 @@ DNSTools is split into two pieces:
 
 ## Website
 
-The website is a C# ASP .NET Core 7.0 website, built using React and SignalR.
+The website is a C# ASP .NET Core 8.0 website, built using React and SignalR.
 
 ## Worker
 
-The "worker" (or "agent") is a small app that runs on multiple servers around the world. It's a [gRPC](https://grpc.io/) service written in C# using .NET Core 7.0. In production, the workers are a mix of KVM and OpenVZ7 VPSes running Debian Buster (10), Bullseye (11) or Bookworm (12).
+The "worker" (or "agent") is a small app that runs on multiple servers around the world. It's a [gRPC](https://grpc.io/) service written in C# using .NET Core 8.0 and compiled to a single executable using [Native AoT](https://learn.microsoft.com/en-us/dotnet/core/deploying/native-aot). In production, the workers are a mix of KVM and OpenVZ7 VPSes running Debian Bookworm (12).
 
 Some workers (such as pings and traceroutes) use the standard `ping` and `traceroute` command-line utilities. Pings can only be sent by root, and reusing existing well-tested code is more secure than creating our own setuid binaries. Other tools (like DNS lookups) are all performed using C# code.
 
