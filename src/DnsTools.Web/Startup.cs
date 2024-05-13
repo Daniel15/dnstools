@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
 using DnsClient;
 using DnsTools.Web.HealthChecks;
 using DnsTools.Web.Hubs;
@@ -18,147 +19,144 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
 
-namespace DnsTools.Web
-{
-	public class Startup
+const string CORS_PROD = "prod";
+const string CORS_DEV = "dev";
+
+var builder = WebApplication.CreateBuilder(args);
+
+builder.WebHost
+	.UseSentry(options =>
 	{
-		private const string CORS_PROD = "prod";
-		private const string CORS_DEV = "dev";
-		
-		public Startup(IConfiguration configuration)
-		{
-			Configuration = configuration;
-		}
+		options.Release = ThisAssembly.Git.Sha;
+	});
 
-		public IConfiguration Configuration { get; }
+var config = builder.Configuration;
+// Config shared between client-side and server-side
+config.AddJsonFile("ClientApp/src/config.json");
 
-		// This method gets called by the runtime. Use this method to add services to the container.
-		public void ConfigureServices(IServiceCollection services)
-		{
-			// Default caching DNS client, eg. for reverse DNS lookups
-			services.AddSingleton<ILookupClient>(_ => new LookupClient(new LookupClientOptions
-			{
-				UseCache = true
-			}));
+var services = builder.Services;
+// Default caching DNS client, eg. for reverse DNS lookups
+services.AddSingleton<ILookupClient>(_ => new LookupClient(new LookupClientOptions
+{
+	UseCache = true
+}));
 
-			services.Configure<AppConfig>(Configuration);
-			services.AddSentryTunneling("errors.d.sb");
-			services.AddSingleton<IHttp2PushManifestHandler, Http2PushManifestHandler>();
-			services.AddSingleton<IWorkerProvider, WorkerProvider>();
-			services.AddSingleton<IIpDataProvider, IpDataProvider>();
-			services.AddScoped<ICaptcha, Captcha>();
+services.Configure<AppConfig>(config);
+services.AddSentryTunneling("errors.d.sb");
+services.AddSingleton<IHttp2PushManifestHandler, Http2PushManifestHandler>();
+services.AddSingleton<IWorkerProvider, WorkerProvider>();
+services.AddSingleton<IIpDataProvider, IpDataProvider>();
+services.AddScoped<ICaptcha, Captcha>();
 
-			services.AddSingleton<IIpDataLoader, IpInfoIpDataLoader>();
-			services.AddSingleton<IIpDataLoader, MaxMindIpDataLoader>();
+services.AddSingleton<IIpDataLoader, IpInfoIpDataLoader>();
+services.AddSingleton<IIpDataLoader, MaxMindIpDataLoader>();
 
-			services.AddSingleton<TracerouteRunner>();
-			services.AddTransient<MtrRunner>();
+services.AddSingleton<TracerouteRunner>();
+services.AddTransient<MtrRunner>();
 
-			services.AddHttpClient();
-			services.AddHttpContextAccessor();
+services.AddHttpClient();
+services.AddHttpContextAccessor();
 
-			services.AddCors(options =>
-			{
-				options.AddPolicy(CORS_PROD , builder =>
-				{
-					builder.WithOrigins("https://dnstools.ws")
-						.AllowAnyHeader()
-						.AllowCredentials();
-				});
-				
-				options.AddPolicy(CORS_DEV, builder =>
-				{
-					builder.WithOrigins(
-						// create-react-app server
-						"http://localhost:31429",
-						// react-snap server
-						"http://localhost:45678"
-					)
-					.AllowAnyHeader()
-					.AllowCredentials();
-				});
-			});
+services.AddCors(options =>
+{
+	options.AddPolicy(CORS_PROD , builder =>
+	{
+		builder.WithOrigins("https://dnstools.ws", "https://staging.dnstools.ws")
+			.AllowAnyHeader()
+			.AllowCredentials();
+	});
+	
+	options.AddPolicy(CORS_DEV, builder =>
+	{
+		builder.WithOrigins(
+			// create-react-app server
+			"http://localhost:64329",
+			// react-snap server
+			"http://localhost:45678"
+		)
+		.AllowAnyHeader()
+		.AllowCredentials();
+	});
+});
 
-			services.AddControllersWithViews();
-			services.AddSignalR().AddJsonProtocol(options =>
-			{
-				options.PayloadSerializerOptions.IgnoreNullValues = true;
-			});
+services.AddControllersWithViews();
+services.AddSignalR().AddJsonProtocol(options =>
+{
+	options.PayloadSerializerOptions.IgnoreNullValues = true;
+});
 
-			services.AddDistributedMemoryCache();
-			services.AddSession(options =>
-			{
-				options.IdleTimeout = TimeSpan.FromHours(1);
-				options.Cookie.HttpOnly = true;
-				options.Cookie.IsEssential = true;
-				options.Cookie.Name = ".DnsTools.Session";
-				options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
-			});
+services.AddDistributedMemoryCache();
+services.AddSession(options =>
+{
+	options.IdleTimeout = TimeSpan.FromHours(1);
+	options.Cookie.HttpOnly = true;
+	options.Cookie.IsEssential = true;
+	options.Cookie.Name = ".DnsTools.Session";
+	options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+});
 
-			ConfigureHealthChecks(services.AddHealthChecks());
-		}
+ConfigureHealthChecks(services.AddHealthChecks());
 
-		private void ConfigureHealthChecks(IHealthChecksBuilder builder)
-		{
-			var config = Configuration.Get<AppConfig>();
-			foreach (var worker in config.Workers)
-			{
-				builder.AddTypeActivatedCheck<WorkerHealthCheck>($"worker_{worker.Id}", worker.Id);
-			}
-		}
+var app = builder.Build();
 
-		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-		public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-		{
-			if (env.IsDevelopment())
-			{
-				app.UseDeveloperExceptionPage();
-				// Allow unencrypted gRPC calls in development
-				AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
-			}
-			else
-			{
-				app.UseExceptionHandler("/Error/Error");
-				app.UseStatusCodePagesWithReExecute("/Error/Status{0}");
-				// The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-				app.UseHsts();
-			}
+if (app.Environment.IsDevelopment())
+{
+	app.UseDeveloperExceptionPage();
+	// Allow unencrypted gRPC calls in development
+	AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
+}
+else
+{
+	app.UseExceptionHandler("/Error/Error");
+	app.UseStatusCodePagesWithReExecute("/Error/Status{0}");
+	// The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+	app.UseHsts();
+}
 
-			app.UseHttpsRedirection();
-			app.UseForwardedHeaders(new ForwardedHeadersOptions
-			{
-				ForwardedHeaders = ForwardedHeaders.XForwardedFor
-			});
-			app.UseStaticFiles();
-			app.UseSession();
+app.UseHttpsRedirection();
+app.UseForwardedHeaders(new ForwardedHeadersOptions
+{
+	ForwardedHeaders = ForwardedHeaders.XForwardedFor
+});
+app.UseStaticFiles();
+app.UseSession();
 
-			app.UseRouting();
-			app.UseCors(env.IsDevelopment() ? CORS_DEV : CORS_PROD);
-			app.UseSentryTunneling("/error/log");
+app.UseRouting();
+app.UseCors(app.Environment.IsDevelopment() ? CORS_DEV : CORS_PROD);
+app.UseSentryTunneling("/error/log");
 
-			app.UseHealthChecksPrometheusExporter("/health/prom", options =>
-			{
-				options.ResultStatusCodes = new Dictionary<HealthStatus, int>
-				{
-					// Always return HTTP 200 so Prometheus sees the request as successful.
-					{HealthStatus.Healthy, 200},
-					{HealthStatus.Degraded, 200},
-					{HealthStatus.Unhealthy, 200},
-				};
-			});
-			app.UseEndpoints(endpoints =>
-			{
-				endpoints.MapHealthChecks("/health");
-				endpoints.MapHealthChecks("/health/json", new HealthCheckOptions
-				{
-					ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse,
-				});
+app.UseHealthChecksPrometheusExporter("/health/prom", options =>
+{
+	options.ResultStatusCodes = new Dictionary<HealthStatus, int>
+	{
+		// Always return HTTP 200 so Prometheus sees the request as successful.
+		{HealthStatus.Healthy, 200},
+		{HealthStatus.Degraded, 200},
+		{HealthStatus.Unhealthy, 200},
+	};
+});
 
-				endpoints.MapHub<ToolsHub>("/hub");
-				endpoints.MapControllerRoute(
-					name: "default",
-					pattern: "{controller}/{action=Index}/{id?}");
-			});
-		}
+app.MapHealthChecks("/health");
+app.MapHealthChecks("/health/json", new HealthCheckOptions
+{
+	ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse,
+});
+
+app.MapHub<ToolsHub>("/hub");
+app.MapControllerRoute(
+	name: "default",
+	pattern: "{controller}/{action=Index}/{id?}"
+);
+
+app.Run();
+
+return;
+
+void ConfigureHealthChecks(IHealthChecksBuilder builder)
+{
+	var appConfig = config.Get<AppConfig>();
+	foreach (var worker in appConfig.Workers)
+	{
+		builder.AddTypeActivatedCheck<WorkerHealthCheck>($"worker_{worker.Id}", worker.Id);
 	}
 }

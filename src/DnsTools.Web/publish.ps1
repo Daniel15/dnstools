@@ -28,4 +28,4 @@ switch ($choice) {
 	2 { $remoteDir = "dnstools" }
 }
 
-wsl.exe rsync -av --progress ./bin/Release/net6.0/linux-x64/publish/ daniel@d.sb:/var/www/$remoteDir/
+wsl.exe rsync -av --progress ./bin/Release/net8.0/linux-x64/publish/ daniel@d.sb:/var/www/$remoteDir/
