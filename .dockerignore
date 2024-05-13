@@ -1,7 +1,8 @@
 **/.classpath
 **/.dockerignore
 **/.env
-**/.git
+# Need this for GitInfo to work.
+#**/.git
 **/.gitignore
 **/.project
 **/.settings
