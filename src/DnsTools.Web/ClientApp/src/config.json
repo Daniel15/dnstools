@@ -22,19 +22,6 @@
       "networkAsn": 45671
     },
     {
-      "id": "at",
-      "city": "Vienna",
-      "region": "Vienna",
-      "country": "AT",
-      "locationDisplay": "Austria",
-      "latitude": 48.26976336,
-      "longitude": 16.41074775,
-      "providerName": "HostHatch",
-      "providerUrl": "https://hosthatch.com/",
-      "dataCenterName": "Interxion",
-      "networkAsn": 63473
-    },
-    {
       "id": "bg",
       "city": "Sofia",
       "region": "Sofia City",
@@ -147,8 +134,8 @@
       "locationDisplay": "India",
       "latitude": 18.564534,
       "longitude": 73.784045,
-      "providerName": "WebHorizon",
-      "providerUrl": "https://webhorizon.in/",
+      "providerName": "HostNamaste",
+      "providerUrl": "https://www.hostnamaste.com/",
       "dataCenterName": "LeapSwitch Networks",
       "networkAsn": 132335
     },
@@ -216,19 +203,6 @@
       "providerUrl": "https://zappiehost.com/",
       "dataCenterName": "Zappie Host",
       "networkAsn": 61138
-    },
-    {
-      "id": "pl",
-      "city": "Warsaw",
-      "region": "Mazovia",
-      "country": "PL",
-      "locationDisplay": "Poland",
-      "latitude": 52.22773771,
-      "longitude": 21.00500235,
-      "providerName": "WebHorizon",
-      "providerUrl": "https://webhorizon.in/",
-      "dataCenterName": "Mevspace",
-      "networkAsn": 201814
     },
     {
       "id": "ro",
