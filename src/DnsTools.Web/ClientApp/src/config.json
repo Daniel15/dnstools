@@ -165,6 +165,21 @@
       "dataCenterName": "Iron Mountain LON1",
       "networkAsn": 63473
     },
+
+    {
+      "id": "md",
+      "city": "Chișinău",
+      "region": "Chișinău",
+      "country": "MD",
+      "locationDisplay": "Moldova",
+      "latitude": 46.989939,
+      "longitude": 28.859201,
+      "providerName": "AlexHost",
+      "providerUrl": "https://alexhost.com/",
+      "dataCenterName": "AlexHost",
+      "networkAsn": 200019
+    },
+
     {
       "id": "no",
       "city": "Sandefjord",

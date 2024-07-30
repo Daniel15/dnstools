@@ -13,6 +13,11 @@ const providers = [
     url: 'https://advinservers.com/',
   },
   {
+    name: 'AlexHost',
+    tooltip: 'Reliable and fast hosting for your sites, based in Moldova',
+    url: 'https://alexhost.com/',
+  },
+  {
     name: 'FreeVPS',
     tooltip: 'Free VPS for active users of LowEndTalk and LowEndSpirit forums',
     url: 'https://freevps.org/',

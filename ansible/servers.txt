@@ -17,6 +17,7 @@ in.worker.dns.tg
 it.worker.dns.tg
 jp.worker.dns.tg
 lon.worker.dns.tg
+md.worker.dns.tg
 nl.worker.dns.tg
 no.worker.dns.tg
 nz.worker.dns.tg
