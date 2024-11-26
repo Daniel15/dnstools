@@ -37,10 +37,9 @@ module.exports = {
           () => [
             sentryWebpackPlugin({
               authToken: process.env.SENTRY_AUTH_TOKEN,
-              org: 'sentry',
+              org: 'daniel15',
               project: 'dnstools-js',
               release: process.env.SENTRY_RELEASE,
-              url: 'https://errors.d.sb',
             })
           ],
           []
