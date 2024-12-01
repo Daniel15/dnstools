@@ -40,11 +40,6 @@ const providers = [
     url: 'https://www.hostnamaste.com/',
   },
   {
-    name: 'Terrahost',
-    tooltip: 'VPSes and dedicated servers in secure bunker datacenters',
-    url: 'https://terrahost.com/',
-  },
-  {
     name: 'WebHorizon',
     tooltip: 'AMD EPYC NAT VPS hosting from £5.50 per year',
     url: 'https://webhorizon.in/',

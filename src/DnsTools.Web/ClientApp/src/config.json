@@ -233,19 +233,6 @@
       "networkAsn": 9009
     },
     {
-      "id": "ru",
-      "city": "Moscow",
-      "region": "Moscow",
-      "country": "RU",
-      "locationDisplay": "Russia",
-      "latitude": 55.73649986,
-      "longitude": 37.72117087,
-      "providerName": "HostNamaste",
-      "providerUrl": "https://www.hostnamaste.com/",
-      "dataCenterName": "DataPro",
-      "networkAsn": 49335
-    },
-    {
       "id": "sg",
       "city": "Singapore",
       "region": "Singapore",
@@ -309,19 +296,6 @@
       "providerUrl": "https://advinservers.com/",
       "dataCenterName": "QuadraNet",
       "networkAsn": 206216
-    },
-    {
-      "id": "us-kc",
-      "city": "Kansas City",
-      "region": "Missouri",
-      "country": "US",
-      "locationDisplay": "Kansas City, USA",
-      "latitude": 39.0101512,
-      "longitude": -94.504120,
-      "providerName": "Terrahost",
-      "providerUrl": "https://terrahost.com/",
-      "dataCenterName": "?",
-      "networkAsn": 56655
     },
     {
       "id": "us-la",

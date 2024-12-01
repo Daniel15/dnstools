@@ -14,7 +14,6 @@ fi.worker.dns.tg
 fr.worker.dns.tg
 hk.worker.dns.tg
 in.worker.dns.tg
-it.worker.dns.tg
 jp.worker.dns.tg
 lon.worker.dns.tg
 md.worker.dns.tg
@@ -23,7 +22,6 @@ no.worker.dns.tg
 nz.worker.dns.tg
 pl.worker.dns.tg
 ro.worker.dns.tg
-ru.worker.dns.tg
 se.worker.dns.tg
 sg.worker.dns.tg
 us-dal.worker.dns.tg
