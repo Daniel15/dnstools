@@ -71,5 +71,8 @@
   "reactSnap": {
     "skipThirdPartyRequests": false,
     "http2PushManifest": true
+  },
+  "volta": {
+    "node": "14.17.6"
   }
 }
