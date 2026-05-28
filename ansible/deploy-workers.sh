@@ -1,7 +1,11 @@
 #!/bin/bash
 set -ex
-if [ ! -d ../src/DnsTools.Worker/bin/Release/net8.0/linux-x64/publish/ ]; then
-	dotnet publish ../src/DnsTools.Worker -r linux-x64 -c Release
+
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+repo_dir="$(cd "$script_dir/.." && pwd)"
+
+if [ ! -d "$repo_dir/src/DnsTools.Worker/bin/Release/net8.0/linux-x64/publish/" ]; then
+	dotnet publish "$repo_dir/src/DnsTools.Worker" -r linux-x64 -c Release
 fi
 
-ANSIBLE_CONFIG=/mnt/c/src/dnstools.ws/ansible/ansible.cfg ansible-playbook worker.yml --extra-vars '@passwd.yml' --vault-password-file=vault-password
+ANSIBLE_CONFIG="$script_dir/ansible.cfg" ansible-playbook "$script_dir/worker.yml" --extra-vars "@$script_dir/passwd.yml" --vault-password-file="$script_dir/vault-password"
