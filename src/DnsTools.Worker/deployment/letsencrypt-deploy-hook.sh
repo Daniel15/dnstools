@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 set -e
 
 # To obtain cert:
@@ -8,4 +8,11 @@ openssl pkcs12 -export -out /opt/dnstools-worker/key.pfx -inkey /etc/letsencrypt
 chown root:www-data /opt/dnstools-worker/key.pfx
 chmod 0750 /opt/dnstools-worker/key.pfx
 
-systemctl restart dnstools-worker
+if command -v systemctl >/dev/null 2>&1 && systemctl is-system-running >/dev/null 2>&1; then
+	systemctl restart dnstools-worker
+elif command -v rc-service >/dev/null 2>&1; then
+	rc-service dnstools-worker restart
+else
+	echo "Could not restart dnstools-worker: neither systemd nor OpenRC is available" >&2
+	exit 1
+fi

@@ -41,6 +41,9 @@
     <None Update="deployment\letsencrypt-deploy-hook.sh">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="deployment\dnstools-worker.openrc">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

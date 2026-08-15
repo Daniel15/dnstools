@@ -1,0 +1,20 @@
+#!/sbin/openrc-run
+
+name="DNSTools Worker"
+description="DNSTools Worker"
+
+supervisor="supervise-daemon"
+command="/opt/dnstools-worker/DnsTools.Worker"
+directory="/opt/dnstools-worker"
+command_user="www-data"
+stopsig="INT"
+
+# Restart service after 10 seconds if the dotnet service crashes
+respawn_delay="10"
+respawn_max="0"
+
+export ASPNETCORE_ENVIRONMENT="Production"
+
+depend() {
+	need net
+}

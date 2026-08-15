@@ -31,7 +31,17 @@ You can then hit the site at `http://localhost:31429/`. The C# backend is runnin
 
 ## Worker
 
-The worker requires a few Linux utilities (like `ping` and `traceroute`) to be available. On Windows, you can run the worker using Docker. VS2019's built-in Docker support is sufficient for this - Just start the project in Visual Studio and it'll automatically spin up the Docker container.
+The worker requires a few Linux utilities (like `ping` and `traceroute`) to be available.
+
+To build the Alpine version, `musl` is required:
+
+```
+# On Fedora
+sudo dnf install musl-gcc musl-libc-static
+
+# on Debian
+sudo apt install musl-tools
+```
 
 # Deploying to Production
 

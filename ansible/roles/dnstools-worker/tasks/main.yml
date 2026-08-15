@@ -1,5 +1,5 @@
 ---
-- name: Install packages
+- name: Install Debian packages
   ansible.builtin.apt:
     name:
       - certbot
@@ -15,6 +15,40 @@
     state: present
     install_recommends: false
     update_cache: true
+  when: ansible_facts['os_family'] == 'Debian'
+
+- name: Install Alpine packages
+  community.general.apk:
+    name:
+      - certbot
+      - htop
+      - iputils-ping
+      - mtr
+      - rsync
+      - traceroute
+    state: present
+    update_cache: true
+  when: ansible_facts['os_family'] == 'Alpine'
+
+- name: Ensure www-data group exists
+  ansible.builtin.group:
+    name: www-data
+    gid: 82
+    system: true
+    state: present
+  when: ansible_facts['os_family'] == 'Alpine'
+
+- name: Ensure www-data user exists
+  ansible.builtin.user:
+    name: www-data
+    uid: 82
+    group: www-data
+    home: /var/www
+    shell: /sbin/nologin
+    system: true
+    create_home: false
+    state: present
+  when: ansible_facts['os_family'] == 'Alpine'
 
 - name: Disable search domain in /etc/resolv.conf
   ansible.builtin.lineinfile:
@@ -31,6 +65,14 @@
 #################################################
 # Certbot
 
+- name: Create certbot renewal hooks directory
+  ansible.builtin.file:
+    path: /etc/letsencrypt/renewal-hooks/deploy
+    state: directory
+    owner: root
+    group: root
+    mode: "0700"
+
 - name: Create acme-dns-auth.py for acme-dns
   ansible.builtin.template:
     src: acme-dns-auth.py.j2
@@ -38,19 +80,34 @@
     owner: root
     group: root
     mode: "0700"
-
-- name: Create certbot renewal hooks directory
-  ansible.builtin.file:
-    path: /etc/letsencrypt/renewal-hooks/deploy/
-    state: directory
-    mode: "0755"
-
 - name: Enable certbot renewal hook
   ansible.builtin.file:
     src: /opt/dnstools-worker/deployment/letsencrypt-deploy-hook.sh
     dest: /etc/letsencrypt/renewal-hooks/deploy/01-dnstools-worker
     state: link
     force: true
+
+- name: Add Alpine certbot renewal cron job
+  ansible.builtin.copy:
+    dest: /etc/periodic/daily/certbot-renew
+    content: |
+      #!/bin/sh
+      certbot renew --quiet
+    owner: root
+    group: root
+    mode: "0755"
+  when: ansible_facts['os_family'] == 'Alpine'
+
+- name: Add Alpine autoupdate cron job
+  ansible.builtin.copy:
+    dest: /etc/periodic/daily/autoupdate
+    content: |
+      #!/bin/sh
+      apk upgrade --update
+    owner: root
+    group: root
+    mode: "0755"
+  when: ansible_facts['os_family'] == 'Alpine'
 
 #################################################
 # dnstools-worker
@@ -64,19 +121,28 @@
 
 - name: Copy worker
   ansible.posix.synchronize:
-    src: ../src/DnsTools.Worker/bin/Release/net8.0/linux-x64/publish/
+    src: "../src/DnsTools.Worker/bin/Release/net8.0/{{ 'linux-musl-x64' if ansible_facts['os_family'] == 'Alpine' else 'linux-x64' }}/publish/"
     dest: /opt/dnstools-worker/
     rsync_path: "/usr/bin/rsync" # Avoiding sudo for rsync
 
-- name: Enable dnstools-worker systemd
+- name: Enable dnstools-worker (systemd)
   ansible.builtin.file:
     src: /opt/dnstools-worker/deployment/dnstools-worker.service
     dest: /etc/systemd/system/dnstools-worker.service
     state: link
+  when: ansible_facts['service_mgr'] == 'systemd'
 
 - name: Reload systemd
   ansible.builtin.systemd:
     daemon_reload: true
+  when: ansible_facts['service_mgr'] == 'systemd'
+
+- name: Enable dnstools-worker (OpenRC)
+  ansible.builtin.file:
+    src: /opt/dnstools-worker/deployment/dnstools-worker.openrc
+    dest: /etc/init.d/dnstools-worker
+    state: link
+  when: ansible_facts['service_mgr'] == 'openrc'
 
 - name: Check if certbot has ran
   ansible.builtin.stat:
@@ -89,7 +155,7 @@
   when: not cert_exists.stat.exists
 
 - name: Start worker
-  ansible.builtin.systemd:
+  ansible.builtin.service:
     name: dnstools-worker
     state: restarted
     enabled: true

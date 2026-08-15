@@ -1,7 +1,18 @@
 ---
 - name: Configure servers
   hosts: workers
+  gather_facts: false
   become: true
+
+  pre_tasks:
+    - name: Gather facts
+      ansible.builtin.setup:
+      become: false
+
+    - name: Select privilege escalation method
+      ansible.builtin.set_fact:
+        ansible_become_method: "{{ 'doas' if ansible_facts['os_family'] == 'Alpine' else 'sudo' }}"
+      become: false
 
   roles:
     - dnstools-worker
