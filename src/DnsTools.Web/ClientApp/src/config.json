@@ -22,6 +22,19 @@
       "networkAsn": 45671
     },
     {
+      "id": "at",
+      "city": "Vienna",
+      "region": "Vienna",
+      "country": "AT",
+      "locationDisplay": "Austria",
+      "latitude": 48.26976336,
+      "longitude": 16.41074775,
+      "providerName": "HostHatch",
+      "providerUrl": "https://hosthatch.com/",
+      "dataCenterName": "Interxion",
+      "networkAsn": 63473
+    },
+    {
       "id": "bg",
       "city": "Sofia",
       "region": "Sofia City",

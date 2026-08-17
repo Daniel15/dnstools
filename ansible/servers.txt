@@ -2,6 +2,7 @@
 control ansible_connection=local
 
 [workers]
+at.worker.networktest.org
 au-syd.worker.networktest.org
 bg.worker.networktest.org
 ca.worker.networktest.org
