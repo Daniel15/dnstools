@@ -1,0 +1,29 @@
+@model Whois.Registrar
+
+@{
+	var name = Model.Name ?? Model.AbuseName ?? "Unknown";
+}
+
+@if (Model.Url != null)
+{
+	<a href="@Model.Url" rel="nofollow">@name</a>
+}
+else
+{
+	@name
+}
+
+@if (Model.IanaId != null)
+{
+	@:<br />#@Model.IanaId
+}
+
+@if (Model.AbuseEmail != null)
+{
+	@:<br /><a href="mailto:@Model.AbuseEmail" rel="nofollow">@Model.AbuseEmail</a>
+}
+
+@if (Model.AbuseTelephoneNumber != null)
+{
+	@:<br /><a href="@Model.AbuseTelephoneNumber">@Model.AbuseTelephoneNumber.Replace("tel:", string.Empty)</a>
+}

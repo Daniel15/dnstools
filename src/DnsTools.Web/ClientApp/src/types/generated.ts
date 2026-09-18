@@ -205,3 +205,8 @@ export enum DnsLookupType {
 	Txt = 7,
 	Caa = 8
 }
+export enum WhoisProtocol {
+	Auto = 0,
+	Whois = 1,
+	Rdap = 2
+}

@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useCallback} from 'react';
+import {useState, useEffect, useCallback} from 'react';
 import Helmet from 'react-helmet';
 import {RouteComponentProps} from 'react-router-dom';
 
@@ -11,11 +11,11 @@ import ShimmerBar from '../components/ShimmerBar';
 
 type Props = RouteComponentProps<{
   host: string;
-  type: string;
+  protocol: string | undefined;
 }>;
 
 export default function Whois(props: Props) {
-  const {host} = props.match.params;
+  const {host, protocol} = props.match.params;
   const [isLoading, setIsLoading] = useState<boolean>();
   const [results, setResults] = useState<string | null>(null);
   const [error, setError] = useState<Error | null>(null);
@@ -31,14 +31,18 @@ export default function Whois(props: Props) {
     let didCancel = false;
 
     async function load() {
+      const protocolPath = protocol == null ? '' : `${protocol}/`;
       try {
         setIsLoading(true);
         setResults(null);
         setError(null);
         setShowCaptcha(false);
-        const rawResponse = await fetch(`${apiUrl}/data/whois/${host}/`, {
-          credentials: 'include',
-        });
+        const rawResponse = await fetch(
+          `${apiUrl}/data/whois/${host}/${protocolPath}`,
+          {
+            credentials: 'include',
+          },
+        );
         const response = await rawResponse.text();
         setIsLoading(false);
         if (didCancel) {
@@ -64,7 +68,7 @@ export default function Whois(props: Props) {
     return () => {
       didCancel = true;
     };
-  }, [host, forceLoadInc]);
+  }, [host, forceLoadInc, protocol]);
 
   return (
     <>

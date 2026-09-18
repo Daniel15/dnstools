@@ -1,0 +1,22 @@
+@using System.Globalization
+@model Whois.Trademark
+
+@if (Model.Name != null)
+{
+	<strong>@Model.Name</strong>
+}
+
+@if (Model.Number != null)
+{
+	@: #@Model.Number
+}
+
+@if (Model.Country != null)
+{
+	@:, @Model.Country
+}
+
+@if (Model.Date != null)
+{
+	@:, @Model.Date.Value.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)
+}

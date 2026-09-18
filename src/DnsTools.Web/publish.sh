@@ -8,10 +8,6 @@ yarn run build
 yarn run generate-cshtml
 cd ..
 
-cd legacy
-composer install --apcu-autoloader
-cd ..
-
 dotnet publish --no-self-contained -r linux-x64 -c Release
 
 PS3="Deploy? "

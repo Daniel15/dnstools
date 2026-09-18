@@ -18,6 +18,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
+using Whois;
 
 const string CORS_PROD = "prod";
 const string CORS_DEV = "dev";
@@ -47,6 +48,11 @@ services.AddSingleton<IHttp2PushManifestHandler, Http2PushManifestHandler>();
 services.AddSingleton<IWorkerProvider, WorkerProvider>();
 services.AddSingleton<IIpDataProvider, IpDataProvider>();
 services.AddScoped<ICaptcha, Captcha>();
+services.AddWhois(options =>
+{
+	options.TimeoutSeconds = 10;
+	options.FollowReferrer = true;
+});
 
 services.AddSingleton<IIpDataLoader, IpInfoIpDataLoader>();
 services.AddSingleton<IIpDataLoader, MaxMindIpDataLoader>();

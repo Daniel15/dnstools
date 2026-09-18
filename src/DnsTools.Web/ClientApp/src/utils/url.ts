@@ -1,7 +1,7 @@
 import {LocationDescriptorObject} from 'history';
 import {Tool, ToolInput} from '../components/MainForm';
 import {defaultWorker, workers as WorkersConfig} from '../config';
-import {Protocol, DnsLookupType} from '../types/generated';
+import {Protocol, DnsLookupType, WhoisProtocol} from '../types/generated';
 
 export function buildToolURI({
   tool,
@@ -43,6 +43,9 @@ export function buildToolURI({
 
     case Tool.Whois:
       uri = `/whois/${input.hosts[0]}/`;
+      if (input.whoisProtocol !== WhoisProtocol.Auto) {
+        uri += `${WhoisProtocol[input.whoisProtocol].toLowerCase()}/`;
+      }
       break;
   }
 

@@ -2,6 +2,7 @@
 using DnsTools.Worker;
 using Reinforced.Typings.Attributes;
 using Reinforced.Typings.Fluent;
+using Whois;
 
 [assembly: TsGlobal(
 	CamelCaseForMethods = true,
@@ -48,6 +49,7 @@ namespace DnsTools.Web
 			builder.ExportAsEnum<DnsTraversalResponse.ResponseOneofCase>().OverrideName("DnsTraversalResponseType");
 			builder.ExportAsEnum<DnsRecord.RecordOneofCase>().OverrideName("DnsRecordType");
 			builder.ExportAsEnum<MtrResponse.ResponseOneofCase>().OverrideName("MtrResponseType");
+			builder.ExportAsEnum<ProtocolPreference>().OverrideName("WhoisProtocol");
 
 			builder.ExportAsInterface<Error>().WithPublicInstanceProperties();
 

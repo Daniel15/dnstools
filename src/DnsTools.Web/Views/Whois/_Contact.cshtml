@@ -1,0 +1,36 @@
+@model Whois.Contact
+
+@if (Model.Name != null)
+{
+	<strong>@Model.Name</strong>
+	if (Model.RegistryId != null)
+	{
+		@: (@Model.RegistryId)
+	}
+	<br />
+}
+
+@if (Model.Organization != null)
+{
+	@Model.Organization<br />
+}
+
+@if (Model.Email != null)
+{
+	@:Email: <a href="mailto:@Model.Email">@Model.Email</a><br />
+}
+
+@if (Model.TelephoneNumber != null)
+{
+	@:Phone: <a href="tel:@Model.TelephoneNumber">@Model.TelephoneNumber</a><br />
+}
+
+@if (Model.FaxNumber != null)
+{
+	@:Fax: <a href="tel:@Model.FaxNumber">@Model.FaxNumber</a><br />
+}
+
+@if (Model.Address is { Lines.Count: > 0 })
+{
+	@:Address: @string.Join(", ", Model.Address.Lines)
+}

@@ -1,13 +1,11 @@
 const autoprefixer = require('autoprefixer');
 const purgecss = require('@fullhuman/postcss-purgecss');
-const {sentryWebpackPlugin} = require("@sentry/webpack-plugin");
+const {sentryWebpackPlugin} = require('@sentry/webpack-plugin');
 const {whenProd} = require('@craco/craco');
 
 module.exports = {
   babel: {
-    plugins: [
-      'babel-plugin-dev-expression',
-    ]
+    plugins: ['babel-plugin-dev-expression'],
   },
   style: {
     postcss: {
@@ -21,7 +19,6 @@ module.exports = {
                 './src/**/*.tsx',
                 './src/**/*.ts',
                 '../Views/**/*.cshtml',
-                '../legacy/public/*.php',
               ],
             }),
           ],
@@ -40,11 +37,11 @@ module.exports = {
               org: 'daniel15',
               project: 'dnstools-js',
               release: process.env.SENTRY_RELEASE,
-            })
+            }),
           ],
-          []
+          [],
         ),
       ],
-    }
-  }
+    },
+  },
 };

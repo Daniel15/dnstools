@@ -68,7 +68,7 @@ export default function App() {
                 <Traceroute {...routeProps} ipData={ipData} />
               )}
             />
-            <Route path="/whois/:host/" component={Whois} />
+            <Route path="/whois/:host/:protocol?/" component={Whois} />
             <Route
               path="/:worker/mtr/:host/"
               render={routeProps => <Mtr {...routeProps} ipData={ipData} />}

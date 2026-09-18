@@ -17,6 +17,8 @@
   <ItemGroup>
     <PackageReference Include="AspNetCore.HealthChecks.Prometheus.Metrics" Version="8.0.1" />
     <PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="8.0.1" />
+    <PackageReference Include="CliWrap" Version="3.6.6" />
+    <PackageReference Include="Daniel15.Whois" Version="4.0.0-beta.2-daniel15-01" />
     <PackageReference Include="DnsClient" Version="1.7.0" />
     <PackageReference Include="GitInfo" Version="3.3.4">
       <PrivateAssets>all</PrivateAssets>
@@ -48,6 +50,9 @@
     <Compile Include="..\DnsTools.Worker\Models\IDnsLookupRequest.cs" Link="Models\IDnsLookupRequest.cs" />
     <Compile Include="..\DnsTools.Worker\Models\IHasError.cs" Link="Models\IHasError.cs" />
     <Compile Include="..\DnsTools.Worker\Models\ProtobufModelExtensions.cs" Link="Models\ProtobufModelExtensions.cs" />
+    <Compile Include="..\DnsTools.Worker\Utils\Hostname.cs">
+      <Link>Utils\Hostname.cs</Link>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>
@@ -55,9 +60,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="legacy\**">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Update="ClientApp\build\**">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

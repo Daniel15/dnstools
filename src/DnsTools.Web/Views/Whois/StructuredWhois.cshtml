@@ -1,0 +1,121 @@
+@using System.Globalization
+@model Whois.LookupResult<Whois.DomainInfo>
+
+@functions
+{
+	private static string FormatDate(DateTime date)
+	{
+		return date.ToString("yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture);
+	}
+}
+
+<table class="table table-striped mt-4">
+	<tbody>
+		@if (Model.Response.Registered != null)
+		{
+			<tr>
+				<th>Created</th>
+				<td>@FormatDate(Model.Response.Registered.Value)</td>
+			</tr>
+		}
+		
+		@if (Model.Response.Updated != null)
+		{
+			<tr>
+				<th>Last Changed</th>
+				<td>@FormatDate(Model.Response.Updated.Value)</td>
+			</tr>
+		}
+		
+		@if (Model.Response.Expiration != null)
+		{
+			<tr>
+				<th>Expires</th>
+				<td>@FormatDate(Model.Response.Expiration.Value)</td>
+			</tr>
+		}
+		
+		<tr>
+			<th>Status</th>
+			<td>
+				@Model.Response.Status.ToString()<br />
+				@foreach (var status in Model.Response.DomainStatus)
+				{
+					@status<br />
+				}
+			</td>
+		</tr>
+		
+		@if (Model.Response.Registrar != null)
+		{
+			<tr>
+				<th>Registrar</th>
+				<td><partial name="_Registrar" model="@Model.Response.Registrar" /></td>
+			</tr>
+		}
+		
+		@if (Model.Response.Registrant != null)
+		{
+			<tr>
+				<th>Registrant</th>
+				<td><partial name="_Contact" model="@Model.Response.Registrant" /></td>
+			</tr>
+		}
+		
+		@if (Model.Response.AdminContact != null)
+		{
+			<tr>
+				<th>Admin</th>
+				<td><partial name="_Contact" model="@Model.Response.AdminContact" /></td>
+			</tr>
+		}
+		
+		@if (Model.Response.BillingContact != null)
+		{
+			<tr>
+				<th>Billing</th>
+				<td><partial name="_Contact" model="@Model.Response.BillingContact" /></td>
+			</tr>
+		}
+		
+		@if (Model.Response.TechnicalContact != null)
+		{
+			<tr>
+				<th>Tech</th>
+				<td><partial name="_Contact" model="@Model.Response.TechnicalContact" /></td>
+			</tr>
+		}
+		
+		@if (Model.Response.ZoneContact != null)
+		{
+			<tr>
+				<th>Zone Contact</th>
+				<td><partial name="_Contact" model="@Model.Response.ZoneContact" /></td>
+			</tr>
+		}
+		
+		@if (Model.Response.Remarks != null)
+		{
+			<tr>
+				<th>Remarks</th>
+				<td>@Model.Response.Remarks</td>
+			</tr>
+		}
+		
+		@if (Model.Response.Trademark != null)
+		{
+			<tr>
+				<th>Trademark</th>
+				<td><partial name="_Trademark" model="@Model.Response.Trademark" /></td>
+			</tr>
+		}
+		
+		<tr>
+			<th>DNSSEC</th>
+			<td>@(Model.Response.DnsSecStatus ?? "unsigned")</td>
+		</tr>
+		</tbody>
+</table>
+
+<h5>Raw Response</h5>
+<partial name="RawWhois" model="@Model.RawContent" />

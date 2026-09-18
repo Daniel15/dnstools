@@ -1,0 +1,30 @@
+@using System.Text.Json.Nodes
+@model string
+
+@{
+	Layout = null;
+}
+
+@{
+	var output = Model;
+	
+	// See if it could be JSON from an RDAP lookup
+	if (output.StartsWith("{"))
+	{
+		try
+		{
+			// Parse it to pretty format it.
+			var json = JsonNode.Parse(output);
+			if (json != null)
+			{
+				output = json.ToString();
+			}
+		}
+		catch (Exception)
+		{
+			// This is fine - fallback to treating it like a plain string.
+		}
+	}
+}
+
+<pre>@output</pre>

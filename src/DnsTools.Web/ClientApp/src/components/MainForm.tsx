@@ -1,7 +1,7 @@
-import React, {useState, FormEvent} from 'react';
+import {useState, FormEvent} from 'react';
 import {useHistory} from 'react-router';
 
-import {Protocol, DnsLookupType} from '../types/generated';
+import {Protocol, DnsLookupType, WhoisProtocol} from '../types/generated';
 import Config from '../config.json';
 import CheckboxList, {Option} from './form/CheckboxList';
 import DropdownButton from './DropdownButton';
@@ -48,6 +48,8 @@ export type ToolInput = {
   workers: ReadonlySet<string>;
   // For tools that only allow one worker
   worker: string;
+  // For WHOIS
+  whoisProtocol: WhoisProtocol;
 };
 
 const toolOptions: ReadonlyArray<ToolMetadata> = [
@@ -88,7 +90,7 @@ const toolOptions: ReadonlyArray<ToolMetadata> = [
   },
   {
     tool: Tool.Whois,
-    label: 'WHOIS',
+    label: 'WHOIS / RDAP',
     description: 'Get information on a domain name or IP address.',
   },
 ];
@@ -101,6 +103,7 @@ export function getDefaultInput(): ToolInput {
     server: '',
     workers: new Set(Config.workers.map(worker => worker.id)),
     worker: Config.defaultWorker,
+    whoisProtocol: WhoisProtocol.Auto,
   };
 }
 
@@ -168,6 +171,9 @@ export default function MainForm(props: Props) {
             tool={selectedTool.tool}
             workerOptions={workerOptions}
           />
+        )}
+        {selectedTool.tool === Tool.Whois && (
+          <WhoisInput input={input} onChangeInput={setInput} />
         )}
         <button
           className="btn btn-primary btn-lg"
@@ -396,6 +402,40 @@ function DnsLookupInput(props: {
         </>
       )}
     </>
+  );
+}
+
+function WhoisInput(props: {
+  input: ToolInput;
+  onChangeInput: (input: ToolInput) => void;
+}) {
+  return (
+    <FormRow id="whois-protocol" isInput={false} label="Protocol">
+      <RadioList
+        name="whois-protocol"
+        options={[
+          {
+            id: 'whois-protocol-auto',
+            label: 'Auto',
+            value: WhoisProtocol.Auto,
+          },
+          {
+            id: 'whois-protocol-rdap',
+            label: 'RDAP',
+            value: WhoisProtocol.Rdap,
+          },
+          {
+            id: 'whois-protocol-whois',
+            label: 'Legacy WHOIS',
+            value: WhoisProtocol.Whois,
+          },
+        ]}
+        selectedValue={props.input.whoisProtocol}
+        onSelect={value =>
+          props.onChangeInput({...props.input, whoisProtocol: value})
+        }
+      />
+    </FormRow>
   );
 }
 
