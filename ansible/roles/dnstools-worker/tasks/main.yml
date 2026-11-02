@@ -17,6 +17,30 @@
     update_cache: true
   when: ansible_facts['os_family'] == 'Debian'
 
+- name: Enable daily unattended upgrades on Debian
+  ansible.builtin.copy:
+    dest: /etc/apt/apt.conf.d/20auto-upgrades
+    content: |
+      APT::Periodic::Enable "1";
+      APT::Periodic::Update-Package-Lists "1";
+      APT::Periodic::Unattended-Upgrade "1";
+    owner: root
+    group: root
+    mode: "0644"
+  when: ansible_facts['os_family'] == 'Debian'
+
+- name: Enable APT update and upgrade timers on Debian
+  ansible.builtin.systemd:
+    name: "{{ item }}"
+    enabled: true
+    state: started
+  loop:
+    - apt-daily.timer
+    - apt-daily-upgrade.timer
+  when:
+    - ansible_facts['os_family'] == 'Debian'
+    - ansible_facts['service_mgr'] == 'systemd'
+
 - name: Install Alpine packages
   community.general.apk:
     name:
